@@ -47,6 +47,10 @@ function initBattle() {
           draggle.faint()
         })
         queue.push(() => {
+          // Afficher le code de victoire
+          if (typeof showVictoryCode === 'function') {
+            showVictoryCode()
+          }
           // fade back to black
           gsap.to('#overlappingDiv', {
             opacity: 1,
@@ -60,7 +64,7 @@ function initBattle() {
               })
 
               battle.initiated = false
-              audio.Map.play()
+              if (audio && audio.Map) audio.Map.play()
             }
           })
         })

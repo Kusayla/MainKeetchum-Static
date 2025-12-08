@@ -1,165 +1,363 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A$$ Keetchum</title>
+    <title>A$$ Keetchum - Gagnez le Code !</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/game.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Masquer le site jusqu'à ce que le code soit entré */
+        #site-content {
+            display: none;
+        }
+        
+        #code-entry {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        #code-entry.hidden {
+            display: none;
+        }
+        
+        .code-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 500px;
+        }
+        
+        .code-input {
+            font-size: 2rem;
+            padding: 1rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            margin: 1rem 0;
+            width: 100%;
+        }
+        
+        .victory-message {
+            background: #4CAF50;
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            font-size: 1.5rem;
+        }
+        
+        .game-won {
+            display: none;
+        }
+        
+        .game-won.show {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="row logoR">
-            <div class="col-4"></div>
-            <div class="col-6 mt-5">
-                <a href="https://x.com/asskeetchumcoin?s=21">
-                    <img src="img/token.png" class="img-fluid justify-content-end" alt="">
-                </a>
+    <!-- Écran de saisie du code -->
+    <div id="code-entry">
+        <div class="code-box">
+            <h1>🎮 A$$ Keetchum</h1>
+            <p>Terminez le jeu pour obtenir le code d'accès au site !</p>
+            
+                <!-- Zone du jeu -->
+            <div id="game-container" style="margin: 2rem 0; position: relative;">
+                <canvas id="gameCanvas" style="border: 2px solid #333; background: #000; max-width: 100%; display: block; margin: 0 auto;"></canvas>
+                
+                <!-- Interface de combat -->
+                <div id="userInterface" style="display: none; background: rgba(0,0,0,0.8); color: white; padding: 1rem; margin-top: 1rem; border-radius: 10px;">
+                    <div id="dialogueBox" style="background: white; color: black; padding: 1rem; margin-bottom: 1rem; border-radius: 5px;"></div>
+                    <div id="enemyHealthBar" style="height: 20px; background: linear-gradient(to right, #ff0000, #ff6666); border-radius: 10px; margin: 0.5rem 0;"></div>
+                    <div id="playerHealthBar" style="height: 20px; background: linear-gradient(to right, #00ff00, #66ff66); border-radius: 10px; margin: 0.5rem 0;"></div>
+                    <div id="attacksBox" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;"></div>
+                </div>
+                
+                <!-- Dialogue avec personnages -->
+                <div id="characterDialogueBox" style="display: none; position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); padding: 1rem 2rem; border-radius: 10px; max-width: 80%; text-align: center;"></div>
             </div>
-            <div class="col-1 mt-5">
-                <a href="https://x.com/asskeetchumcoin?s=21">
-                    <img src="img/tel.png" class="img-fluid justify-content-end" alt="">
-                </a>
-            </div>
-            <div class="col-1 mt-5">
-                <a href="https://x.com/asskeetchumcoin?s=21">
-                    <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row align-items-center my-row">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <div class="text-column mt-5 image-overlay-text text-beside-image">
-                    <h2 class="ms-5">A$$ KEETCHUM!</h2>
+            
+            <!-- Message de victoire -->
+            <div id="victory-message" class="game-won">
+                <div class="victory-message">
+                    <h2>🎉 Félicitations !</h2>
+                    <p>Vous avez gagné ! Votre code d'accès est :</p>
+                    <div id="victory-code" style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: #fff;"></div>
+                    <p>Entrez ce code ci-dessous pour accéder au site :</p>
                 </div>
             </div>
-            <div class="col-2"></div>
+            
+            <!-- Saisie du code -->
+            <div id="code-input-section">
+                <input type="text" id="codeInput" class="code-input" placeholder="Entrez le code" maxlength="10">
+                <button onclick="checkCode()" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;">Accéder au Site</button>
+                <p id="code-error" style="color: red; margin-top: 1rem; display: none;">Code incorrect !</p>
+            </div>
         </div>
     </div>
 
-    <div class="row p-3 mt-5">
+    <!-- Contenu du site (masqué jusqu'à ce que le code soit entré) -->
+    <div id="site-content">
         <div class="container">
-            <div class="row">
-                <div class="col-7">
-                    <img class="img-fluid picka" src="img/pikatchoum.png" alt="Pikatchoum">
+            <div class="row logoR">
+                <div class="col-4"></div>
+                <div class="col-6 mt-5">
+                    <a href="https://x.com/asskeetchumcoin?s=21">
+                        <img src="img/token.png" class="img-fluid justify-content-end" alt="">
+                    </a>
                 </div>
-                <div class="col-5">
-                    <div class="container">
-                        <div class="row align-items-center my-row">
-                            <div class="text-column mt-5 image-overlay-text text-beside-image">
-                                <h2>A$$!</h2>
-                                <p>A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
-                                    <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to not
-                                        just catch Pokémon, but <br> also the boundless potential of cryptocurrency!
-                                    </span> Gonna catch 'em all!
-                                </p>
+                <div class="col-1 mt-5">
+                    <a href="https://x.com/asskeetchumcoin?s=21">
+                        <img src="img/tel.png" class="img-fluid justify-content-end" alt="">
+                    </a>
+                </div>
+                <div class="col-1 mt-5">
+                    <a href="https://x.com/asskeetchumcoin?s=21">
+                        <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row align-items-center my-row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="text-column mt-5 image-overlay-text text-beside-image">
+                        <h2 class="ms-5">A$$ KEETCHUM!</h2>
+                    </div>
+                </div>
+                <div class="col-2"></div>
+            </div>
+        </div>
+
+        <div class="row p-3 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-7">
+                        <img class="img-fluid picka" src="img/pikatchoum.png" alt="Pikatchoum">
+                    </div>
+                    <div class="col-5">
+                        <div class="container">
+                            <div class="row align-items-center my-row">
+                                <div class="text-column mt-5 image-overlay-text text-beside-image">
+                                    <h2>A$$!</h2>
+                                    <p>A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
+                                        <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to not just catch Pokémon, but <br> also the boundless potential of cryptocurrency! </span> Gonna catch 'em all!</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="black-band">
-        <div class="row">
-            <div class="col-12">
-                <img src="img/adressTitle.png" alt="" class="img-fluid">
-            </div>
-            <div>
-                <div class="contract-address">
-                    <button class="button-wl" onclick="copyToClipboard()">
-                        <span id="contractText">
-                            <h2>FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR</h2>
-                        </span>
-                    </button>
+        <div class="black-band">
+            <div class="row">
+                <div class="col-12">
+                    <img src="img/adressTitle.png" alt="" class="img-fluid">
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-8">
-                <img src="img/slem.webp" alt="Image Description" class="img-fluid picka mt-5">
-            </div>
-            <div class="col-4 mx-auto mxt">
-                <div class="text-image-container">
-                    <div class="text-beside-image">
-                        <h2>JOIN THE </h2>
-                        <h1>A$$!</h1>
-                        <h2>COMMUNITY </h2>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 mt-5">
-                            <a href="">
-                                <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center"
-                                    alt="">
-                            </a>
-                        </div>
-                        <div class="col-6 mt-5">
-                            <a href="https://x.com/asskeetchumcoin?s=21">
-                                <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
-                            </a>
-                        </div>
+                <div>
+                    <div class="contract-address">
+                        <button class="button-wl" onclick="copyToClipboard()">
+                            <span id="contractText">
+                                <h2>FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR</h2>
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="PurpleBlack-band">
         <div class="container">
             <div class="row">
-                <div class="col-4"></div>
-                <div class="col-4 mxt">
-                    <h1 class="htba">HOW TO BUY A$$!!!</h1>
+                <div class="col-8">
+                    <img src="img/slem.webp" alt="Image Description" class="img-fluid picka mt-5">
                 </div>
-                <div class="col-4"></div>
-                <div class="col-4"></div>
-                <div class="col-4 mxt">
-                    <img src="img/Ask.png" alt="">
+                <div class="col-4 mx-auto mxt">
+                    <div class="text-image-container">
+                        <div class="text-beside-image">
+                            <h2>JOIN THE </h2>
+                            <h1>A$$!</h1>
+                            <h2>COMMUNITY </h2>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mt-5">
+                                <a href="">
+                                    <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center" alt="">
+                                </a>
+                            </div>
+                            <div class="col-6 mt-5">
+                                <a href="https://x.com/asskeetchumcoin?s=21">
+                                    <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-4"></div>
-                <div class="col-4 mxt">
-                    <h2 class="htba">Creat SOLANA Wallet</h2>
-                    <p class="htba">creer ton wallet sur Phanto suis simplement le guide</p>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-6 mxt">
-                    <img src="img/wallet.png" alt="" class="logoR">
-                </div>
-                <div class="col-6">
-                    <img src="img/solToken.png" alt="" class="logoR">
-                </div>
-                <div class="col-2"></div>
-                <div class="col-4">
-                    <h2 class="htba">Buy some SOL</h2>
-                    <p class="htba">Bravo tu a créer ton wallet maintenant remplie le de SOL</p>
-                </div>
-                <div class="col-4">
-                    <h2 class="htba">Swap your SOL to A$$</h2>
-                    <p class="htba">Maintenant utilise Raydium afin de swap tes SOL en A$$</p>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-6">
-                    <img src="img/Raydium.png" alt="" class="logoR">
+            </div>
+        </div>
+
+        <div class="PurpleBlack-band">
+            <div class="container">
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4 mxt">
+                        <h1 class="htba">HOW TO BUY A$$!!!</h1>
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4"></div>
+                    <div class="col-4 mxt">
+                        <img src="img/Ask.png" alt="">
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4 mxt">
+                        <h2 class="htba">Creat SOLANA Wallet</h2>
+                        <p class="htba">creer ton wallet sur Phanto suis simplement le guide</p>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-6 mxt">
+                        <img src="img/wallet.png" alt="" class="logoR">
+                    </div>
+                    <div class="col-6">
+                        <img src="img/solToken.png" alt="" class="logoR">
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <h2 class="htba">Buy some SOL</h2>
+                        <p class="htba">Bravo tu a créer ton wallet maintenant remplie le de SOL</p>
+                    </div>
+                    <div class="col-4">
+                        <h2 class="htba">Swap your SOL to A$$</h2>
+                        <p class="htba">Maintenant utilise Raydium afin de swap tes SOL en A$$</p>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-6">
+                        <img src="img/Raydium.png" alt="" class="logoR">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container text-center mt-5 mb-5">
-        <a href="game.html" class="btn btn-primary btn-lg">🎮 Jouer au Jeu Pokémon</a>
-    </div>
+    <!-- Overlay pour les transitions -->
+    <div id="overlappingDiv" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; opacity: 0; pointer-events: none;"></div>
 
+    <!-- Scripts du jeu (ordre important !) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="data/classes.js"></script>
+    <script src="data/utils.js"></script>
+    <script src="data/attacks.js"></script>
+    <script src="data/monsters.js"></script>
+    <script src="data/characters.js"></script>
+    <script src="data/collisions.js"></script>
+    <script src="data/battleZones.js"></script>
+    <script src="data/audio.js"></script>
+    <script src="data/battleScene.js"></script>
+    <script src="data/index.js"></script>
+    
     <script>
+        // Code d'accès (généré après la victoire)
+        const ACCESS_CODE = 'A$$2024';
+        let gameWon = false;
+        let victoryCodeGenerated = false;
+
+        // Vérifier si le code est déjà entré (dans localStorage)
+        if (localStorage.getItem('codeEntered') === 'true') {
+            document.getElementById('code-entry').classList.add('hidden');
+            document.getElementById('site-content').style.display = 'block';
+        }
+
+        // Fonction pour vérifier le code
+        function checkCode() {
+            const input = document.getElementById('codeInput').value.toUpperCase();
+            const errorMsg = document.getElementById('code-error');
+            
+            if (input === ACCESS_CODE || input === localStorage.getItem('victoryCode')) {
+                localStorage.setItem('codeEntered', 'true');
+                document.getElementById('code-entry').classList.add('hidden');
+                document.getElementById('site-content').style.display = 'block';
+                errorMsg.style.display = 'none';
+            } else {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = 'Code incorrect ! Terminez le jeu pour obtenir le code.';
+            }
+        }
+
+        // Détecter la victoire dans le jeu
+        function checkVictory() {
+            // Vérifier périodiquement si le joueur a gagné
+            setInterval(() => {
+                if (typeof draggle !== 'undefined' && draggle && draggle.health <= 0 && !gameWon) {
+                    gameWon = true;
+                    showVictoryCode();
+                }
+            }, 1000);
+        }
+
+        // Afficher le code de victoire (accessible globalement)
+        window.showVictoryCode = function() {
+            if (!victoryCodeGenerated) {
+                victoryCodeGenerated = true;
+                gameWon = true;
+                const victoryCode = ACCESS_CODE;
+                document.getElementById('victory-code').textContent = victoryCode;
+                localStorage.setItem('victoryCode', victoryCode);
+                document.getElementById('victory-message').classList.add('show');
+                document.getElementById('code-input-section').style.display = 'block';
+                
+                // Arrêter le jeu
+                if (typeof cancelAnimationFrame !== 'undefined' && window.animationId) {
+                    cancelAnimationFrame(window.animationId);
+                }
+            }
+        }
+
+        // Modifier la fonction de victoire dans battleScene.js
+        // Intercepter la victoire
+        const originalInitBattle = window.initBattle;
+        window.initBattle = function() {
+            if (originalInitBattle) originalInitBattle();
+            
+            // Écouter les clics sur les boutons d'attaque
+            setTimeout(() => {
+                document.querySelectorAll('#attacksBox button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        setTimeout(() => {
+                            if (typeof draggle !== 'undefined' && draggle && draggle.health <= 0) {
+                                showVictoryCode();
+                            }
+                        }, 2000);
+                    });
+                });
+            }, 1000);
+        };
+
+        // Démarrer la vérification de victoire
+        checkVictory();
+
+        // Permettre la soumission avec Entrée
+        document.getElementById('codeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkCode();
+            }
+        });
+
         function copyToClipboard() {
             const text = 'FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR';
             navigator.clipboard.writeText(text).then(() => {
@@ -168,5 +366,5 @@
         }
     </script>
 </body>
-
 </html>
+

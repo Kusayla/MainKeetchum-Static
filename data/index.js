@@ -407,7 +407,15 @@ function animate() {
       })
   }
 }
-// animate()
+
+// Démarrer l'animation quand le canvas est prêt
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (canvas) animate()
+  })
+} else {
+  if (canvas) animate()
+}
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
