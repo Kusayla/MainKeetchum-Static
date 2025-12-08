@@ -42,15 +42,15 @@
         }
 
         #code-entry {
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: relative;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
+            padding: 2rem 0;
             z-index: 10000;
         }
 
@@ -64,7 +64,9 @@
             border-radius: 20px;
             text-align: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+            max-width: 90vw;
+            width: 100%;
+            margin: 2rem auto;
         }
 
         .code-input {
@@ -100,6 +102,13 @@
             .controls {
                 display: none !important;
             }
+        }
+
+        /* Afficher le site en dessous du jeu */
+        #site-content {
+            position: relative;
+            z-index: 1;
+            background: var(--background-color, #ffe100);
         }
     </style>
 </head>
@@ -505,7 +514,11 @@
 
         // Vérifier si le code est déjà entré (dans localStorage)
         if (localStorage.getItem('codeEntered') === 'true') {
-            document.getElementById('code-entry').classList.add('hidden');
+            // Ne pas masquer le jeu, juste afficher le site en dessous
+            document.getElementById('code-entry').style.position = 'relative';
+            document.getElementById('code-entry').style.height = 'auto';
+            document.getElementById('code-entry').style.overflow = 'visible';
+            document.getElementById('code-input-section').style.display = 'none';
             document.getElementById('site-content').style.display = 'block';
         }
 
@@ -516,7 +529,11 @@
 
             if (input === ACCESS_CODE || input === localStorage.getItem('victoryCode')) {
                 localStorage.setItem('codeEntered', 'true');
-                document.getElementById('code-entry').classList.add('hidden');
+                // Ne pas masquer le jeu, juste afficher le site en dessous
+                document.getElementById('code-entry').style.position = 'relative';
+                document.getElementById('code-entry').style.height = 'auto';
+                document.getElementById('code-entry').style.overflow = 'visible';
+                document.getElementById('code-input-section').style.display = 'none';
                 document.getElementById('site-content').style.display = 'block';
                 errorMsg.style.display = 'none';
             } else {
