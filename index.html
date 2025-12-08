@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,7 @@
         #site-content {
             display: none;
         }
-        
+
         #code-entry {
             position: fixed;
             top: 0;
@@ -25,20 +26,20 @@
             align-items: center;
             z-index: 10000;
         }
-        
+
         #code-entry.hidden {
             display: none;
         }
-        
+
         .code-box {
             background: white;
             padding: 3rem;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             max-width: 500px;
         }
-        
+
         .code-input {
             font-size: 2rem;
             padding: 1rem;
@@ -49,7 +50,7 @@
             margin: 1rem 0;
             width: 100%;
         }
-        
+
         .victory-message {
             background: #4CAF50;
             color: white;
@@ -58,53 +59,67 @@
             margin: 2rem 0;
             font-size: 1.5rem;
         }
-        
+
         .game-won {
             display: none;
         }
-        
+
         .game-won.show {
             display: block;
         }
     </style>
 </head>
+
 <body>
     <!-- Écran de saisie du code -->
     <div id="code-entry">
         <div class="code-box">
             <h1>🎮 A$$ Keetchum</h1>
             <p>Terminez le jeu pour obtenir le code d'accès au site !</p>
-            
-                <!-- Zone du jeu -->
+
+            <!-- Zone du jeu -->
             <div id="game-container" style="margin: 2rem 0; position: relative;">
-                <canvas id="gameCanvas" style="border: 2px solid #333; background: #000; max-width: 100%; display: block; margin: 0 auto;"></canvas>
-                
+                <canvas id="gameCanvas"
+                    style="border: 2px solid #333; background: #000; max-width: 100%; display: block; margin: 0 auto;"></canvas>
+
                 <!-- Interface de combat -->
-                <div id="userInterface" style="display: none; background: rgba(0,0,0,0.8); color: white; padding: 1rem; margin-top: 1rem; border-radius: 10px;">
-                    <div id="dialogueBox" style="background: white; color: black; padding: 1rem; margin-bottom: 1rem; border-radius: 5px;"></div>
-                    <div id="enemyHealthBar" style="height: 20px; background: linear-gradient(to right, #ff0000, #ff6666); border-radius: 10px; margin: 0.5rem 0;"></div>
-                    <div id="playerHealthBar" style="height: 20px; background: linear-gradient(to right, #00ff00, #66ff66); border-radius: 10px; margin: 0.5rem 0;"></div>
-                    <div id="attacksBox" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;"></div>
+                <div id="userInterface"
+                    style="display: none; background: rgba(0,0,0,0.8); color: white; padding: 1rem; margin-top: 1rem; border-radius: 10px;">
+                    <div id="dialogueBox"
+                        style="background: white; color: black; padding: 1rem; margin-bottom: 1rem; border-radius: 5px;">
+                    </div>
+                    <div id="enemyHealthBar"
+                        style="height: 20px; background: linear-gradient(to right, #ff0000, #ff6666); border-radius: 10px; margin: 0.5rem 0;">
+                    </div>
+                    <div id="playerHealthBar"
+                        style="height: 20px; background: linear-gradient(to right, #00ff00, #66ff66); border-radius: 10px; margin: 0.5rem 0;">
+                    </div>
+                    <div id="attacksBox" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                    </div>
                 </div>
-                
+
                 <!-- Dialogue avec personnages -->
-                <div id="characterDialogueBox" style="display: none; position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); padding: 1rem 2rem; border-radius: 10px; max-width: 80%; text-align: center;"></div>
+                <div id="characterDialogueBox"
+                    style="display: none; position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); padding: 1rem 2rem; border-radius: 10px; max-width: 80%; text-align: center;">
+                </div>
             </div>
-            
+
             <!-- Message de victoire -->
             <div id="victory-message" class="game-won">
                 <div class="victory-message">
                     <h2>🎉 Félicitations !</h2>
                     <p>Vous avez gagné ! Votre code d'accès est :</p>
-                    <div id="victory-code" style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: #fff;"></div>
+                    <div id="victory-code" style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: #fff;">
+                    </div>
                     <p>Entrez ce code ci-dessous pour accéder au site :</p>
                 </div>
             </div>
-            
+
             <!-- Saisie du code -->
             <div id="code-input-section">
                 <input type="text" id="codeInput" class="code-input" placeholder="Entrez le code" maxlength="10">
-                <button onclick="checkCode()" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;">Accéder au Site</button>
+                <button onclick="checkCode()" class="btn btn-primary btn-lg"
+                    style="width: 100%; margin-top: 1rem;">Accéder au Site</button>
                 <p id="code-error" style="color: red; margin-top: 1rem; display: none;">Code incorrect !</p>
             </div>
         </div>
@@ -157,7 +172,10 @@
                                 <div class="text-column mt-5 image-overlay-text text-beside-image">
                                     <h2>A$$!</h2>
                                     <p>A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
-                                        <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to not just catch Pokémon, but <br> also the boundless potential of cryptocurrency! </span> Gonna catch 'em all!</p>
+                                        <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to
+                                            not just catch Pokémon, but <br> also the boundless potential of
+                                            cryptocurrency! </span> Gonna catch 'em all!
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -198,7 +216,8 @@
                         <div class="row">
                             <div class="col-6 mt-5">
                                 <a href="">
-                                    <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center" alt="">
+                                    <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center"
+                                        alt="">
                                 </a>
                             </div>
                             <div class="col-6 mt-5">
@@ -255,7 +274,9 @@
     </div>
 
     <!-- Overlay pour les transitions -->
-    <div id="overlappingDiv" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; opacity: 0; pointer-events: none;"></div>
+    <div id="overlappingDiv"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; opacity: 0; pointer-events: none;">
+    </div>
 
     <!-- Scripts du jeu (ordre important !) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -270,7 +291,7 @@
     <script src="data/audio.js"></script>
     <script src="data/battleScene.js"></script>
     <script src="data/index.js"></script>
-    
+
     <script>
         // Code d'accès (généré après la victoire)
         const ACCESS_CODE = 'A$$2024';
@@ -287,7 +308,7 @@
         function checkCode() {
             const input = document.getElementById('codeInput').value.toUpperCase();
             const errorMsg = document.getElementById('code-error');
-            
+
             if (input === ACCESS_CODE || input === localStorage.getItem('victoryCode')) {
                 localStorage.setItem('codeEntered', 'true');
                 document.getElementById('code-entry').classList.add('hidden');
@@ -311,7 +332,7 @@
         }
 
         // Afficher le code de victoire (accessible globalement)
-        window.showVictoryCode = function() {
+        window.showVictoryCode = function () {
             if (!victoryCodeGenerated) {
                 victoryCodeGenerated = true;
                 gameWon = true;
@@ -320,7 +341,7 @@
                 localStorage.setItem('victoryCode', victoryCode);
                 document.getElementById('victory-message').classList.add('show');
                 document.getElementById('code-input-section').style.display = 'block';
-                
+
                 // Arrêter le jeu
                 if (typeof cancelAnimationFrame !== 'undefined' && window.animationId) {
                     cancelAnimationFrame(window.animationId);
@@ -331,13 +352,13 @@
         // Modifier la fonction de victoire dans battleScene.js
         // Intercepter la victoire
         const originalInitBattle = window.initBattle;
-        window.initBattle = function() {
+        window.initBattle = function () {
             if (originalInitBattle) originalInitBattle();
-            
+
             // Écouter les clics sur les boutons d'attaque
             setTimeout(() => {
                 document.querySelectorAll('#attacksBox button').forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         setTimeout(() => {
                             if (typeof draggle !== 'undefined' && draggle && draggle.health <= 0) {
                                 showVictoryCode();
@@ -352,7 +373,7 @@
         checkVictory();
 
         // Permettre la soumission avec Entrée
-        document.getElementById('codeInput').addEventListener('keypress', function(e) {
+        document.getElementById('codeInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkCode();
             }
@@ -366,5 +387,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>

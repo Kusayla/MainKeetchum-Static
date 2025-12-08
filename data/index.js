@@ -83,7 +83,7 @@ charactersMap.forEach((row, i) => {
           },
           scale: 3,
           animate: true,
-          dialogue: ['...', 'Y a que les arabes pour faire des scams?','les Israelien sont une sous race']
+          dialogue: ['...', 'Y a que les arabes pour faire des scams?', 'les Israelien sont une sous race']
         })
       )
     }
@@ -505,87 +505,87 @@ function simulateKeyRelease(key) {
   window.dispatchEvent(new KeyboardEvent('keyup', { 'key': key }));
 }
 
-document.querySelector('.dpad .left').addEventListener('mousedown', function() {
+document.querySelector('.dpad .left').addEventListener('mousedown', function () {
   startKeyPress('a');
 });
-document.querySelector('.dpad .left').addEventListener('mouseup', function() {
+document.querySelector('.dpad .left').addEventListener('mouseup', function () {
   stopKeyPress('a');
 });
-document.querySelector('.dpad .left').addEventListener('touchstart', function(e) {
+document.querySelector('.dpad .left').addEventListener('touchstart', function (e) {
   e.preventDefault();
   startKeyPress('a');
 });
-document.querySelector('.dpad .left').addEventListener('touchend', function() {
+document.querySelector('.dpad .left').addEventListener('touchend', function () {
   stopKeyPress('a');
 });
 
-document.querySelector('.dpad .right').addEventListener('mousedown', function() {
+document.querySelector('.dpad .right').addEventListener('mousedown', function () {
   startKeyPress('d');
 });
-document.querySelector('.dpad .right').addEventListener('mouseup', function() {
+document.querySelector('.dpad .right').addEventListener('mouseup', function () {
   stopKeyPress('d');
 });
-document.querySelector('.dpad .right').addEventListener('touchstart', function(e) {
+document.querySelector('.dpad .right').addEventListener('touchstart', function (e) {
   e.preventDefault();
   startKeyPress('d');
 });
-document.querySelector('.dpad .right').addEventListener('touchend', function() {
+document.querySelector('.dpad .right').addEventListener('touchend', function () {
   stopKeyPress('d');
 });
 
-document.querySelector('.dpad .up').addEventListener('mousedown', function() {
+document.querySelector('.dpad .up').addEventListener('mousedown', function () {
   startKeyPress('w');
 });
-document.querySelector('.dpad .up').addEventListener('mouseup', function() {
+document.querySelector('.dpad .up').addEventListener('mouseup', function () {
   stopKeyPress('w');
 });
-document.querySelector('.dpad .up').addEventListener('touchstart', function(e) {
+document.querySelector('.dpad .up').addEventListener('touchstart', function (e) {
   e.preventDefault();
   startKeyPress('w');
 });
-document.querySelector('.dpad .up').addEventListener('touchend', function() {
+document.querySelector('.dpad .up').addEventListener('touchend', function () {
   stopKeyPress('w');
 });
 
-document.querySelector('.dpad .down').addEventListener('mousedown', function() {
+document.querySelector('.dpad .down').addEventListener('mousedown', function () {
   startKeyPress('s');
 });
-document.querySelector('.dpad .down').addEventListener('mouseup', function() {
+document.querySelector('.dpad .down').addEventListener('mouseup', function () {
   stopKeyPress('s');
 });
-document.querySelector('.dpad .down').addEventListener('touchstart', function(e) {
+document.querySelector('.dpad .down').addEventListener('touchstart', function (e) {
   e.preventDefault();
   startKeyPress('s');
 });
-document.querySelector('.dpad .down').addEventListener('touchend', function() {
+document.querySelector('.dpad .down').addEventListener('touchend', function () {
   stopKeyPress('s');
 });
 
-document.querySelector('.a-b .a').addEventListener('mousedown', function() {
+document.querySelector('.a-b .a').addEventListener('mousedown', function () {
   simulateKeyPress(' ');
 });
-document.querySelector('.a-b .a').addEventListener('mouseup', function() {
+document.querySelector('.a-b .a').addEventListener('mouseup', function () {
   simulateKeyRelease(' ');
 });
-document.querySelector('.a-b .a').addEventListener('touchstart', function(e) {
+document.querySelector('.a-b .a').addEventListener('touchstart', function (e) {
   e.preventDefault();
   simulateKeyPress(' ');
 });
-document.querySelector('.a-b .a').addEventListener('touchend', function() {
+document.querySelector('.a-b .a').addEventListener('touchend', function () {
   simulateKeyRelease(' ');
 });
 
-document.querySelector('.a-b .b').addEventListener('mousedown', function() {
+document.querySelector('.a-b .b').addEventListener('mousedown', function () {
   simulateKeyPress('b'); // Définissez une action pour 'B' si nécessaire
 });
-document.querySelector('.a-b .b').addEventListener('mouseup', function() {
+document.querySelector('.a-b .b').addEventListener('mouseup', function () {
   simulateKeyRelease('b'); // Définissez une action pour 'B' si nécessaire
 });
-document.querySelector('.a-b .b').addEventListener('touchstart', function(e) {
+document.querySelector('.a-b .b').addEventListener('touchstart', function (e) {
   e.preventDefault();
   simulateKeyPress('b'); // Définissez une action pour 'B' si nécessaire
 });
-document.querySelector('.a-b .b').addEventListener('touchend', function() {
+document.querySelector('.a-b .b').addEventListener('touchend', function () {
   simulateKeyRelease('b'); // Définissez une action pour 'B' si nécessaire
 });
 

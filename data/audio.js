@@ -13,8 +13,8 @@ const audioPaths = {
 function createSound(soundKey, volume = 0.1) {
   // Créer un son silencieux si le fichier n'existe pas
   return {
-    play: function() { console.log('Audio:', soundKey); },
-    stop: function() { console.log('Audio stop:', soundKey); }
+    play: function () { console.log('Audio:', soundKey); },
+    stop: function () { console.log('Audio stop:', soundKey); }
   };
 }
 
