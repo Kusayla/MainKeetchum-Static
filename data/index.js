@@ -407,9 +407,11 @@ function animate() {
         // deactivate current animation loop
         window.cancelAnimationFrame(animationId)
 
-        audio.Map.stop()
-        audio.initBattle.play()
-        audio.battle.play()
+        if (typeof audio !== 'undefined' && audio) {
+          if (audio.Map) audio.Map.stop()
+          if (audio.initBattle) audio.initBattle.play()
+          if (audio.battle) audio.battle.play()
+        }
 
         battle.initiated = true;
         gsap.to('#overlappingDiv', {
@@ -665,7 +667,9 @@ window.addEventListener('keyup', (e) => {
 let clicked = false;
 addEventListener('click', () => {
   if (!clicked) {
-    audio.Map.play();
+    if (typeof audio !== 'undefined' && audio && audio.Map) {
+      audio.Map.play();
+    }
     clicked = true;
   }
 });
