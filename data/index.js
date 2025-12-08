@@ -76,6 +76,154 @@ villagerImg.src = './img/villager/Idle.png'
 const oldManImg = new Image()
 oldManImg.src = './img/oldMan/Idle.png'
 
+const newCharacterImg = new Image();
+newCharacterImg.src = './img/oldMan/Idle.png';
+
+function simulateKeyPress(key) {
+  const event = new KeyboardEvent('keydown', {
+    key: key,
+    bubbles: true,
+    cancelable: true
+  });
+  document.dispatchEvent(event);
+}
+
+const newCharacter = new Character({
+  position: {
+    x: 2850, // Nouvelle position X
+    y: 1470   // Nouvelle position Y
+  },
+  image: newCharacterImg,
+  frames: {
+    max: 4,
+    hold: 60
+  },
+  scale: 3,
+  dialogue: [
+    "Wow, I thought you were a paper hands,",
+    "but maybe you have what it takes to be a diamond hands",
+    "and hold to the moon.",
+    "Here's the password to enter our site... <span class='newCharacterDialogue'>pikasschu</span> ahahaha,",
+    "did you really think it was the end?",
+    "I hope you've studied your Unown well because you're going to need it.",
+    "Good luck Degen!"
+  ],
+  onComplete: () => {
+    console.log("Dialogue terminé. Lancement de startTrainerDialog...");
+  }
+});
+
+// Ajoutez une classe spécifique à la boîte de dialogue de ce personnage
+const dialogueBox = document.querySelector('#characterDialogueBox');
+if (dialogueBox) {
+  dialogueBox.classList.add('newsCharacterDialogue');
+}
+
+let gameState = {
+  inDialogueWithNewCharacter: false,
+  dialogueIndex: 0
+};
+
+function handleDialogue(character) {
+  if (!gameState.inDialogueWithNewCharacter) return;
+
+  const dialogueBox = document.getElementById('dialogueBox');
+  if (dialogueBox && gameState.dialogueIndex < character.dialogue.length) {
+    dialogueBox.innerHTML = character.dialogue[gameState.dialogueIndex];
+    gameState.dialogueIndex++;
+  } else {
+    console.log("Dialogue terminé. Lancement du combat.");
+    launchBattle();
+    gameState.inDialogueWithNewCharacter = false;
+    gameState.dialogueIndex = 0;
+  }
+}
+
+function startDialogueWithNewCharacter() {
+  gameState.inDialogueWithNewCharacter = true;
+  gameState.dialogueIndex = 0;
+}
+
+function calculateDistance(position1, position2) {
+  const dx = position1.x - position2.x;
+  const dy = position1.y - position2.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function checkProximityAndLaunchBattle() {
+  if (!shouldCheckDistance) return;
+
+  const playerPosition = player.position;
+  const newCharacterPosition = newCharacter.position;
+  const distance = calculateDistance(playerPosition, newCharacterPosition);
+
+  const proximityThreshold = 75;
+
+  if (distance <= proximityThreshold) {
+    console.log("Personnage proche de newCharacter. Lancement du combat.");
+    launchBattle();
+    shouldCheckDistance = false;
+  }
+
+  requestAnimationFrame(checkProximityAndLaunchBattle);
+}
+
+let shouldCheckDistance = true;
+
+function launchBattle() {
+  console.log("Lancement du combat");
+  forceStartBattle();
+}
+
+function forceStartBattle() {
+  const animationId = window.requestAnimationFrame(animate);
+  window.cancelAnimationFrame(animationId);
+
+  audio.Map.stop();
+  audio.initBattle.play();
+  audio.battle.play();
+
+  battle.initiated = true;
+
+  gsap.to('#overlappingDiv', {
+    opacity: 1,
+    repeat: 3,
+    yoyo: true,
+    duration: 0.4,
+    onComplete() {
+      gsap.to('#overlappingDiv', {
+        opacity: 1,
+        duration: 0.4,
+        onComplete() {
+          initBattle(true);
+          animateBattle();
+          gsap.to('#overlappingDiv', {
+            opacity: 0,
+            duration: 0.4
+          });
+        }
+      });
+    }
+  });
+}
+
+function startTrainerBattle() {
+  console.log("Initialisation du combat contre le dresseur...");
+  battle.initiated = true;
+  initBattle();
+  animateBattle();
+}
+
+function startTrainerDialog(character, callback) {
+  console.log("Démarrage du dialogue avec le personnage:", character);
+  setTimeout(() => {
+    console.log("Fin du dialogue avec le personnage.");
+    callback();
+  }, 2000);
+}
+
+characters.push(newCharacter);
+
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
     // 1026 === villager
@@ -208,6 +356,7 @@ const renderables = [
   ...boundaries,
   ...battleZones,
   ...characters,
+  newCharacter,
   player,
   foreground
 ]
@@ -290,7 +439,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: 0, y: 3 }
+      characterOffset: { x: 0, y: currentSpeed }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -302,7 +451,7 @@ function animate() {
             ...boundary,
             position: {
               x: boundary.position.x,
-              y: boundary.position.y + 3
+              y: boundary.position.y + currentSpeed
             }
           }
         })
@@ -314,7 +463,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.y += 3
+        movable.position.y += currentSpeed
       })
   } else if (keys.a.pressed && lastKey === 'a') {
     player.animate = true
@@ -323,7 +472,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: 3, y: 0 }
+      characterOffset: { x: currentSpeed, y: 0 }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -334,7 +483,7 @@ function animate() {
           rectangle2: {
             ...boundary,
             position: {
-              x: boundary.position.x + 3,
+              x: boundary.position.x + currentSpeed,
               y: boundary.position.y
             }
           }
@@ -347,7 +496,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.x += 3
+        movable.position.x += currentSpeed
       })
   } else if (keys.s.pressed && lastKey === 's') {
     player.animate = true
@@ -356,7 +505,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: 0, y: -3 }
+      characterOffset: { x: 0, y: -currentSpeed }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -368,7 +517,7 @@ function animate() {
             ...boundary,
             position: {
               x: boundary.position.x,
-              y: boundary.position.y - 3
+              y: boundary.position.y - currentSpeed
             }
           }
         })
@@ -380,7 +529,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.y -= 3
+        movable.position.y -= currentSpeed
       })
   } else if (keys.d.pressed && lastKey === 'd') {
     player.animate = true
@@ -389,7 +538,7 @@ function animate() {
     checkForCharacterCollision({
       characters,
       player,
-      characterOffset: { x: -3, y: 0 }
+      characterOffset: { x: -currentSpeed, y: 0 }
     })
 
     for (let i = 0; i < boundaries.length; i++) {
@@ -400,7 +549,7 @@ function animate() {
           rectangle2: {
             ...boundary,
             position: {
-              x: boundary.position.x - 3,
+              x: boundary.position.x - currentSpeed,
               y: boundary.position.y
             }
           }
@@ -413,7 +562,7 @@ function animate() {
 
     if (moving)
       movables.forEach((movable) => {
-        movable.position.x -= 3
+        movable.position.x -= currentSpeed
       })
   }
 }
@@ -421,10 +570,16 @@ function animate() {
 // Démarrer l'animation quand le canvas est prêt
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    if (canvas) animate()
+    if (canvas) {
+      animate()
+      checkProximityAndLaunchBattle()
+    }
   })
 } else {
-  if (canvas) animate()
+  if (canvas) {
+    animate()
+    checkProximityAndLaunchBattle()
+  }
 }
 
 let lastKey = ''
@@ -471,6 +626,11 @@ window.addEventListener('keydown', (e) => {
       keys.d.pressed = true;
       lastKey = 'd';
       break;
+    case 'b':
+    case 'Shift': 
+      keys.b.pressed = true;
+      currentSpeed = sprintSpeed;
+      break;
   }
 });
 
@@ -487,6 +647,11 @@ window.addEventListener('keyup', (e) => {
       break;
     case 'd':
       keys.d.pressed = false;
+      break;
+    case 'b':
+    case 'Shift':
+      keys.b.pressed = false;
+      currentSpeed = normalSpeed; 
       break;
   }
 });
