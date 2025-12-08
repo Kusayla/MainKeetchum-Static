@@ -1,11 +1,6 @@
 
 
-const canvas = document.querySelector('#mainCanvas') || document.querySelector('canvas')
-if (!canvas) {
-  console.error('Canvas not found! Make sure #mainCanvas exists in the DOM.');
-  throw new Error('Canvas element not found');
-}
-
+const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 canvas.width = 1024
@@ -15,6 +10,7 @@ const normalSpeed = 3;
 const sprintSpeed = 6;
 
 let currentSpeed = normalSpeed; // Vitesse actuelle
+
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i += 70) {
@@ -50,10 +46,20 @@ collisionsMap.forEach((row, i) => {
           }
         })
       )
+    else if (symbol === 7777)
+      boundaries.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y
+          }
+        })
+      )
   })
 })
 
 const battleZones = []
+
 
 battleZonesMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
@@ -91,7 +97,7 @@ function simulateKeyPress(key) {
 const newCharacter = new Character({
   position: {
     x: 2850, // Nouvelle position X
-    y: 1470   // Nouvelle position Y
+    y: 1470   // Nouvelle position Y]
   },
   image: newCharacterImg,
   frames: {
@@ -103,7 +109,7 @@ const newCharacter = new Character({
     "Wow, I thought you were a paper hands,",
     "but maybe you have what it takes to be a diamond hands",
     "and hold to the moon.",
-    "Here's the password to enter our site... <span class='newCharacterDialogue'>pikasschu</span> ahahaha,",
+    "Here's the password to enter our site... \<span class='newCharacterDialogue'>pikasschu</span> ahahaha,",
     "did you really think it was the end?",
     "I hope you've studied your Unown well because you're going to need it.",
     "Good luck Degen!"
@@ -113,11 +119,10 @@ const newCharacter = new Character({
   }
 });
 
+
 // Ajoutez une classe spécifique à la boîte de dialogue de ce personnage
 const dialogueBox = document.querySelector('#characterDialogueBox');
-if (dialogueBox) {
-  dialogueBox.classList.add('newsCharacterDialogue');
-}
+dialogueBox.classList.add('newsCharacterDialogue');
 
 let gameState = {
   inDialogueWithNewCharacter: false,
@@ -127,8 +132,10 @@ let gameState = {
 function handleDialogue(character) {
   if (!gameState.inDialogueWithNewCharacter) return;
 
-  const dialogueBox = document.getElementById('dialogueBox');
-  if (dialogueBox && gameState.dialogueIndex < character.dialogue.length) {
+  const dialogueBox = document.getElementById('dialogueBox'); // Assurez-vous d'avoir un élément avec cet ID pour afficher le dialogue.
+
+  if (gameState.dialogueIndex < character.dialogue.length) {
+    // Utilisez innerHTML pour afficher le dialogue avec des balises HTML
     dialogueBox.innerHTML = character.dialogue[gameState.dialogueIndex];
     gameState.dialogueIndex++;
   } else {
@@ -139,9 +146,11 @@ function handleDialogue(character) {
   }
 }
 
+
 function startDialogueWithNewCharacter() {
   gameState.inDialogueWithNewCharacter = true;
   gameState.dialogueIndex = 0;
+  // Appelez handleDialogue(newCharacter) ici pour démarrer le dialogue
 }
 
 function calculateDistance(position1, position2) {
@@ -151,18 +160,18 @@ function calculateDistance(position1, position2) {
 }
 
 function checkProximityAndLaunchBattle() {
-  if (!shouldCheckDistance) return;
+  if (!shouldCheckDistance) return; // Arrête la vérification si shouldCheckDistance est false
 
   const playerPosition = player.position;
   const newCharacterPosition = newCharacter.position;
   const distance = calculateDistance(playerPosition, newCharacterPosition);
 
-  const proximityThreshold = 75;
+  const proximityThreshold = 75; // Ajustez cette valeur selon vos besoins
 
   if (distance <= proximityThreshold) {
     console.log("Personnage proche de newCharacter. Lancement du combat.");
     launchBattle();
-    shouldCheckDistance = false;
+    shouldCheckDistance = false; // Arrête la vérification une fois le combat lancé
   }
 
   requestAnimationFrame(checkProximityAndLaunchBattle);
@@ -170,21 +179,30 @@ function checkProximityAndLaunchBattle() {
 
 let shouldCheckDistance = true;
 
+
+
 function launchBattle() {
   console.log("Lancement du combat");
-  forceStartBattle();
+  // Ici, vous pouvez appeler initBattle() et animateBattle() pour démarrer le combat
+ forceStartBattle();
+
 }
 
-function forceStartBattle() {
+
+function forceTrainerBattle() {
+  // Arrêter l'animation actuelle
   const animationId = window.requestAnimationFrame(animate);
   window.cancelAnimationFrame(animationId);
 
+  // Arrêter la musique de la carte et lancer les sons de combat
   audio.Map.stop();
   audio.initBattle.play();
   audio.battle.play();
 
+  // Déclarer que le combat est initié
   battle.initiated = true;
 
+  // Transition visuelle (fondu enchaîné) avec GSAP
   gsap.to('#overlappingDiv', {
     opacity: 1,
     repeat: 3,
@@ -195,6 +213,7 @@ function forceStartBattle() {
         opacity: 1,
         duration: 0.4,
         onComplete() {
+          // Activer une nouvelle boucle d'animation de combat
           initBattle(true);
           animateBattle();
           gsap.to('#overlappingDiv', {
@@ -207,22 +226,65 @@ function forceStartBattle() {
   });
 }
 
-function startTrainerBattle() {
-  console.log("Initialisation du combat contre le dresseur...");
+function forceStartBattle() {
+  // Arrêter l'animation actuelle
+  const animationId = window.requestAnimationFrame(animate);
+  window.cancelAnimationFrame(animationId);
+
+  // Arrêter la musique de la carte et lancer les sons de combat
+  audio.Map.stop();
+  audio.initBattle.play();
+  audio.battle.play();
+
+  // Déclarer que le combat est initié
   battle.initiated = true;
-  initBattle();
-  animateBattle();
+
+  // Transition visuelle (fondu enchaîné) avec GSAP
+  gsap.to('#overlappingDiv', {
+    opacity: 1,
+    repeat: 3,
+    yoyo: true,
+    duration: 0.4,
+    onComplete() {
+      gsap.to('#overlappingDiv', {
+        opacity: 1,
+        duration: 0.4,
+        onComplete() {
+          // Activer une nouvelle boucle d'animation de combat
+          initBattle(true);
+          animateBattle();
+          gsap.to('#overlappingDiv', {
+            opacity: 0,
+            duration: 0.4
+          });
+        }
+      });
+    }
+  });
 }
 
+
+characters.push(newCharacter);
+
+
+// Nouvelle fonction pour démarrer le combat contre un dresseur
+function startTrainerBattle() {
+  console.log("Initialisation du combat contre le dresseur...");
+  battle.initiated = true; // Définir la variable de combat à true
+  initBattle(); // Initialiser le combat
+  animateBattle(); // Démarrer l'animation du combat
+}
+
+
+// Ajout de la logique pour démarrer le combat après le dialogue
 function startTrainerDialog(character, callback) {
   console.log("Démarrage du dialogue avec le personnage:", character);
+  // Simulez le dialogue
   setTimeout(() => {
     console.log("Fin du dialogue avec le personnage.");
     callback();
-  }, 2000);
+  }, 2000); // Remplacez ce délai par la durée réelle du dialogue
 }
-
-characters.push(newCharacter);
 
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
@@ -231,8 +293,8 @@ charactersMap.forEach((row, i) => {
       characters.push(
         new Character({
           position: {
-            x: j * Boundary.width + offset.x,
-            y: i * Boundary.height + offset.y
+            x: j * Boundary.width + offset.x+900,
+            y: i * Boundary.height + offset.y+176
           },
           image: villagerImg,
           frames: {
@@ -241,7 +303,11 @@ charactersMap.forEach((row, i) => {
           },
           scale: 3,
           animate: true,
-          dialogue: ['...', 'Y a que les arabes pour faire des scams?', 'les Israelien sont une sous race']
+          dialogue: ['...', 'Welcome to Sollet Town! You are the first to visit us here.',
+          'If you want to leave this place,',
+          'you will need to defeat the developer in a Pokémon battle.',
+          'He is waiting for you to the south. On your way feel free to enjoy the scenery,',
+          'and battle against Solkemons.']
         })
       )
     }
@@ -250,8 +316,8 @@ charactersMap.forEach((row, i) => {
       characters.push(
         new Character({
           position: {
-            x: j * Boundary.width + offset.x,
-            y: i * Boundary.height + offset.y
+            x: j * Boundary.width + offset.x+110,
+            y: i * Boundary.height + offset.y+500
           },
           image: oldManImg,
           frames: {
@@ -259,7 +325,11 @@ charactersMap.forEach((row, i) => {
             hold: 60
           },
           scale: 3,
-          dialogue: ['En vraie rien ne vos un bon scam.']
+          dialogue: [ "I've been stuck on this island for days and I can't access the website",
+          "because I can't beat the developer.",
+          "I heard another trainer say that if you win against the developer,",
+          "he will give you the password in an ancient language to decrypt,",
+          "but I don't know if it's true."]
         })
       )
     }
@@ -328,24 +398,64 @@ const foreground = new Sprite({
   },
   image: foregroundImage
 })
-
 const keys = {
-  w: {
-    pressed: false
-  },
-  a: {
-    pressed: false
-  },
-  s: {
-    pressed: false
-  },
-  d: {
-    pressed: false
-  },
-  b: {
-    pressed: false
+  w: { pressed: false },
+  a: { pressed: false },
+  s: { pressed: false },
+  d: { pressed: false },
+  b: { pressed: false },
+  
+};
+
+window.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'w':
+      keys.w.pressed = true;
+      lastKey = 'w';
+      break;
+    case 'a':
+      keys.a.pressed = true;
+      lastKey = 'a';
+      break;
+    case 's':
+      keys.s.pressed = true;
+      lastKey = 's';
+      break;
+    case 'd':
+      keys.d.pressed = true;
+      lastKey = 'd';
+      break;
+    case 'b':
+    case 'Shift': 
+      keys.b.pressed = true;
+      currentSpeed = sprintSpeed;
+      break;
   }
-}
+});
+
+window.addEventListener('keyup', (e) => {
+  switch (e.key) {
+    case 'w':
+      keys.w.pressed = false;
+      break;
+    case 'a':
+      keys.a.pressed = false;
+      break;
+    case 's':
+      keys.s.pressed = false;
+      break;
+    case 'd':
+      keys.d.pressed = false;
+      break;
+    case 'b':
+    case 'Shift':
+      keys.b.pressed = false;
+      currentSpeed = normalSpeed; 
+      break;
+  }
+});
+
+
 
 const movables = [
   background,
@@ -359,7 +469,6 @@ const renderables = [
   ...boundaries,
   ...battleZones,
   ...characters,
-  newCharacter,
   player,
   foreground
 ]
@@ -436,154 +545,96 @@ function animate() {
   }
 
   if (keys.w.pressed && lastKey === 'w') {
-    player.animate = true
-    player.image = player.sprites.up
-
+    player.animate = true;
+    player.image = player.sprites.up;
+  
     checkForCharacterCollision({
       characters,
       player,
       characterOffset: { x: 0, y: currentSpeed }
-    })
-
+    });
+  
     for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
+      const boundary = boundaries[i];
+      if (rectangularCollision({
           rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x,
-              y: boundary.position.y + currentSpeed
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
+          rectangle2: { ...boundary, position: { x: boundary.position.x, y: boundary.position.y + currentSpeed }}
+        })) {
+        moving = false;
+        break;
       }
     }
-
-    if (moving)
-      movables.forEach((movable) => {
-        movable.position.y += currentSpeed
-      })
+  
+    if (moving) movables.forEach((movable) => { movable.position.y += currentSpeed });
   } else if (keys.a.pressed && lastKey === 'a') {
-    player.animate = true
-    player.image = player.sprites.left
-
+    player.animate = true;
+    player.image = player.sprites.left;
+  
     checkForCharacterCollision({
       characters,
       player,
       characterOffset: { x: currentSpeed, y: 0 }
-    })
-
+    });
+  
     for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
+      const boundary = boundaries[i];
+      if (rectangularCollision({
           rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x + currentSpeed,
-              y: boundary.position.y
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
+          rectangle2: { ...boundary, position: { x: boundary.position.x + currentSpeed, y: boundary.position.y }}
+        })) {
+        moving = false;
+        break;
       }
     }
-
-    if (moving)
-      movables.forEach((movable) => {
-        movable.position.x += currentSpeed
-      })
+  
+    if (moving) movables.forEach((movable) => { movable.position.x += currentSpeed });
   } else if (keys.s.pressed && lastKey === 's') {
-    player.animate = true
-    player.image = player.sprites.down
-
+    player.animate = true;
+    player.image = player.sprites.down;
+  
     checkForCharacterCollision({
       characters,
       player,
       characterOffset: { x: 0, y: -currentSpeed }
-    })
-
+    });
+  
     for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
+      const boundary = boundaries[i];
+      if (rectangularCollision({
           rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x,
-              y: boundary.position.y - currentSpeed
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
+          rectangle2: { ...boundary, position: { x: boundary.position.x, y: boundary.position.y - currentSpeed }}
+        })) {
+        moving = false;
+        break;
       }
     }
-
-    if (moving)
-      movables.forEach((movable) => {
-        movable.position.y -= currentSpeed
-      })
+  
+    if (moving) movables.forEach((movable) => { movable.position.y -= currentSpeed });
   } else if (keys.d.pressed && lastKey === 'd') {
-    player.animate = true
-    player.image = player.sprites.right
-
+    player.animate = true;
+    player.image = player.sprites.right;
+  
     checkForCharacterCollision({
       characters,
       player,
       characterOffset: { x: -currentSpeed, y: 0 }
-    })
-
+    });
+  
     for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i]
-      if (
-        rectangularCollision({
+      const boundary = boundaries[i];
+      if (rectangularCollision({
           rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: {
-              x: boundary.position.x - currentSpeed,
-              y: boundary.position.y
-            }
-          }
-        })
-      ) {
-        moving = false
-        break
+          rectangle2: { ...boundary, position: { x: boundary.position.x - currentSpeed, y: boundary.position.y }}
+        })) {
+        moving = false;
+        break;
       }
     }
-
-    if (moving)
-      movables.forEach((movable) => {
-        movable.position.x -= currentSpeed
-      })
+  
+    if (moving) movables.forEach((movable) => { movable.position.x -= currentSpeed });
   }
-}
-
-// Démarrer l'animation quand le canvas est prêt
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    if (canvas) {
-      animate()
-      checkProximityAndLaunchBattle()
-    }
-  })
-} else {
-  if (canvas) {
-    animate()
-    checkProximityAndLaunchBattle()
-  }
-}
+}  
+animate()
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
@@ -629,11 +680,6 @@ window.addEventListener('keydown', (e) => {
       keys.d.pressed = true;
       lastKey = 'd';
       break;
-    case 'b':
-    case 'Shift':
-      keys.b.pressed = true;
-      currentSpeed = sprintSpeed;
-      break;
   }
 });
 
@@ -650,11 +696,6 @@ window.addEventListener('keyup', (e) => {
       break;
     case 'd':
       keys.d.pressed = false;
-      break;
-    case 'b':
-    case 'Shift':
-      keys.b.pressed = false;
-      currentSpeed = normalSpeed;
       break;
   }
 });
@@ -683,118 +724,89 @@ function simulateKeyRelease(key) {
   window.dispatchEvent(new KeyboardEvent('keyup', { 'key': key }));
 }
 
-// Attacher les event listeners pour les contrôles mobiles
-function attachMobileControls() {
-  const leftBtn = document.querySelector('.dpad .left');
-  const rightBtn = document.querySelector('.dpad .right');
-  const upBtn = document.querySelector('.dpad .up');
-  const downBtn = document.querySelector('.dpad .down');
-  const aBtn = document.querySelector('.a-b .a');
-  const bBtn = document.querySelector('.a-b .b');
+document.querySelector('.dpad .left').addEventListener('mousedown', function() {
+  startKeyPress('a');
+});
+document.querySelector('.dpad .left').addEventListener('mouseup', function() {
+  stopKeyPress('a');
+});
+document.querySelector('.dpad .left').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  startKeyPress('a');
+});
+document.querySelector('.dpad .left').addEventListener('touchend', function() {
+  stopKeyPress('a');
+});
 
-  if (leftBtn) {
-    leftBtn.addEventListener('mousedown', function () {
-      startKeyPress('a');
-    });
-    leftBtn.addEventListener('mouseup', function () {
-      stopKeyPress('a');
-    });
-    leftBtn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      startKeyPress('a');
-    });
-    leftBtn.addEventListener('touchend', function () {
-      stopKeyPress('a');
-    });
-  }
+document.querySelector('.dpad .right').addEventListener('mousedown', function() {
+  startKeyPress('d');
+});
+document.querySelector('.dpad .right').addEventListener('mouseup', function() {
+  stopKeyPress('d');
+});
+document.querySelector('.dpad .right').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  startKeyPress('d');
+});
+document.querySelector('.dpad .right').addEventListener('touchend', function() {
+  stopKeyPress('d');
+});
 
-  if (rightBtn) {
-    rightBtn.addEventListener('mousedown', function () {
-      startKeyPress('d');
-    });
-    rightBtn.addEventListener('mouseup', function () {
-      stopKeyPress('d');
-    });
-    rightBtn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      startKeyPress('d');
-    });
-    rightBtn.addEventListener('touchend', function () {
-      stopKeyPress('d');
-    });
-  }
+document.querySelector('.dpad .up').addEventListener('mousedown', function() {
+  startKeyPress('w');
+});
+document.querySelector('.dpad .up').addEventListener('mouseup', function() {
+  stopKeyPress('w');
+});
+document.querySelector('.dpad .up').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  startKeyPress('w');
+});
+document.querySelector('.dpad .up').addEventListener('touchend', function() {
+  stopKeyPress('w');
+});
 
-  if (upBtn) {
-    upBtn.addEventListener('mousedown', function () {
-      startKeyPress('w');
-    });
-    upBtn.addEventListener('mouseup', function () {
-      stopKeyPress('w');
-    });
-    upBtn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      startKeyPress('w');
-    });
-    upBtn.addEventListener('touchend', function () {
-      stopKeyPress('w');
-    });
-  }
+document.querySelector('.dpad .down').addEventListener('mousedown', function() {
+  startKeyPress('s');
+});
+document.querySelector('.dpad .down').addEventListener('mouseup', function() {
+  stopKeyPress('s');
+});
+document.querySelector('.dpad .down').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  startKeyPress('s');
+});
+document.querySelector('.dpad .down').addEventListener('touchend', function() {
+  stopKeyPress('s');
+});
 
-  if (downBtn) {
-    downBtn.addEventListener('mousedown', function () {
-      startKeyPress('s');
-    });
-    downBtn.addEventListener('mouseup', function () {
-      stopKeyPress('s');
-    });
-    downBtn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      startKeyPress('s');
-    });
-    downBtn.addEventListener('touchend', function () {
-      stopKeyPress('s');
-    });
-  }
+document.querySelector('.a-b .a').addEventListener('mousedown', function() {
+  simulateKeyPress(' ');
+});
+document.querySelector('.a-b .a').addEventListener('mouseup', function() {
+  simulateKeyRelease(' ');
+});
+document.querySelector('.a-b .a').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  simulateKeyPress(' ');
+});
+document.querySelector('.a-b .a').addEventListener('touchend', function() {
+  simulateKeyRelease(' ');
+});
 
-  if (aBtn) {
-    aBtn.addEventListener('mousedown', function () {
-      simulateKeyPress(' ');
-    });
-    aBtn.addEventListener('mouseup', function () {
-      simulateKeyRelease(' ');
-    });
-    aBtn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      simulateKeyPress(' ');
-    });
-    aBtn.addEventListener('touchend', function () {
-      simulateKeyRelease(' ');
-    });
-  }
-
-  if (bBtn) {
-    bBtn.addEventListener('mousedown', function () {
-      simulateKeyPress('b');
-    });
-    bBtn.addEventListener('mouseup', function () {
-      simulateKeyRelease('b');
-    });
-    bBtn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      simulateKeyPress('b');
-    });
-    bBtn.addEventListener('touchend', function () {
-      simulateKeyRelease('b');
-    });
-  }
-}
-
-// Attacher les contrôles quand le DOM est prêt
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', attachMobileControls);
-} else {
-  attachMobileControls();
-}
+document.querySelector('.a-b .b').addEventListener('mousedown', function() {
+  simulateKeyPress('b'); // Définissez une action pour 'B' si nécessaire
+});
+document.querySelector('.a-b .b').addEventListener('mouseup', function() {
+  simulateKeyRelease('b'); // Définissez une action pour 'B' si nécessaire
+});
+document.querySelector('.a-b .b').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  simulateKeyPress('b'); // Définissez une action pour 'B' si nécessaire
+});
+document.querySelector('.a-b .b').addEventListener('touchend', function() {
+  simulateKeyRelease('b'); // Définissez une action pour 'B' si nécessaire
+});
 
 let keyIntervals = {};
 function startKeyPress(key) {
@@ -824,4 +836,57 @@ function stopKeyPress(key) {
   window.dispatchEvent(keyupEvent);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+  // Fonction pour remplir le conteneur avec le texte
+  function fillBackgroundWithText() {
+      const container = document.querySelector('.background-container');
+      const text = 'A$$KEETCHUM ';
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const textHeight = 40; // Hauteur du texte en pixels
+      const verticalRepeats = Math.ceil(screenHeight / textHeight);
+      
+      // Effacer le conteneur
+      container.innerHTML = '';
 
+      // Ajout des lignes de texte
+      for (let i = 0; i < verticalRepeats; i++) {
+          const textLine = document.createElement('div');
+          textLine.className = 'scrolling-text';
+          textLine.textContent = text.repeat(Math.ceil(screenWidth / 100)); // Répéter le texte pour couvrir la largeur de l'écran
+          if (i % 2 === 0) {
+              textLine.classList.add('scroll-left-right');
+          } else {
+              textLine.classList.add('scroll-right-left');
+          }
+          textLine.style.top = `${i * textHeight}px`; // Positionner verticalement
+          container.appendChild(textLine);
+      }
+  }
+
+  // Appel de la fonction au chargement initial et en cas de redimensionnement de la fenêtre
+  fillBackgroundWithText();
+  window.addEventListener('resize', fillBackgroundWithText);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('passwordForm');
+  const passwordInput = document.getElementById('passwordInput');
+  const correctPassword = 'pickasschum';
+
+  form.addEventListener('submit', function(event) {
+      event.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
+      const enteredPassword = passwordInput.value;
+
+      if (enteredPassword === correctPassword) {
+          // Créer un cookie avec un identifiant unique
+          const uniqueID = new Date().getTime();
+          document.cookie = `password_verified=${uniqueID};path=/`;
+
+          // Redirige vers la page /
+          window.location.href = '/password';
+      } else {
+          alert('Incorrect password, please try again.');
+      }
+  });
+});
