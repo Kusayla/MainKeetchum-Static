@@ -341,6 +341,9 @@ const keys = {
   },
   d: {
     pressed: false
+  },
+  b: {
+    pressed: false
   }
 }
 
