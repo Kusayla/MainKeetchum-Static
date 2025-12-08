@@ -1,10 +1,13 @@
 
 
 const canvas = document.querySelector('#mainCanvas') || document.querySelector('canvas')
-const c = canvas.getContext('2d')
+if (!canvas) {
+  console.error('Canvas not found! Make sure #mainCanvas exists in the DOM.');
+} else {
+  const c = canvas.getContext('2d')
 
-canvas.width = 1024
-canvas.height = 576
+  canvas.width = 1024
+  canvas.height = 576
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i += 70) {
@@ -645,5 +648,7 @@ function stopKeyPress(key) {
   console.log("Firing keyup for key:", key);
   window.dispatchEvent(keyupEvent);
 }
+
+} // Fin du bloc if (!canvas)
 
 
