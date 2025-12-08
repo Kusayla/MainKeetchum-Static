@@ -113,7 +113,9 @@ function playerTrainerAttack(selectedTrainerAttack) {
               });
 
               battle.initiated = false;
-              audio.Map.play();
+              if (typeof audio !== 'undefined' && audio && audio.Map) {
+                audio.Map.play();
+              }
             }
           });
         });
@@ -225,7 +227,9 @@ function trainerAttack(selectedTrainerAttack) {
               });
 
               battle.initiated = false;
-              audio.Map.play();
+              if (typeof audio !== 'undefined' && audio && audio.Map) {
+                audio.Map.play();
+              }
             }
           });
         });
@@ -238,16 +242,19 @@ function trainerAttack(selectedTrainerAttack) {
 }
 
 function selectTrainerPreviousAttack() {
+  if (!embyTrainer || !embyTrainer.attacks) return;
   selectedTrainerAttackIndex = (selectedTrainerAttackIndex - 1 + embyTrainer.attacks.length) % embyTrainer.attacks.length;
   updateTrainerAttackSelection();
 }
 
 function selectTrainerNextAttack() {
+  if (!embyTrainer || !embyTrainer.attacks) return;
   selectedTrainerAttackIndex = (selectedTrainerAttackIndex + 1) % embyTrainer.attacks.length;
   updateTrainerAttackSelection();
 }
 
 function selectTrainerCurrentAttack() {
+  if (!embyTrainer || !embyTrainer.attacks) return;
   const selectedTrainerAttack = embyTrainer.attacks[selectedTrainerAttackIndex];
   trainerAttack(selectedTrainerAttack);
 }
