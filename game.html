@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A$$ Keetchum - Jeu</title>
+    <link rel="stylesheet" href="css/game.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Interface de combat -->
+        <div id="userInterface" style="display: none;">
+            <div id="dialogueBox"></div>
+            <div id="enemyHealthBar"></div>
+            <div id="playerHealthBar"></div>
+            <div id="attacksBox"></div>
+        </div>
+
+        <!-- Dialogue avec personnages -->
+        <div id="characterDialogueBox" style="display: none;"></div>
+
+        <!-- Contrôles mobiles -->
+        <div class="mobile-controls">
+            <div class="dpad">
+                <button class="up">↑</button>
+                <div class="middle">
+                    <button class="left">←</button>
+                    <button class="center"></button>
+                    <button class="right">→</button>
+                </div>
+                <button class="down">↓</button>
+            </div>
+            <div class="a-b">
+                <button class="a">A</button>
+                <button class="b">B</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts du jeu -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="data/utils.js"></script>
+    <script src="data/attacks.js"></script>
+    <script src="data/monsters.js"></script>
+    <script src="data/characters.js"></script>
+    <script src="data/collisions.js"></script>
+    <script src="data/battleZones.js"></script>
+    <script src="data/audio.js"></script>
+    <script src="data/battleScene.js"></script>
+    <script src="data/index.js"></script>
+</body>
+
+</html>
