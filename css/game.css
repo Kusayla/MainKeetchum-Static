@@ -15,6 +15,7 @@
 /* Forcer le positionnement correct du screen-area et ui-container */
 .screen-area {
     position: relative !important;
+    background-color: transparent !important;
 }
 
 .ui-container {
@@ -30,9 +31,9 @@
     display: block !important;
 }
 
-/* Corriger la couleur de fond des status-box - beige au lieu de blanc */
+/* Corriger la couleur de fond des status-box - BLANC comme dans Pokémon */
 .status-box {
-    background-color: #f8f8d8 !important;
+    background-color: white !important;
 }
 
 .health-bar {
@@ -42,6 +43,27 @@
 /* Forcer le canvas à avoir un fond clair au lieu de noir */
 .display, #mainCanvas {
     background-color: #a3d5f1 !important;
+}
+
+/* Overlay pour les transitions - doit être au-dessus mais transparent pendant le combat */
+#overlappingDiv {
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* S'assurer que le ui-container est au-dessus de l'overlay pendant le combat */
+.ui-container {
+    z-index: 15 !important;
+}
+
+/* S'assurer que les noms des Pokémon sont visibles */
+.status-title {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+    margin-bottom: 5px !important;
+    display: block !important;
+    text-transform: uppercase;
 }
 
 /* Styles pour les boutons d'attaque */
