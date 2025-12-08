@@ -176,8 +176,10 @@ function launchBattle() {
 }
 
 function forceStartBattle() {
-  const animationId = window.requestAnimationFrame(animate);
-  window.cancelAnimationFrame(animationId);
+  if (animationId !== null) {
+    window.cancelAnimationFrame(animationId);
+    animationId = null;
+  }
 
   if (typeof audio !== 'undefined' && audio) {
     if (audio.Map) audio.Map.stop();
@@ -370,8 +372,14 @@ const renderables = [
 const battle = {
   initiated: false
 }
+
+let animationId = null
+
 function animate() {
-  const animationId = window.requestAnimationFrame(animate)
+  if (animationId !== null) {
+    window.cancelAnimationFrame(animationId)
+  }
+  animationId = window.requestAnimationFrame(animate)
   renderables.forEach((renderable) => {
     renderable.draw()
   })
@@ -405,7 +413,10 @@ function animate() {
         Math.random() < 0.01
       ) {
         // deactivate current animation loop
-        window.cancelAnimationFrame(animationId)
+        if (animationId !== null) {
+          window.cancelAnimationFrame(animationId)
+          animationId = null
+        }
 
         if (typeof audio !== 'undefined' && audio) {
           if (audio.Map) audio.Map.stop()

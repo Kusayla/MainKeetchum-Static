@@ -67,12 +67,17 @@ function playerTrainerAttack(selectedTrainerAttack) {
       dragkatchu.faint();
     });
     queueTrainer.push(() => {
+      // Afficher le code de victoire
+      if (typeof showVictoryCode === 'function') {
+        showVictoryCode();
+      }
       // fade back to black
       gsap.to('#overlappingDiv', {
         opacity: 1,
         onComplete: () => {
-          cancelAnimationFrame(battleTrainerAnimationId);
-          animate();
+          if (battleTrainerAnimationId) {
+            cancelAnimationFrame(battleTrainerAnimationId);
+          }
           document.querySelector('#userInterface').style.display = 'none';
 
           gsap.to('#overlappingDiv', {
@@ -181,12 +186,17 @@ function trainerAttack(selectedTrainerAttack) {
       dragkatchu.faint();
     });
     queueTrainer.push(() => {
+      // Afficher le code de victoire
+      if (typeof showVictoryCode === 'function') {
+        showVictoryCode();
+      }
       // fade back to black
       gsap.to('#overlappingDiv', {
         opacity: 1,
         onComplete: () => {
-          cancelAnimationFrame(battleTrainerAnimationId);
-          animate();
+          if (battleTrainerAnimationId) {
+            cancelAnimationFrame(battleTrainerAnimationId);
+          }
           document.querySelector('#userInterface').style.display = 'none';
 
           gsap.to('#overlappingDiv', {

@@ -132,7 +132,7 @@ function animateBattle() {
 // animateBattle()
 
 document.querySelector('#dialogueBox').addEventListener('click', (e) => {
-  if (queue.length > 0) {
+  if (queue && queue.length > 0) {
     queue[0]()
     queue.shift()
   } else e.currentTarget.style.display = 'none'
