@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/game.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=5">
     <style>
         * {
             font-family: "Press Start 2P", cursive;
@@ -80,23 +80,6 @@
             width: 100%;
         }
 
-        .victory-message {
-            background: #4CAF50;
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin: 2rem 0;
-            font-size: 1.5rem;
-        }
-
-        .game-won {
-            display: none;
-        }
-
-        .game-won.show {
-            display: block;
-        }
-
         /* Sur desktop, masquer les contrôles */
         @media (min-width: 801px) {
             .controls {
@@ -110,19 +93,50 @@
             z-index: 1;
             background: var(--background-color, #ffe100);
         }
+
+        /* Background animé avec texte défilant */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            background-color: #74C857;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .scrolling-text {
+            white-space: nowrap;
+            font-size: 40px;
+            color: #498248;
+            position: absolute;
+            width: 100%;
+        }
+
+        .scroll-left-right {
+            animation: scrollLeftRight 10s linear infinite;
+        }
+
+        .scroll-right-left {
+            animation: scrollRightLeft 10s linear infinite;
+        }
+
+        @keyframes scrollLeftRight {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        @keyframes scrollRightLeft {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
     </style>
 </head>
 
 <body>
-    <div id="audioPaths" style="display: none;"
-         data-map="audio/map.wav"
-         data-initBattle="audio/initBattle.wav"
-         data-battle="audio/battle.mp3"
-         data-tackleHit="audio/tackleHit.wav"
-         data-fireballHit="audio/fireballHit.wav"
-         data-initFireball="audio/initFireball.wav"
-         data-victory="audio/victory.wav">
-    </div>
+    <div class="background-container"></div>
     <!-- Écran de saisie du code -->
     <div id="code-entry">
         <div class="code-box" style="max-width: 90vw; width: 100%;">
@@ -334,17 +348,6 @@
                 </div>
             </div>
 
-            <!-- Message de victoire -->
-            <div id="victory-message" class="game-won" style="margin-top: 2rem;">
-                <div class="victory-message">
-                    <h2>🎉 Félicitations !</h2>
-                    <p>Vous avez gagné ! Votre code d'accès est :</p>
-                    <div id="victory-code" style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: #fff;">
-                    </div>
-                    <p>Entrez ce code ci-dessous pour accéder au site :</p>
-                </div>
-            </div>
-
             <!-- Saisie du code -->
             <div id="code-input-section">
                 <input type="text" id="codeInput" class="code-input" placeholder="Entrez le code" maxlength="10">
@@ -507,17 +510,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <script>window.gsap = gsap;</script>
-    <script src="data/classes.js?v=4"></script>
-    <script src="data/utils.js?v=4"></script>
-    <script src="data/attacks.js?v=4"></script>
-    <script src="data/monsters.js?v=4"></script>
-    <script src="data/characters.js?v=4"></script>
-    <script src="data/collisions.js?v=4"></script>
-    <script src="data/battleZones.js?v=4"></script>
-    <script src="data/audio.js?v=4"></script>
-    <script src="data/battleScene.js?v=4"></script>
-    <script src="data/trainer.js?v=4"></script>
-    <script src="data/index.js?v=4"></script>
+    <script src="data/classes.js?v=5"></script>
+    <script src="data/utils.js?v=5"></script>
+    <script src="data/attacks.js?v=5"></script>
+    <script src="data/monsters.js?v=5"></script>
+    <script src="data/characters.js?v=5"></script>
+    <script src="data/collisions.js?v=5"></script>
+    <script src="data/battleZones.js?v=5"></script>
+    <script src="data/audio.js?v=5"></script>
+    <script src="data/battleScene.js?v=5"></script>
+    <script src="data/trainer.js?v=5"></script>
+    <script src="data/index.js?v=5"></script>
 
     <script>
         // Code d'accès (généré après la victoire)
@@ -574,24 +577,6 @@
             }
         }
 
-        // Afficher le code de victoire (accessible globalement)
-        window.showVictoryCode = function () {
-            if (!victoryCodeGenerated) {
-                victoryCodeGenerated = true;
-                gameWon = true;
-                const victoryCode = ACCESS_CODE;
-                document.getElementById('victory-code').textContent = victoryCode;
-                localStorage.setItem('victoryCode', victoryCode);
-                document.getElementById('victory-message').classList.add('show');
-                document.getElementById('code-input-section').style.display = 'block';
-
-                // Arrêter le jeu
-                if (typeof cancelAnimationFrame !== 'undefined' && window.animationId) {
-                    cancelAnimationFrame(window.animationId);
-                }
-            }
-        }
-
         // Permettre la soumission avec Entrée
         document.getElementById('codeInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -605,6 +590,39 @@
                 alert('Adresse copiée !');
             });
         }
+
+        // Remplir le background avec du texte animé
+        function fillBackgroundWithText() {
+            const container = document.querySelector('.background-container');
+            if (!container) return;
+
+            const text = 'A$$KEETCHUM ';
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const textHeight = 40; // Hauteur du texte en pixels
+            const verticalRepeats = Math.ceil(screenHeight / textHeight);
+
+            // Effacer le conteneur
+            container.innerHTML = '';
+
+            // Ajout des lignes de texte
+            for (let i = 0; i < verticalRepeats; i++) {
+                const textLine = document.createElement('div');
+                textLine.className = 'scrolling-text';
+                textLine.textContent = text.repeat(Math.ceil(screenWidth / 100));
+                if (i % 2 === 0) {
+                    textLine.classList.add('scroll-left-right');
+                } else {
+                    textLine.classList.add('scroll-right-left');
+                }
+                textLine.style.top = `${i * textHeight}px`;
+                container.appendChild(textLine);
+            }
+        }
+
+        // Appel de la fonction au chargement
+        fillBackgroundWithText();
+        window.addEventListener('resize', fillBackgroundWithText);
     </script>
 </body>
 

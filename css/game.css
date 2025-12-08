@@ -12,6 +12,28 @@
     user-select: none;
 }
 
+/* Styles pour les boutons d'attaque */
+#attacksBox button, #attacksBoxTrainer button {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    padding: 12px;
+    margin: 2px;
+    border: 3px solid black;
+    background-color: white;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+#attacksBox button:hover, #attacksBoxTrainer button:hover {
+    background-color: #f0f0f0;
+}
+
+#attacksBox button.selected, #attacksBoxTrainer button.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
 body {
     margin: 0;
     padding: 0;
