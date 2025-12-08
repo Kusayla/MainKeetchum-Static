@@ -12,6 +12,24 @@
     user-select: none;
 }
 
+/* Forcer le positionnement correct du screen-area et ui-container */
+.screen-area {
+    position: relative !important;
+}
+
+.ui-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: none !important;
+}
+
+.ui-container[style*="display: block"] {
+    display: block !important;
+}
+
 /* Styles pour les boutons d'attaque */
 #attacksBox button, #attacksBoxTrainer button {
     font-family: 'Press Start 2P', cursive;
