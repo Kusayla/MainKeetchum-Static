@@ -195,8 +195,9 @@ function forceStartBattle() {
         opacity: 1,
         duration: 0.4,
         onComplete() {
-          initBattle(true);
-          animateBattle();
+          // Lancer le combat trainer contre Dragkatchu
+          initBattl();
+          animateTrainerBattle();
           gsap.to('#overlappingDiv', {
             opacity: 0,
             duration: 0.4
