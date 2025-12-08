@@ -12,7 +12,6 @@ const battleTrainerBackground = new Sprite({
   image: battleTrainerBackgroundImage
 });
 
-
 let dragkatchu;
 let embyTrainer;
 let renderedSpritesTrainer;
@@ -131,11 +130,15 @@ function playerTrainerAttack(selectedTrainerAttack) {
 
 function animateTrainerBattle() {
   battleTrainerAnimationId = window.requestAnimationFrame(animateTrainerBattle);
-  battleTrainerBackground.draw();
+  if (battleTrainerBackground) {
+    battleTrainerBackground.draw();
+  }
 
-  renderedSpritesTrainer.forEach((sprite) => {
-    sprite.draw();
-  });
+  if (renderedSpritesTrainer) {
+    renderedSpritesTrainer.forEach((sprite) => {
+      sprite.draw();
+    });
+  }
 }
 
 // animate() - Retiré car appelé depuis index.js

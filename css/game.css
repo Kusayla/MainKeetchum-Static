@@ -30,6 +30,20 @@
     display: block !important;
 }
 
+/* Corriger la couleur de fond des status-box - beige au lieu de blanc */
+.status-box {
+    background-color: #f8f8d8 !important;
+}
+
+.health-bar {
+    background-color: #4CAF50 !important;
+}
+
+/* Forcer le canvas à avoir un fond clair au lieu de noir */
+.display, #mainCanvas {
+    background-color: #a3d5f1 !important;
+}
+
 /* Styles pour les boutons d'attaque */
 #attacksBox button, #attacksBoxTrainer button {
     font-family: 'Press Start 2P', cursive;
