@@ -20,11 +20,11 @@ let queueTrainer;
 let selectedTrainerAttackIndex = 0;
 
 function initBattl() {
-  document.querySelector('#userInterface').style.display = 'block';
-  document.querySelector('#dialogueBox').style.display = 'none';
-  document.querySelector('#enemyHealthBar').style.width = '100%';
-  document.querySelector('#playerHealthBar').style.width = '100%';
-  document.querySelector('#attacksBox').replaceChildren();
+  document.querySelector('#userInterfaceTrainer').style.display = 'block';
+  document.querySelector('#dialogueBoxTrainer').style.display = 'none';
+  document.querySelector('#enemyHealthBarTrainer').style.width = '100%';
+  document.querySelector('#playerHealthBarTrainer').style.width = '100%';
+  document.querySelector('#attacksBoxTrainer').replaceChildren();
 
   dragkatchu = new Monster(monsters.dragkatchu);
   embyTrainer = new Monster(monsters.Emby);
@@ -37,10 +37,10 @@ function initBattl() {
     if (index === selectedTrainerAttackIndex) {
       button.classList.add('selected');
     }
-    document.querySelector('#attacksBox').append(button);
+    document.querySelector('#attacksBoxTrainer').append(button);
   });
 
-  document.querySelectorAll('button').forEach((button, index) => {
+  document.querySelectorAll('#attacksBoxTrainer button').forEach((button, index) => {
     button.addEventListener('click', (e) => {
       const selectedTrainerAttack = attacks[e.currentTarget.innerHTML];
       trainerAttack(selectedTrainerAttack);
@@ -48,8 +48,8 @@ function initBattl() {
 
     button.addEventListener('mouseenter', (e) => {
       const selectedTrainerAttack = attacks[e.currentTarget.innerHTML];
-      document.querySelector('#attackType').innerHTML = selectedTrainerAttack.type;
-      document.querySelector('#attackType').style.color = selectedTrainerAttack.color;
+      document.querySelector('#attackTypeTrainer').innerHTML = selectedTrainerAttack.type;
+      document.querySelector('#attackTypeTrainer').style.color = selectedTrainerAttack.color;
     });
   });
 }
@@ -74,7 +74,7 @@ function playerTrainerAttack(selectedTrainerAttack) {
             cancelAnimationFrame(battleTrainerAnimationId);
           }
           animate();
-          document.querySelector('#userInterface').style.display = 'none';
+          document.querySelector('#userInterfaceTrainer').style.display = 'none';
 
           gsap.to('#overlappingDiv', {
             opacity: 0
@@ -107,7 +107,7 @@ function playerTrainerAttack(selectedTrainerAttack) {
             onComplete: () => {
               cancelAnimationFrame(battleTrainerAnimationId);
               animate();
-              document.querySelector('#userInterface').style.display = 'none';
+              document.querySelector('#userInterfaceTrainer').style.display = 'none';
 
               gsap.to('#overlappingDiv', {
                 opacity: 0
@@ -125,7 +125,7 @@ function playerTrainerAttack(selectedTrainerAttack) {
   }
 
   // Afficher la boîte de dialogue après l'attaque du joueur
-  document.querySelector('#dialogueBox').style.display = 'block';
+  document.querySelector('#dialogueBoxTrainer').style.display = 'block';
 }
 
 function animateTrainerBattle() {
@@ -143,7 +143,7 @@ function animateTrainerBattle() {
 
 // animate() - Retiré car appelé depuis index.js
 
-document.querySelector('#dialogueBox').addEventListener('click', (e) => {
+document.querySelector('#dialogueBoxTrainer').addEventListener('click', (e) => {
   if (queueTrainer.length > 0) {
     queueTrainer[0]();
     queueTrainer.shift();
@@ -164,7 +164,7 @@ window.addEventListener('keydown', (e) => {
       selectTrainerNextAttack();
       break;
     case ' ':
-      if (document.querySelector('#dialogueBox').style.display === 'block') {
+      if (document.querySelector('#dialogueBoxTrainer').style.display === 'block') {
         processTrainerQueue();
       } else {
         selectTrainerCurrentAttack();
@@ -194,7 +194,7 @@ function trainerAttack(selectedTrainerAttack) {
             cancelAnimationFrame(battleTrainerAnimationId);
           }
           animate();
-          document.querySelector('#userInterface').style.display = 'none';
+          document.querySelector('#userInterfaceTrainer').style.display = 'none';
 
           gsap.to('#overlappingDiv', {
             opacity: 0
@@ -227,7 +227,7 @@ function trainerAttack(selectedTrainerAttack) {
             onComplete: () => {
               cancelAnimationFrame(battleTrainerAnimationId);
               animate();
-              document.querySelector('#userInterface').style.display = 'none';
+              document.querySelector('#userInterfaceTrainer').style.display = 'none';
 
               gsap.to('#overlappingDiv', {
                 opacity: 0
@@ -245,7 +245,7 @@ function trainerAttack(selectedTrainerAttack) {
   }
 
   // Afficher la boîte de dialogue après l'attaque du joueur
-  document.querySelector('#dialogueBox').style.display = 'block';
+  document.querySelector('#dialogueBoxTrainer').style.display = 'block';
 }
 
 function selectTrainerPreviousAttack() {
@@ -267,7 +267,7 @@ function selectTrainerCurrentAttack() {
 }
 
 function updateTrainerAttackSelection() {
-  const attackButtons = document.querySelectorAll('#attacksBox button');
+  const attackButtons = document.querySelectorAll('#attacksBoxTrainer button');
   attackButtons.forEach((button, index) => {
     if (index === selectedTrainerAttackIndex) {
       button.classList.add('selected');
@@ -282,7 +282,7 @@ function processTrainerQueue() {
     queueTrainer[0]();
     queueTrainer.shift();
   } else {
-    document.querySelector('#dialogueBox').style.display = 'none';
+    document.querySelector('#dialogueBoxTrainer').style.display = 'none';
   }
 }
 

@@ -11858,13 +11858,13 @@ textarea.form-control-lg {
 
 @font-face {
   font-family: "Pokemon";
-  src: url(/build/fonts/Pokemon.f46d79f1.woff2) format("woff2"), url(/build/fonts/Pokemon.8adcdd6b.woff) format("woff"), url(/build/fonts/Pokemon.5d60be1f.ttf) format("truetype");
+  src: url(../fonts/Pokemon.woff2) format("woff2"), url(../fonts/Pokemon.woff) format("woff"), url(../fonts/Pokemon.ttf) format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "Unown";
-  src: url(/build/fonts/Unown.9b6e8427.ttf) format("truetype");
+  src: url(../fonts/Unown.ttf) format("truetype");
   font-weight: normal;
   font-style: normal;
 }

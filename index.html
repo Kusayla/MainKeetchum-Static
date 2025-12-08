@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/lastversion.css">
-    <link rel="stylesheet" href="css/game.css?v=9">
+    <link rel="stylesheet" href="css/lastversion.css?v=10">
+    <link rel="stylesheet" href="css/game.css?v=10">
     <style>
         body {
             margin: 0;
@@ -85,6 +85,29 @@
                     <div id="attacksBox" class="attacks-box"></div>
                     <div class="attack-type-container">
                         <h1 id="attackType" class="attack-type-title">Attack Type</h1>
+                    </div>
+                </div>
+            </div>
+            <div id="userInterfaceTrainer" class="ui-container" style="display: none;">
+                <div class="status-box enemy">
+                    <h1 class="status-title">Dragkatchu</h1>
+                    <div class="health-bar-container">
+                        <div class="health-bar-background"></div>
+                        <div id="enemyHealthBarTrainer" class="health-bar"></div>
+                    </div>
+                </div>
+                <div class="status-box player">
+                    <h1 class="status-title">Emby</h1>
+                    <div class="health-bar-container">
+                        <div class="health-bar-background"></div>
+                        <div id="playerHealthBarTrainer" class="health-bar"></div>
+                    </div>
+                </div>
+                <div class="battle-options">
+                    <div id="dialogueBoxTrainer" class="dialogue"></div>
+                    <div id="attacksBoxTrainer" class="attacks-box"></div>
+                    <div class="attack-type-container">
+                        <h1 id="attackTypeTrainer" class="attack-type-title">Attack Type</h1>
                     </div>
                 </div>
             </div>
@@ -272,17 +295,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 <script>window.gsap = gsap;</script>
-<script src="data/classes.js?v=9"></script>
-<script src="data/utils.js?v=9"></script>
-<script src="data/attacks.js?v=9"></script>
-<script src="data/monsters.js?v=9"></script>
-<script src="data/characters.js?v=9"></script>
-<script src="data/collisions.js?v=9"></script>
-<script src="data/battleZones.js?v=9"></script>
-<script src="data/audio.js?v=9"></script>
-<script src="data/battleScene.js?v=9"></script>
-<script src="data/trainer.js?v=9"></script>
-<script src="data/index.js?v=9"></script>
+<script src="data/classes.js?v=10"></script>
+<script src="data/utils.js?v=10"></script>
+<script src="data/attacks.js?v=10"></script>
+<script src="data/monsters.js?v=10"></script>
+<script src="data/characters.js?v=10"></script>
+<script src="data/collisions.js?v=10"></script>
+<script src="data/battleZones.js?v=10"></script>
+<script src="data/audio.js?v=10"></script>
+<script src="data/battleScene.js?v=10"></script>
+<script src="data/trainer.js?v=10"></script>
+<script src="data/index.js?v=10"></script>
 
 <script>
     // Remplir le background avec du texte animé
