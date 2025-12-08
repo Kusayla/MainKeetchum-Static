@@ -100,7 +100,7 @@ function initBattle() {
                 })
 
                 battle.initiated = false
-                audio.Map.play()
+                if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play()
               }
             })
           })
