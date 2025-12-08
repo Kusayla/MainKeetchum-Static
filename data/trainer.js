@@ -272,4 +272,4 @@ function processTrainerQueue() {
   }
 }
 
-checkProximityAndLaunchBattle();
+// checkProximityAndLaunchBattle() est appelé depuis index.js
