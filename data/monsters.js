@@ -31,5 +31,22 @@ const monsters = {
     isEnemy: true,
     name: 'Draggle',
     attacks: [attacks.Tackle, attacks.Fireball]
+  },
+  dragkatchu: {
+    position: {
+      x: 800,
+      y: 100
+    },
+    image: {
+      src: './img/Dragkatchu.png'
+    },
+    frames: {
+      max: 4,
+      hold: 30
+    },
+    animate: true,
+    isEnemy: true,
+    name: 'Dragkatchu',
+    attacks: [attacks.Tackle, attacks.Fireball]
   }
 }

@@ -192,7 +192,7 @@ body {
         z-index: 5;
     }
 
-    .controls .dpad > * {
+    .controls .dpad>* {
         width: 33%;
         height: 33%;
         position: absolute;
@@ -200,7 +200,7 @@ body {
         cursor: pointer;
     }
 
-    .controls .dpad > * i {
+    .controls .dpad>* i {
         position: relative;
         display: block;
         margin: 0 auto;
@@ -436,4 +436,3 @@ body {
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
-

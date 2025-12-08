@@ -1,21 +1,13 @@
-// Chemins des fichiers audio (désactivés pour l'instant - peut être ajouté plus tard)
-const audioPaths = {
-  map: './audio/map.mp3',
-  initBattle: './audio/initBattle.mp3',
-  battle: './audio/battle.mp3',
-  tackleHit: './audio/tackleHit.mp3',
-  fireballHit: './audio/fireballHit.mp3',
-  initFireball: './audio/initFireball.mp3',
-  victory: './audio/victory.mp3'
-};
+// Récupérer l'élément contenant les chemins
+const audioPathData = document.getElementById('audioPaths');
 
-// Création d'une fonction pour initialiser les sons (désactivé si fichiers absents)
+// Création d'une fonction pour initialiser les sons avec les chemins récupérés
 function createSound(soundKey, volume = 0.1) {
-  // Créer un son silencieux si le fichier n'existe pas
-  return {
-    play: function () { console.log('Audio:', soundKey); },
-    stop: function () { console.log('Audio stop:', soundKey); }
-  };
+  return new Howl({
+      src: [audioPathData.dataset[soundKey]],
+      html5: true,
+      volume: volume
+  });
 }
 
 // Utilisation de la fonction pour créer chaque son

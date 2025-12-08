@@ -11,6 +11,11 @@ const c = canvas.getContext('2d')
 canvas.width = 1024
 canvas.height = 576
 
+const normalSpeed = 3;
+const sprintSpeed = 6;
+
+let currentSpeed = normalSpeed; // Vitesse actuelle
+
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, 70 + i))
