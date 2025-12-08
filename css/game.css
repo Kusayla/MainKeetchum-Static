@@ -1,4 +1,17 @@
 /* Styles pour le jeu */
+
+@font-face {
+    font-family: 'Unown';
+    src: url('../fonts/Unown.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.newCharacterDialogue {
+    font-family: 'Unown';
+    user-select: none;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -175,6 +188,41 @@ body {
         margin-top: 30px;
         text-shadow: 0px -2px 1px #6b67ed;
         box-shadow: 0px -2px 1px #6b67ed;
+    }
+
+    .nintendo input[type="text"] {
+        width: calc(100% - 10px);
+        padding: 5px;
+        margin-bottom: 5px;
+        border: 1px solid #3436bf;
+        border-radius: 5px;
+        box-shadow: inset 0px -2px 1px #6b67ed;
+        font-family: 'Press Start 2P', sans-serif;
+        text-align: center;
+        color: #8686be;
+        font-size: 8px;
+    }
+
+    .formSolana {
+        background-color: #4f50db;
+        border-radius: 20px;
+    }
+
+    .nintendo button {
+        width: 100%;
+        padding: 2px 5px;
+        background: transparent;
+        border: none;
+        color: #3436bf;
+        font-weight: bold;
+        text-shadow: 0px -2px 1px #6b67ed;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .nintendo button:hover {
+        background-color: #3436bf;
+        color: #6b67ed;
     }
 
     .controls {
