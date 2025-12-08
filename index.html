@@ -5,10 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A$$ Keetchum - Gagnez le Code !</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/game.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        * {
+            font-family: "Press Start 2P", cursive;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
+
         /* Masquer le site jusqu'à ce que le code soit entré */
         #site-content {
             display: none;
@@ -67,45 +94,227 @@
         .game-won.show {
             display: block;
         }
+
+        /* Sur desktop, masquer les contrôles */
+        @media (min-width: 801px) {
+            .controls {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
 <body>
     <!-- Écran de saisie du code -->
     <div id="code-entry">
-        <div class="code-box">
+        <div class="code-box" style="max-width: 90vw; width: 100%;">
             <h1>🎮 A$$ Keetchum</h1>
             <p>Terminez le jeu pour obtenir le code d'accès au site !</p>
 
-            <!-- Zone du jeu -->
-            <div id="game-container" style="margin: 2rem 0; position: relative;">
-                <canvas id="gameCanvas"
-                    style="border: 2px solid #333; background: #000; max-width: 100%; display: block; margin: 0 auto;"></canvas>
+            <!-- Zone du jeu avec structure Gameboy -->
+            <div style="display: inline-block; position: relative; width: 100%;">
+                <div id="overlappingDiv" style="
+                    background-color: black;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    opacity: 0;
+                    pointer-events: none;
+                    z-index: 10;
+                "></div>
+                <div class="gameboy" id="GameBoy">
+                    <div class="screen-area">
+                        <canvas class="display" id="mainCanvas"></canvas>
+                        <div id="characterDialogueBox" style="
+                            background-color: white;
+                            height: 10vh;
+                            position: absolute;
+                            bottom: 3vh;
+                            left: 3vh;
+                            right: 3vh;
+                            border-top: 4px black solid;
+                            display: none;
+                            padding: 12px;
+                        "></div>
 
-                <!-- Interface de combat -->
-                <div id="userInterface"
-                    style="display: none; background: rgba(0,0,0,0.8); color: white; padding: 1rem; margin-top: 1rem; border-radius: 10px;">
-                    <div id="dialogueBox"
-                        style="background: white; color: black; padding: 1rem; margin-bottom: 1rem; border-radius: 5px;">
-                    </div>
-                    <div id="enemyHealthBar"
-                        style="height: 20px; background: linear-gradient(to right, #ff0000, #ff6666); border-radius: 10px; margin: 0.5rem 0;">
-                    </div>
-                    <div id="playerHealthBar"
-                        style="height: 20px; background: linear-gradient(to right, #00ff00, #66ff66); border-radius: 10px; margin: 0.5rem 0;">
-                    </div>
-                    <div id="attacksBox" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                    </div>
-                </div>
+                        <div id="userInterface" style="display: none">
+                            <!-- Represents health bar of draggle (enemy) -->
+                            <div style="
+                                background-color: white;
+                                width: 25vw;
+                                position: absolute;
+                                top: 15vh;
+                                left: 5vh;
+                                border: 4px black solid;
+                                padding: 12px;
+                            ">
+                                <h1 style="font-size: 16px">Draggle</h1>
+                                <div style="position: relative">
+                                    <div style="height: 5px; background-color: #ccc; margin-top: 10px"></div>
+                                    <div id="enemyHealthBar" style="
+                                        height: 5px;
+                                        background-color: green;
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        right: 0;
+                                    "></div>
+                                </div>
+                            </div>
 
-                <!-- Dialogue avec personnages -->
-                <div id="characterDialogueBox"
-                    style="display: none; position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); padding: 1rem 2rem; border-radius: 10px; max-width: 80%; text-align: center;">
+                            <!-- Represents health bar of emby (us) -->
+                            <div style="
+                                background-color: white;
+                                width: 25vw;
+                                position: absolute;
+                                top: 30vh;
+                                right: 5vh;
+                                border: 4px black solid;
+                                padding: 12px;
+                            ">
+                                <h1 style="font-size: 16px">Emby</h1>
+                                <div style="position: relative">
+                                    <div style="height: 5px; background-color: #ccc; margin-top: 10px"></div>
+                                    <div id="playerHealthBar" style="
+                                        height: 5px;
+                                        background-color: green;
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        right: 0;
+                                    "></div>
+                                </div>
+                            </div>
+
+                            <div style="
+                                background-color: white;
+                                height: 10vh;
+                                position: absolute;
+                                bottom: 3vh;
+                                left: 3vh;
+                                right: 3vh;
+                                border-top: 4px black solid;
+                                display: flex;
+                            ">
+                                <div id="dialogueBox" style="
+                                    position: absolute;
+                                    top: 0;
+                                    right: 0;
+                                    bottom: 0;
+                                    left: 0;
+                                    background-color: white;
+                                    padding: 12px;
+                                    display: none;
+                                    cursor: pointer;
+                                ">nique ta mere</div>
+                                <div id="attacksBox" style="
+                                    width: 40.66%;
+                                    display: grid;
+                                    grid-template-columns: repeat(2, 1fr);
+                                "></div>
+                                <div style="
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    width: 33.33%;
+                                    border-left: 4px black solid;
+                                ">
+                                    <h1 id="attackType" style="font-size: 16px">Attack Type</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="label">
+                            <div class="title">A$$ GAME</div>
+                            <div class="subtitle">
+                                <span class="c">C</span><!--
+                                --><span class="o1">O</span><!--
+                                --><span class="l">L</span><!--
+                                --><span class="o2">O</span><!--
+                                --><span class="r">R</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nintendo">SOLANA</div>
+
+                    <div class="controls">
+                        <div class="dpad">
+                            <div class="up"><i class="fa fa-caret-up"></i></div>
+                            <div class="right"><i class="fa fa-caret-right"></i></div>
+                            <div class="down"><i class="fa fa-caret-down"></i></div>
+                            <div class="left"><i class="fa fa-caret-left"></i></div>
+                            <div class="middle"></div>
+                        </div>
+                        <div class="a-b">
+                            <div class="b">B</div>
+                            <div class="a">A</div>
+                        </div>
+                    </div>
+
+                    <div class="speaker">
+                        <div class="dot placeholder"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot placeholder"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot placeholder"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot closed"></div>
+                        <div class="dot open"></div>
+                        <div class="dot placeholder"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Message de victoire -->
-            <div id="victory-message" class="game-won">
+            <div id="victory-message" class="game-won" style="margin-top: 2rem;">
                 <div class="victory-message">
                     <h2>🎉 Félicitations !</h2>
                     <p>Vous avez gagné ! Votre code d'accès est :</p>
@@ -273,14 +482,10 @@
         </div>
     </div>
 
-    <!-- Overlay pour les transitions -->
-    <div id="overlappingDiv"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; opacity: 0; pointer-events: none;">
-    </div>
-
     <!-- Scripts du jeu (ordre important !) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script>window.gsap = gsap;</script>
     <script src="data/classes.js"></script>
     <script src="data/utils.js"></script>
     <script src="data/attacks.js"></script>
@@ -320,17 +525,6 @@
             }
         }
 
-        // Détecter la victoire dans le jeu
-        function checkVictory() {
-            // Vérifier périodiquement si le joueur a gagné
-            setInterval(() => {
-                if (typeof draggle !== 'undefined' && draggle && draggle.health <= 0 && !gameWon) {
-                    gameWon = true;
-                    showVictoryCode();
-                }
-            }, 1000);
-        }
-
         // Afficher le code de victoire (accessible globalement)
         window.showVictoryCode = function () {
             if (!victoryCodeGenerated) {
@@ -348,29 +542,6 @@
                 }
             }
         }
-
-        // Modifier la fonction de victoire dans battleScene.js
-        // Intercepter la victoire
-        const originalInitBattle = window.initBattle;
-        window.initBattle = function () {
-            if (originalInitBattle) originalInitBattle();
-
-            // Écouter les clics sur les boutons d'attaque
-            setTimeout(() => {
-                document.querySelectorAll('#attacksBox button').forEach(button => {
-                    button.addEventListener('click', function () {
-                        setTimeout(() => {
-                            if (typeof draggle !== 'undefined' && draggle && draggle.health <= 0) {
-                                showVictoryCode();
-                            }
-                        }, 2000);
-                    });
-                });
-            }, 1000);
-        };
-
-        // Démarrer la vérification de victoire
-        checkVictory();
 
         // Permettre la soumission avec Entrée
         document.getElementById('codeInput').addEventListener('keypress', function (e) {

@@ -1,6 +1,6 @@
 
 
-const canvas = document.querySelector('canvas')
+const canvas = document.querySelector('#mainCanvas') || document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
 canvas.width = 1024
@@ -505,89 +505,118 @@ function simulateKeyRelease(key) {
   window.dispatchEvent(new KeyboardEvent('keyup', { 'key': key }));
 }
 
-document.querySelector('.dpad .left').addEventListener('mousedown', function () {
-  startKeyPress('a');
-});
-document.querySelector('.dpad .left').addEventListener('mouseup', function () {
-  stopKeyPress('a');
-});
-document.querySelector('.dpad .left').addEventListener('touchstart', function (e) {
-  e.preventDefault();
-  startKeyPress('a');
-});
-document.querySelector('.dpad .left').addEventListener('touchend', function () {
-  stopKeyPress('a');
-});
+// Attacher les event listeners pour les contrôles mobiles
+function attachMobileControls() {
+  const leftBtn = document.querySelector('.dpad .left');
+  const rightBtn = document.querySelector('.dpad .right');
+  const upBtn = document.querySelector('.dpad .up');
+  const downBtn = document.querySelector('.dpad .down');
+  const aBtn = document.querySelector('.a-b .a');
+  const bBtn = document.querySelector('.a-b .b');
 
-document.querySelector('.dpad .right').addEventListener('mousedown', function () {
-  startKeyPress('d');
-});
-document.querySelector('.dpad .right').addEventListener('mouseup', function () {
-  stopKeyPress('d');
-});
-document.querySelector('.dpad .right').addEventListener('touchstart', function (e) {
-  e.preventDefault();
-  startKeyPress('d');
-});
-document.querySelector('.dpad .right').addEventListener('touchend', function () {
-  stopKeyPress('d');
-});
+  if (leftBtn) {
+    leftBtn.addEventListener('mousedown', function () {
+      startKeyPress('a');
+    });
+    leftBtn.addEventListener('mouseup', function () {
+      stopKeyPress('a');
+    });
+    leftBtn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      startKeyPress('a');
+    });
+    leftBtn.addEventListener('touchend', function () {
+      stopKeyPress('a');
+    });
+  }
 
-document.querySelector('.dpad .up').addEventListener('mousedown', function () {
-  startKeyPress('w');
-});
-document.querySelector('.dpad .up').addEventListener('mouseup', function () {
-  stopKeyPress('w');
-});
-document.querySelector('.dpad .up').addEventListener('touchstart', function (e) {
-  e.preventDefault();
-  startKeyPress('w');
-});
-document.querySelector('.dpad .up').addEventListener('touchend', function () {
-  stopKeyPress('w');
-});
+  if (rightBtn) {
+    rightBtn.addEventListener('mousedown', function () {
+      startKeyPress('d');
+    });
+    rightBtn.addEventListener('mouseup', function () {
+      stopKeyPress('d');
+    });
+    rightBtn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      startKeyPress('d');
+    });
+    rightBtn.addEventListener('touchend', function () {
+      stopKeyPress('d');
+    });
+  }
 
-document.querySelector('.dpad .down').addEventListener('mousedown', function () {
-  startKeyPress('s');
-});
-document.querySelector('.dpad .down').addEventListener('mouseup', function () {
-  stopKeyPress('s');
-});
-document.querySelector('.dpad .down').addEventListener('touchstart', function (e) {
-  e.preventDefault();
-  startKeyPress('s');
-});
-document.querySelector('.dpad .down').addEventListener('touchend', function () {
-  stopKeyPress('s');
-});
+  if (upBtn) {
+    upBtn.addEventListener('mousedown', function () {
+      startKeyPress('w');
+    });
+    upBtn.addEventListener('mouseup', function () {
+      stopKeyPress('w');
+    });
+    upBtn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      startKeyPress('w');
+    });
+    upBtn.addEventListener('touchend', function () {
+      stopKeyPress('w');
+    });
+  }
 
-document.querySelector('.a-b .a').addEventListener('mousedown', function () {
-  simulateKeyPress(' ');
-});
-document.querySelector('.a-b .a').addEventListener('mouseup', function () {
-  simulateKeyRelease(' ');
-});
-document.querySelector('.a-b .a').addEventListener('touchstart', function (e) {
-  e.preventDefault();
-  simulateKeyPress(' ');
-});
-document.querySelector('.a-b .a').addEventListener('touchend', function () {
-  simulateKeyRelease(' ');
-});
+  if (downBtn) {
+    downBtn.addEventListener('mousedown', function () {
+      startKeyPress('s');
+    });
+    downBtn.addEventListener('mouseup', function () {
+      stopKeyPress('s');
+    });
+    downBtn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      startKeyPress('s');
+    });
+    downBtn.addEventListener('touchend', function () {
+      stopKeyPress('s');
+    });
+  }
 
-document.querySelector('.a-b .b').addEventListener('mousedown', function () {
-  simulateKeyPress('b'); // Définissez une action pour 'B' si nécessaire
-});
-document.querySelector('.a-b .b').addEventListener('mouseup', function () {
-  simulateKeyRelease('b'); // Définissez une action pour 'B' si nécessaire
-});
-document.querySelector('.a-b .b').addEventListener('touchstart', function (e) {
-  e.preventDefault();
-  simulateKeyPress('b'); // Définissez une action pour 'B' si nécessaire
-});
-document.querySelector('.a-b .b').addEventListener('touchend', function () {
-  simulateKeyRelease('b'); // Définissez une action pour 'B' si nécessaire
-});
+  if (aBtn) {
+    aBtn.addEventListener('mousedown', function () {
+      simulateKeyPress(' ');
+    });
+    aBtn.addEventListener('mouseup', function () {
+      simulateKeyRelease(' ');
+    });
+    aBtn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      simulateKeyPress(' ');
+    });
+    aBtn.addEventListener('touchend', function () {
+      simulateKeyRelease(' ');
+    });
+  }
+
+  if (bBtn) {
+    bBtn.addEventListener('mousedown', function () {
+      simulateKeyPress('b');
+    });
+    bBtn.addEventListener('mouseup', function () {
+      simulateKeyRelease('b');
+    });
+    bBtn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      simulateKeyPress('b');
+    });
+    bBtn.addEventListener('touchend', function () {
+      simulateKeyRelease('b');
+    });
+  }
+}
+
+// Attacher les contrôles quand le DOM est prêt
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', attachMobileControls);
+} else {
+  attachMobileControls();
+}
 
 let keyIntervals = {};
 function startKeyPress(key) {
