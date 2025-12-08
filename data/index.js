@@ -179,9 +179,11 @@ function forceStartBattle() {
   const animationId = window.requestAnimationFrame(animate);
   window.cancelAnimationFrame(animationId);
 
-  audio.Map.stop();
-  audio.initBattle.play();
-  audio.battle.play();
+  if (typeof audio !== 'undefined' && audio) {
+    if (audio.Map) audio.Map.stop();
+    if (audio.initBattle) audio.initBattle.play();
+    if (audio.battle) audio.battle.play();
+  }
 
   battle.initiated = true;
 

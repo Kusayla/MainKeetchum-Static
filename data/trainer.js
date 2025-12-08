@@ -14,8 +14,8 @@ const battleTrainerBackground = new Sprite({
 
 
 let dragkatchu;
-let emby;
-let renderedSprites;
+let embyTrainer;
+let renderedSpritesTrainer;
 let battleTrainerAnimationId;
 let queueTrainer;
 let selectedTrainerAttackIndex = 0;
@@ -29,7 +29,7 @@ function initBattl() {
 
   dragkatchu = new Monster(monsters.dragkatchu);
   embyTrainer = new Monster(monsters.Emby);
-  renderedSprites = [dragkatchu, embyTrainer];
+  renderedSpritesTrainer = [dragkatchu, embyTrainer];
   queueTrainer = [];
 
   embyTrainer.attacks.forEach((attack, index) => {
@@ -59,7 +59,7 @@ function playerTrainerAttack(selectedTrainerAttack) {
   embyTrainer.attack({
     attack: selectedTrainerAttack,
     recipient: dragkatchu,
-    renderedSprites
+    renderedSprites: renderedSpritesTrainer
   });
 
   if (dragkatchu.health <= 0) {
@@ -80,7 +80,7 @@ function playerTrainerAttack(selectedTrainerAttack) {
           });
 
           battle.initiated = false;
-          audio.Map.play();
+          if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play();
         }
       });
     });
@@ -91,7 +91,7 @@ function playerTrainerAttack(selectedTrainerAttack) {
       dragkatchu.attack({
         attack: randomTrainerAttack,
         recipient: embyTrainer,
-        renderedSprites
+        renderedSprites: renderedSpritesTrainer
       });
 
       if (embyTrainer.health <= 0) {
@@ -129,12 +129,12 @@ function animateTrainerBattle() {
   battleTrainerAnimationId = window.requestAnimationFrame(animateTrainerBattle);
   battleTrainerBackground.draw();
 
-  renderedSprites.forEach((sprite) => {
+  renderedSpritesTrainer.forEach((sprite) => {
     sprite.draw();
   });
 }
 
-animate();
+// animate() - Retiré car appelé depuis index.js
 
 document.querySelector('#dialogueBox').addEventListener('click', (e) => {
   if (queueTrainer.length > 0) {
@@ -171,7 +171,7 @@ function trainerAttack(selectedTrainerAttack) {
   embyTrainer.attack({
     attack: selectedTrainerAttack,
     recipient: dragkatchu,
-    renderedSprites
+    renderedSprites: renderedSpritesTrainer
   });
 
   if (dragkatchu.health <= 0) {
@@ -192,7 +192,7 @@ function trainerAttack(selectedTrainerAttack) {
           });
 
           battle.initiated = false;
-          audio.Map.play();
+          if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play();
         }
       });
     });
@@ -203,7 +203,7 @@ function trainerAttack(selectedTrainerAttack) {
       dragkatchu.attack({
         attack: randomTrainerAttack,
         recipient: embyTrainer,
-        renderedSprites
+        renderedSprites: renderedSpritesTrainer
       });
 
       if (embyTrainer.health <= 0) {
