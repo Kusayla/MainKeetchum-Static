@@ -58,7 +58,12 @@ function playerTrainerAttack(selectedTrainerAttack) {
   embyTrainer.attack({
     attack: selectedTrainerAttack,
     recipient: dragkatchu,
-    renderedSprites: renderedSpritesTrainer
+    renderedSprites: renderedSpritesTrainer,
+    healthBarIds: {
+      dialogueBox: '#dialogueBoxTrainer',
+      enemy: '#enemyHealthBarTrainer',
+      player: '#playerHealthBarTrainer'
+    }
   });
 
   if (dragkatchu.health <= 0) {
@@ -92,7 +97,12 @@ function playerTrainerAttack(selectedTrainerAttack) {
       dragkatchu.attack({
         attack: randomTrainerAttack,
         recipient: embyTrainer,
-        renderedSprites: renderedSpritesTrainer
+        renderedSprites: renderedSpritesTrainer,
+        healthBarIds: {
+          dialogueBox: '#dialogueBoxTrainer',
+          enemy: '#enemyHealthBarTrainer',
+          player: '#playerHealthBarTrainer'
+        }
       });
 
       if (embyTrainer.health <= 0) {
@@ -178,7 +188,12 @@ function trainerAttack(selectedTrainerAttack) {
   embyTrainer.attack({
     attack: selectedTrainerAttack,
     recipient: dragkatchu,
-    renderedSprites: renderedSpritesTrainer
+    renderedSprites: renderedSpritesTrainer,
+    healthBarIds: {
+      dialogueBox: '#dialogueBoxTrainer',
+      enemy: '#enemyHealthBarTrainer',
+      player: '#playerHealthBarTrainer'
+    }
   });
 
   if (dragkatchu.health <= 0) {
@@ -186,7 +201,7 @@ function trainerAttack(selectedTrainerAttack) {
       dragkatchu.faint();
     });
     queueTrainer.push(() => {
-      // fade back to black
+      // Victoire du joueur
       gsap.to('#overlappingDiv', {
         opacity: 1,
         onComplete: () => {
@@ -202,6 +217,11 @@ function trainerAttack(selectedTrainerAttack) {
 
           battle.initiated = false;
           if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play();
+
+          // Afficher le dialogue de victoire avec le newCharacter
+          if (typeof window.showVictoryDialogueGlobal === 'function') {
+            window.showVictoryDialogueGlobal();
+          }
         }
       });
     });
@@ -212,7 +232,12 @@ function trainerAttack(selectedTrainerAttack) {
       dragkatchu.attack({
         attack: randomTrainerAttack,
         recipient: embyTrainer,
-        renderedSprites: renderedSpritesTrainer
+        renderedSprites: renderedSpritesTrainer,
+        healthBarIds: {
+          dialogueBox: '#dialogueBoxTrainer',
+          enemy: '#enemyHealthBarTrainer',
+          player: '#playerHealthBarTrainer'
+        }
       });
 
       if (embyTrainer.health <= 0) {
@@ -221,7 +246,7 @@ function trainerAttack(selectedTrainerAttack) {
         });
 
         queueTrainer.push(() => {
-          // fade back to black
+          // Défaite du joueur
           gsap.to('#overlappingDiv', {
             opacity: 1,
             onComplete: () => {
@@ -236,6 +261,11 @@ function trainerAttack(selectedTrainerAttack) {
               battle.initiated = false;
               if (typeof audio !== 'undefined' && audio && audio.Map) {
                 audio.Map.play();
+              }
+
+              // Proposer de refaire le combat
+              if (typeof window.showDefeatDialogueGlobal === 'function') {
+                window.showDefeatDialogueGlobal();
               }
             }
           });
@@ -287,3 +317,4 @@ function processTrainerQueue() {
 }
 
 // checkProximityAndLaunchBattle() est appelé depuis index.js
+// Les fonctions showVictoryDialogue et showDefeatDialogue sont maintenant dans index.js comme fonctions globales

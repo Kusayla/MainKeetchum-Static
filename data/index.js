@@ -100,18 +100,35 @@ const newCharacter = new Character({
   },
   scale: 3,
   dialogue: [
-    "Wow, I thought you were a paper hands,",
-    "but maybe you have what it takes to be a diamond hands",
-    "and hold to the moon.",
-    "Here's the password to enter our site... <span class='newCharacterDialogue'>pikasschu</span> ahahaha,",
-    "did you really think it was the end?",
-    "I hope you've studied your Unown well because you're going to need it.",
-    "Good luck Degen!"
+    "So you think you can handle Dragkatchu?",
+    "Let's see if you're worthy of the password...",
+    "Get ready to battle!"
   ],
   onComplete: () => {
     console.log("Dialogue terminé. Lancement de startTrainerDialog...");
   }
 });
+
+// Ajouter les dialogues spéciaux après la création
+newCharacter.dialogueAfterVictory = [
+  "Wow, I thought you were a paper hands,",
+  "but maybe you have what it takes to be a diamond hands",
+  "and hold to the moon.",
+  "I found something... an ancient note.",
+  "It's written in Unown alphabet!",
+  "It's now in your BAG.",
+  "Press I to check your bag and decipher it.",
+  "Study the symbols carefully...",
+  "Good luck Degen!"
+];
+
+newCharacter.dialogueAfterDefeat = [
+  "You lost against Dragkatchu!",
+  "Want to try again? (Press SPACE to rematch)"
+];
+
+// Rendre newCharacter globalement accessible
+window.newCharacter = newCharacter;
 
 // Ajoutez une classe spécifique à la boîte de dialogue de ce personnage
 const dialogueBox = document.querySelector('#characterDialogueBox');
@@ -121,8 +138,15 @@ if (dialogueBox) {
 
 let gameState = {
   inDialogueWithNewCharacter: false,
-  dialogueIndex: 0
+  dialogueIndex: 0,
+  waitingForBattle: false
 };
+
+// Variable globale pour le rematch
+window.waitingForRematch = false;
+
+// Variable globale pour suivre si le joueur a vaincu Dragkatchu
+window.hasDefeatedDragkatchu = false;
 
 function handleDialogue(character) {
   if (!gameState.inDialogueWithNewCharacter) return;
@@ -151,18 +175,32 @@ function calculateDistance(position1, position2) {
 }
 
 function checkProximityAndLaunchBattle() {
-  if (!shouldCheckDistance) return;
+  if (!shouldCheckDistance) {
+    return;
+  }
 
-  const playerPosition = player.position;
-  const newCharacterPosition = newCharacter.position;
+  const p = window.player;
+  const nc = window.newCharacter;
+
+  if (!p || !nc) return;
+
+  const playerPosition = p.position;
+  const newCharacterPosition = nc.position;
   const distance = calculateDistance(playerPosition, newCharacterPosition);
 
   const proximityThreshold = 75;
 
   if (distance <= proximityThreshold) {
-    console.log("Personnage proche de newCharacter. Lancement du combat.");
-    launchBattle();
-    shouldCheckDistance = false;
+    // Vérifier si le joueur a déjà vaincu Dragkatchu
+    if (window.hasDefeatedDragkatchu) {
+      // Ne pas relancer le combat, juste désactiver la vérification
+      shouldCheckDistance = false;
+      return;
+    } else {
+      // Afficher d'abord le dialogue initial
+      showPreBattleDialogue();
+      shouldCheckDistance = false;
+    }
   }
 
   requestAnimationFrame(checkProximityAndLaunchBattle);
@@ -170,15 +208,120 @@ function checkProximityAndLaunchBattle() {
 
 let shouldCheckDistance = true;
 
+function showPreBattleDialogue() {
+  // Ne pas afficher le dialogue de pré-combat si le joueur a déjà gagné
+  if (window.hasDefeatedDragkatchu) {
+    return;
+  }
+
+  setTimeout(() => {
+    const nc = window.newCharacter;
+    const p = window.player;
+
+    if (nc) {
+      // Sauvegarder le dialogue original seulement la première fois
+      if (!nc.originalDialogue && !window.hasDefeatedDragkatchu) {
+        nc.originalDialogue = [...nc.dialogue];
+      }
+
+      // Si on n'a pas encore vaincu Dragkatchu, utiliser le dialogue original
+      if (!window.hasDefeatedDragkatchu && nc.originalDialogue) {
+        nc.dialogue = [...nc.originalDialogue];
+      }
+
+      nc.dialogueIndex = 0;
+      const dialogueBox = document.querySelector('#characterDialogueBox');
+      if (dialogueBox) {
+        dialogueBox.innerHTML = nc.dialogue[0];
+        dialogueBox.style.display = 'flex';
+        p.isInteracting = true;
+        p.interactionAsset = nc;
+        gameState.waitingForBattle = true;
+      }
+    }
+  }, 500);
+}
+
 function launchBattle() {
   console.log("Lancement du combat");
+
+  // Fermer le sac si il est ouvert
+  if (typeof window.bagSystem !== 'undefined' && window.bagSystem.isOpen) {
+    window.bagSystem.closeBag();
+  }
+
   forceStartBattle();
+}
+
+// Fonction globale pour afficher le dialogue de victoire (appelée depuis trainer.js)
+window.showVictoryDialogueGlobal = function() {
+  // Marquer que le joueur a vaincu Dragkatchu ET arrêter la vérification de proximité
+  window.hasDefeatedDragkatchu = true;
+  shouldCheckDistance = false;
+
+  // Ajouter l'item "Unknown Note" au sac
+  if (typeof window.bagSystem !== 'undefined') {
+    window.bagSystem.addItem({
+      id: 'mysterious_note',
+      name: 'Unknown Note',
+      icon: '📜',
+      description: 'A mysterious note with a password...'
+    });
+  }
+
+  setTimeout(() => {
+    const nc = window.newCharacter;
+    const p = window.player;
+
+    if (nc && nc.dialogueAfterVictory) {
+      // Changer le dialogue pour le dialogue de victoire
+      nc.dialogue = [...nc.dialogueAfterVictory];
+      nc.originalDialogue = [...nc.dialogueAfterVictory];
+      nc.dialogueIndex = 0;
+
+      const dialogueBox = document.querySelector('#characterDialogueBox');
+      if (dialogueBox) {
+        dialogueBox.innerHTML = nc.dialogue[0];
+        dialogueBox.style.display = 'flex';
+        p.isInteracting = true;
+        p.interactionAsset = nc;
+        gameState.waitingForBattle = false;
+      }
+    }
+  }, 500);
+}
+
+// Fonction globale pour afficher le dialogue de défaite (appelée depuis trainer.js)
+window.showDefeatDialogueGlobal = function() {
+  setTimeout(() => {
+    const nc = window.newCharacter;
+    const p = window.player;
+
+    if (nc && nc.dialogueAfterDefeat) {
+      nc.dialogue = [...nc.dialogueAfterDefeat];
+      nc.dialogueIndex = 0;
+
+      const dialogueBox = document.querySelector('#characterDialogueBox');
+      if (dialogueBox) {
+        dialogueBox.innerHTML = nc.dialogue[0];
+        dialogueBox.style.display = 'flex';
+        p.isInteracting = true;
+        p.interactionAsset = nc;
+        window.waitingForRematch = true;
+      }
+    }
+  }, 500);
 }
 
 function forceStartBattle() {
   if (animationId !== null) {
     window.cancelAnimationFrame(animationId);
     animationId = null;
+  }
+
+  // Fermer le sac si il est ouvert
+  if (typeof window.bagSystem !== 'undefined' && window.bagSystem.isOpen) {
+    window.bagSystem.closeBag();
   }
 
   if (typeof audio !== 'undefined' && audio) {
@@ -318,6 +461,9 @@ const player = new Sprite({
   }
 })
 
+// Rendre player globalement accessible
+window.player = player;
+
 const background = new Sprite({
   position: {
     x: offset.x,
@@ -425,6 +571,12 @@ function animate() {
         }
 
         battle.initiated = true;
+
+        // Fermer le sac si il est ouvert
+        if (typeof window.bagSystem !== 'undefined' && window.bagSystem.isOpen) {
+          window.bagSystem.closeBag();
+        }
+
         gsap.to('#overlappingDiv', {
           opacity: 1,
           repeat: 3,
@@ -613,6 +765,37 @@ window.addEventListener('keydown', (e) => {
             player.interactionAsset.dialogue[dialogueIndex];
           return;
         }
+
+        // Vérifier si on est en attente d'un rematch après une défaite
+        if (typeof window.waitingForRematch !== 'undefined' && window.waitingForRematch) {
+          window.waitingForRematch = false;
+          player.isInteracting = false;
+          player.interactionAsset.dialogueIndex = 0;
+          document.querySelector('#characterDialogueBox').style.display = 'none';
+
+          // Relancer le combat
+          setTimeout(() => {
+            launchBattle();
+          }, 500);
+          return;
+        }
+
+        // Vérifier si on est en attente du combat initial (et qu'on n'a pas encore vaincu Dragkatchu)
+        if (gameState.waitingForBattle && !window.hasDefeatedDragkatchu) {
+          gameState.waitingForBattle = false;
+          player.isInteracting = false;
+          player.interactionAsset.dialogueIndex = 0;
+          document.querySelector('#characterDialogueBox').style.display = 'none';
+
+          // Lancer le combat
+          setTimeout(() => {
+            launchBattle();
+          }, 500);
+          return;
+        }
+
+        // Sinon, juste fermer le dialogue
+        gameState.waitingForBattle = false;
         player.isInteracting = false;
         player.interactionAsset.dialogueIndex = 0;
         document.querySelector('#characterDialogueBox').style.display = 'none';
@@ -624,6 +807,12 @@ window.addEventListener('keydown', (e) => {
   switch (e.key) {
     case ' ':
       if (!player.interactionAsset) return;
+
+      // Si le joueur a déjà vaincu Dragkatchu et interagit avec newCharacter, ne pas lancer le combat
+      if (player.interactionAsset === window.newCharacter && window.hasDefeatedDragkatchu) {
+        gameState.waitingForBattle = false; // Ne pas attendre le combat
+      }
+
       const firstMessage = player.interactionAsset.dialogue[0];
       document.querySelector('#characterDialogueBox').innerHTML = firstMessage;
       document.querySelector('#characterDialogueBox').style.display = 'flex';

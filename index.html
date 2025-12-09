@@ -11,6 +11,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/lastversion.css?v=10">
     <link rel="stylesheet" href="css/game.css?v=10">
+
+    <!-- Unown Font -->
+    <style>
+        @font-face {
+            font-family: 'Unown';
+            src: url('fonts/Unown.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
     <style>
         body {
             margin: 0;
@@ -54,6 +64,295 @@
         @keyframes scrollRightLeft {
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
+        }
+
+        /* Bag/Inventory Interface */
+        .bag-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .bag-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .bag-header h2 {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .bag-instruction {
+            font-size: 10px;
+            color: #aaa;
+        }
+
+        .bag-content {
+            max-height: calc(100% - 100px);
+            overflow-y: auto;
+        }
+
+        .bag-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .bag-item {
+            background: #333;
+            border: 3px solid #666;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bag-item:hover {
+            background: #444;
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .bag-item-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .bag-item-name {
+            font-size: 10px;
+            word-wrap: break-word;
+        }
+
+        .empty-bag-message {
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            padding: 50px 20px;
+        }
+
+        /* Item Detail View (Paper) */
+        .item-detail-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .paper-container {
+            background: #f4e8c1;
+            border: 5px solid #8b7355;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .paper-content {
+            font-family: 'Press Start 2P', cursive;
+            color: #2c1810;
+        }
+
+        .paper-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 30px;
+            text-decoration: underline;
+        }
+
+        .paper-text {
+            line-height: 2;
+        }
+
+        .paper-text p {
+            font-size: 12px;
+            margin: 15px 0;
+        }
+
+        .password-display {
+            background: rgba(139, 115, 85, 0.15);
+            border: 4px solid #8b7355;
+            padding: 30px 20px;
+            margin: 25px 0;
+            text-align: center;
+            font-size: 40px;
+            font-weight: normal;
+            color: #1a0d06;
+            letter-spacing: 12px;
+            font-family: 'Unown', monospace;
+            line-height: 2;
+            text-transform: lowercase;
+            word-break: break-all;
+        }
+
+        .password-hint-text {
+            font-size: 9px;
+            color: #666;
+            margin-top: 15px;
+            font-family: 'Press Start 2P', cursive;
+            line-height: 1.6;
+        }
+
+        .unown-legend {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .unown-legend p {
+            font-size: 8px;
+            color: #999;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .paper-hint {
+            font-size: 10px;
+            font-style: italic;
+            text-align: center;
+            color: #555;
+        }
+
+        .close-paper-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            background: #8b7355;
+            color: #f4e8c1;
+            border: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-paper-btn:hover {
+            background: #6d5a44;
+            transform: scale(1.05);
+        }
+
+        /* Bag Button (for mobile/gameboy) */
+        .bag-button-container {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+        }
+
+        .bag-button {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 25px;
+            border: 3px solid #34495e;
+            border-radius: 8px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: none; /* Hidden by default */
+        }
+
+        .bag-button:hover {
+            background: #34495e;
+            border-color: #7f8c8d;
+            transform: scale(1.05);
+        }
+
+        .bag-button:active {
+            transform: scale(0.95);
+        }
+
+        .bag-button i {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .bag-items {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 10px;
+            }
+
+            .bag-item {
+                padding: 10px;
+            }
+
+            .bag-item-icon {
+                font-size: 24px;
+            }
+
+            .bag-item-name {
+                font-size: 8px;
+            }
+
+            .paper-title {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+
+            .paper-text p {
+                font-size: 9px;
+                line-height: 1.8;
+            }
+
+            .password-display {
+                font-size: 24px;
+                padding: 20px 10px;
+                letter-spacing: 6px;
+            }
+
+            .password-hint-text {
+                font-size: 7px;
+            }
+
+            .unown-legend p:first-child {
+                font-size: 12px !important;
+                letter-spacing: 2px !important;
+            }
+
+            .unown-legend p:last-child {
+                font-size: 6px !important;
+                letter-spacing: 1px !important;
+            }
+
+            .bag-button-container {
+                right: 5%;
+            }
+
+            .bag-button {
+                padding: 10px 15px;
+                font-size: 10px;
+            }
+
+            .paper-container {
+                padding: 20px;
+            }
+
+            .close-paper-btn {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -121,6 +420,42 @@
                     --><span class="none r">R</span>
                 </div>
             </div>
+
+            <!-- Inventory/Bag Interface -->
+            <div id="bagInterface" class="bag-interface" style="display: none;">
+                <div class="bag-header">
+                    <h2>BAG</h2>
+                    <p class="bag-instruction">Press I or tap to close</p>
+                </div>
+                <div class="bag-content">
+                    <div id="bagItems" class="bag-items">
+                        <!-- Items will be added here dynamically -->
+                    </div>
+                    <div id="emptyBagMessage" class="empty-bag-message">
+                        Your bag is empty.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Detail View (Paper with password) -->
+            <div id="itemDetailView" class="item-detail-view" style="display: none;">
+                <div class="paper-container">
+                    <div class="paper-content">
+                        <h3 class="paper-title">MYSTERIOUS NOTE</h3>
+                        <div class="paper-text">
+                            <p>Ancient Unown symbols reveal the secret password:</p>
+                            <div class="password-display" id="passwordDisplay">pikasschu</div>
+                            <p class="password-hint-text">(Decipher the Unown alphabet to read it)</p>
+                            <div class="unown-legend">
+                                <p style="font-family: 'Unown', monospace; font-size: 16px; letter-spacing: 3px; color: #1a0d06;">abcdefghijklmnopqrstuvwxyz</p>
+                                <p style="font-family: 'Press Start 2P', cursive; font-size: 8px; letter-spacing: 2px; color: #666;">abcdefghijklmnopqrstuvwxyz</p>
+                            </div>
+                            <p class="paper-hint">Use this password to unlock the website!</p>
+                        </div>
+                    </div>
+                    <button class="close-paper-btn">CLOSE</button>
+                </div>
+            </div>
         </div>
         <form onsubmit="event.preventDefault(); checkGameboyPassword();" class="nintendo">
             <input class="formSolana" type="text" id="gameboy-password" name="password" placeholder="Pa$$ word" required>
@@ -138,6 +473,11 @@
             <div class="a-b">
                 <div class="b none">B</div>
                 <div class="a none">A</div>
+            </div>
+            <div class="bag-button-container">
+                <div class="bag-button" id="mobileBagButton">
+                    <i class="fa fa-suitcase"></i> BAG
+                </div>
             </div>
         </div>
     </div>
@@ -366,6 +706,210 @@
             alert('Adresse copiée !');
         });
     }
+
+    // ===== BAG/INVENTORY SYSTEM =====
+    const bagSystem = {
+        items: [],
+        isOpen: false,
+
+        init() {
+            // Gestion de la touche "i" pour ouvrir/fermer le sac
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'i' || e.key === 'I') {
+                    this.toggleBag();
+                }
+            });
+
+            // Gestion du clic sur le sac pour le fermer
+            document.getElementById('bagInterface').addEventListener('click', (e) => {
+                if (e.target.id === 'bagInterface') {
+                    this.closeBag();
+                }
+            });
+
+            // Gestion du bouton de fermeture du papier
+            document.querySelector('.close-paper-btn').addEventListener('click', () => {
+                this.closeItemDetail();
+            });
+
+            // Gestion du clic sur le papier en arrière-plan
+            document.getElementById('itemDetailView').addEventListener('click', (e) => {
+                if (e.target.id === 'itemDetailView') {
+                    this.closeItemDetail();
+                }
+            });
+
+            // Gestion du bouton BAG mobile
+            const mobileBagButton = document.getElementById('mobileBagButton');
+            if (mobileBagButton) {
+                mobileBagButton.addEventListener('click', () => {
+                    this.toggleBag();
+                });
+                mobileBagButton.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.toggleBag();
+                });
+            }
+
+            // Cacher le bouton BAG initialement
+            this.updateBagButtonVisibility();
+
+            // Vérifier régulièrement l'état pour mettre à jour la visibilité du bouton
+            setInterval(() => {
+                this.updateBagButtonVisibility();
+
+                // Fermer le sac si un combat commence pendant qu'il est ouvert
+                if (this.isOpen && !this.canAccessBag()) {
+                    this.closeBag();
+                }
+            }, 500);
+        },
+
+        canAccessBag() {
+            // Vérifier si le joueur a vaincu Dragkatchu
+            if (typeof window.hasDefeatedDragkatchu === 'undefined' || !window.hasDefeatedDragkatchu) {
+                return false;
+            }
+
+            // Vérifier si on n'est pas en combat
+            if (typeof battle !== 'undefined' && battle.initiated) {
+                return false;
+            }
+
+            return true;
+        },
+
+        toggleBag() {
+            if (!this.canAccessBag()) {
+                // Ne rien faire si le sac n'est pas accessible
+                console.log("Bag is not accessible yet");
+                return;
+            }
+
+            if (this.isOpen) {
+                this.closeBag();
+            } else {
+                this.openBag();
+            }
+        },
+
+        openBag() {
+            if (!this.canAccessBag()) {
+                return;
+            }
+
+            this.isOpen = true;
+            document.getElementById('bagInterface').style.display = 'block';
+            this.renderItems();
+        },
+
+        closeBag() {
+            this.isOpen = false;
+            document.getElementById('bagInterface').style.display = 'none';
+        },
+
+        updateBagButtonVisibility() {
+            const mobileBagButton = document.getElementById('mobileBagButton');
+            if (mobileBagButton) {
+                if (this.canAccessBag()) {
+                    mobileBagButton.style.display = 'block';
+                } else {
+                    mobileBagButton.style.display = 'none';
+                }
+            }
+        },
+
+        addItem(item) {
+            // Vérifier si l'item n'existe pas déjà
+            if (!this.items.find(i => i.id === item.id)) {
+                this.items.push(item);
+                console.log('Item added to bag:', item);
+
+                // Mettre à jour la visibilité du bouton BAG
+                this.updateBagButtonVisibility();
+
+                // Afficher une notification
+                this.showNotification(`You received: ${item.name}!`);
+            }
+        },
+
+        showNotification(message) {
+            // Créer une notification temporaire
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px 50px;
+                border: 4px solid white;
+                font-family: 'Press Start 2P', cursive;
+                font-size: 16px;
+                z-index: 2000;
+                text-align: center;
+                line-height: 1.8;
+            `;
+            notif.innerHTML = `
+                ${message}<br>
+                <span style="font-size: 12px; color: #aaa; margin-top: 10px; display: inline-block;">
+                    Press I to open your bag
+                </span>
+            `;
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                notif.remove();
+            }, 4000);
+        },
+
+        renderItems() {
+            const bagItemsContainer = document.getElementById('bagItems');
+            const emptyMessage = document.getElementById('emptyBagMessage');
+
+            if (this.items.length === 0) {
+                bagItemsContainer.style.display = 'none';
+                emptyMessage.style.display = 'block';
+            } else {
+                bagItemsContainer.style.display = 'grid';
+                emptyMessage.style.display = 'none';
+                bagItemsContainer.innerHTML = '';
+
+                this.items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'bag-item';
+                    itemDiv.innerHTML = `
+                        <div class="bag-item-icon">${item.icon}</div>
+                        <div class="bag-item-name">${item.name}</div>
+                    `;
+                    itemDiv.addEventListener('click', () => this.showItemDetail(item));
+                    bagItemsContainer.appendChild(itemDiv);
+                });
+            }
+        },
+
+        showItemDetail(item) {
+            document.getElementById('itemDetailView').style.display = 'flex';
+            // On pourrait personnaliser le contenu selon l'item ici si nécessaire
+        },
+
+        closeItemDetail() {
+            document.getElementById('itemDetailView').style.display = 'none';
+        }
+    };
+
+    // Initialiser le système de sac quand le document est prêt
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            bagSystem.init();
+        });
+    } else {
+        bagSystem.init();
+    }
+
+    // Rendre bagSystem globalement accessible
+    window.bagSystem = bagSystem;
 </script>
 </body>
 </html>

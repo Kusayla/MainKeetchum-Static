@@ -114,7 +114,11 @@ class Monster extends Sprite {
   }
 
   faint() {
-    document.querySelector('#dialogueBox').innerHTML = this.name + ' fainted!'
+    // Essayer d'abord le dialogue trainer, puis le dialogue normal
+    const dialogueBox = document.querySelector('#dialogueBoxTrainer') || document.querySelector('#dialogueBox');
+    if (dialogueBox) {
+      dialogueBox.innerHTML = this.name + ' fainted!';
+    }
     gsap.to(this.position, {
       y: this.position.y + 20
     })
@@ -127,13 +131,18 @@ class Monster extends Sprite {
     }
   }
 
-  attack({ attack, recipient, renderedSprites }) {
-    document.querySelector('#dialogueBox').style.display = 'block'
-    document.querySelector('#dialogueBox').innerHTML =
+  attack({ attack, recipient, renderedSprites, healthBarIds }) {
+    // Déterminer les IDs des barres de vie et de la boîte de dialogue
+    const dialogueBoxId = healthBarIds?.dialogueBox || '#dialogueBox'
+    const enemyHealthBarId = healthBarIds?.enemy || '#enemyHealthBar'
+    const playerHealthBarId = healthBarIds?.player || '#playerHealthBar'
+
+    document.querySelector(dialogueBoxId).style.display = 'block'
+    document.querySelector(dialogueBoxId).innerHTML =
       this.name + ' used ' + attack.name
 
-    let healthBar = '#enemyHealthBar'
-    if (this.isEnemy) healthBar = '#playerHealthBar'
+    let healthBar = enemyHealthBarId
+    if (this.isEnemy) healthBar = playerHealthBarId
 
     let rotation = 1
     if (this.isEnemy) rotation = -2.2
