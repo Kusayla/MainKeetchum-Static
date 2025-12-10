@@ -192,20 +192,23 @@ body {
         width: 100vw;
         height: 100vh;
         border-radius: 20px;
-        padding: 20px;
+        padding: 15px;
         background-color: #4f50db;
         font-family: sans-serif;
         -webkit-user-select: none;
         cursor: default;
+        box-sizing: border-box;
+        overflow: hidden;
     }
 
     .screen-area {
         position: relative;
-        padding: 15% 5% 1% 5%;
+        padding: 12% 3% 1% 3%;
         border-radius: 15px;
         background-color: #23252d;
         color: #67879a;
         box-shadow: 0px 2px 0px black, 0px -2px 0px black, -2px 0px 0px black, 2px 0px 0px black;
+        box-sizing: border-box;
     }
 
     .screen-area::after {
@@ -223,11 +226,23 @@ body {
 
     .display {
         background-color: #929d97;
-        height: 35vh;
+        height: 30vh;
         width: 100%;
         border-radius: 0.5vh;
-        margin-bottom: 3vh;
+        margin-bottom: 2vh;
         box-shadow: inset 0px 4px 5px rgba(0, 0, 0, 0.5), inset 0px -2px 0px rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .display canvas {
+        max-width: 100%;
+        max-height: 100%;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
 
     .label {
@@ -275,8 +290,8 @@ body {
     }
 
     .nintendo {
-        padding: 0px 5px;
-        width: 82px;
+        padding: 5px 10px;
+        width: 180px;
         color: #3436bf;
         font-weight: bold;
         text-align: center;
@@ -290,15 +305,15 @@ body {
 
     .nintendo input[type="text"] {
         width: calc(100% - 10px);
-        padding: 5px;
-        margin-bottom: 5px;
+        padding: 8px 5px;
+        margin-bottom: 8px;
         border: 1px solid #3436bf;
         border-radius: 5px;
         box-shadow: inset 0px -2px 1px #6b67ed;
         font-family: 'Press Start 2P', sans-serif;
         text-align: center;
         color: #8686be;
-        font-size: 8px;
+        font-size: 12px;
     }
 
     .formSolana {
@@ -308,7 +323,7 @@ body {
 
     .nintendo button {
         width: 100%;
-        padding: 2px 5px;
+        padding: 8px 5px;
         background: transparent;
         border: none;
         color: #3436bf;
@@ -316,6 +331,8 @@ body {
         text-shadow: 0px -2px 1px #6b67ed;
         cursor: pointer;
         font-family: inherit;
+        font-size: 14px;
+        line-height: 1.2;
     }
 
     .nintendo button:hover {
@@ -325,17 +342,24 @@ body {
 
     .controls {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
+        align-items: flex-start;
+        padding: 0 10px;
+        box-sizing: border-box;
+        max-width: 100%;
+        gap: 10px;
     }
 
     .controls .dpad {
         position: relative;
         display: inline-block;
-        margin-top: 7vw;
-        margin-left: 5vw;
-        width: 30vw;
-        height: 30vw;
+        margin-top: 5vw;
+        margin-left: 2vw;
+        width: 28vw;
+        height: 28vw;
         z-index: 5;
+        flex-shrink: 0;
     }
 
     .controls .dpad>* {
@@ -396,10 +420,11 @@ body {
     .controls .a-b {
         position: relative;
         display: inline-block;
-        margin-top: 15vw;
-        margin-right: 10vw;
-        width: 30vw;
-        height: 15vw;
+        margin-top: 12vw;
+        margin-right: 5vw;
+        width: 28vw;
+        height: 14vw;
+        flex-shrink: 0;
     }
 
     .controls .a-b>* {
