@@ -26,10 +26,20 @@ function initBattl() {
   document.querySelector('#playerHealthBarTrainer').style.width = '100%';
   document.querySelector('#attacksBoxTrainer').replaceChildren();
 
+  // Load player's saved level
+  const savedLevel = localStorage.getItem('playerLevel');
+  const playerLevel = savedLevel ? parseInt(savedLevel) : 5;
+
   dragkatchu = new Monster(monsters.dragkatchu);
-  embyTrainer = new Monster(monsters.Emby);
+  embyTrainer = new Monster({...monsters.Emby, level: playerLevel});
   renderedSpritesTrainer = [dragkatchu, embyTrainer];
   queueTrainer = [];
+
+  // Update level displays
+  document.querySelector('#enemyLevelTrainer').textContent = 'Lv' + dragkatchu.level;
+  document.querySelector('#playerLevelTrainer').textContent = 'Lv' + embyTrainer.level;
+  document.querySelector('#enemyNameTrainer').textContent = dragkatchu.name;
+  document.querySelector('#playerNameTrainer').textContent = embyTrainer.name;
 
   embyTrainer.attacks.forEach((attack, index) => {
     const button = document.createElement('button');
@@ -199,6 +209,23 @@ function trainerAttack(selectedTrainerAttack) {
   if (dragkatchu.health <= 0) {
     queueTrainer.push(() => {
       dragkatchu.faint();
+    });
+    queueTrainer.push(() => {
+      // Grant experience to player
+      const experienceGained = dragkatchu.level * 5;
+      const oldLevel = embyTrainer.level;
+      embyTrainer.gainExperience(experienceGained);
+
+      // Save player level
+      localStorage.setItem('playerLevel', embyTrainer.level.toString());
+
+      // If leveled up, show level up message first
+      if (embyTrainer.level > oldLevel) {
+        queueTrainer.push(() => {
+          document.querySelector('#dialogueBoxTrainer').innerHTML = embyTrainer.name + ' gained ' + experienceGained + ' XP!';
+          document.querySelector('#dialogueBoxTrainer').style.display = 'block';
+        });
+      }
     });
     queueTrainer.push(() => {
       // Victoire du joueur

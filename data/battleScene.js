@@ -21,10 +21,20 @@ function initBattle() {
   document.querySelector('#playerHealthBar').style.width = '100%'
   document.querySelector('#attacksBox').replaceChildren()
 
+  // Load player's saved level
+  const savedLevel = localStorage.getItem('playerLevel')
+  const playerLevel = savedLevel ? parseInt(savedLevel) : 5
+
   draggle = new Monster(monsters.Draggle)
-  emby = new Monster(monsters.Emby)
+  emby = new Monster({...monsters.Emby, level: playerLevel})
   renderedSprites = [draggle, emby]
   queue = []
+
+  // Update level displays
+  document.querySelector('#enemyLevel').textContent = 'Lv' + draggle.level
+  document.querySelector('#playerLevel').textContent = 'Lv' + emby.level
+  document.querySelector('#enemyName').textContent = draggle.name
+  document.querySelector('#playerName').textContent = emby.name
 
   emby.attacks.forEach((attack) => {
     const button = document.createElement('button')
@@ -45,6 +55,23 @@ function initBattle() {
       if (draggle.health <= 0) {
         queue.push(() => {
           draggle.faint()
+        })
+        queue.push(() => {
+          // Grant experience to player
+          const experienceGained = draggle.level * 5
+          const oldLevel = emby.level
+          emby.gainExperience(experienceGained)
+
+          // Save player level
+          localStorage.setItem('playerLevel', emby.level.toString())
+
+          // If leveled up, show level up message first
+          if (emby.level > oldLevel) {
+            queue.push(() => {
+              document.querySelector('#dialogueBox').innerHTML = emby.name + ' gained ' + experienceGained + ' XP!'
+              document.querySelector('#dialogueBox').style.display = 'block'
+            })
+          }
         })
         queue.push(() => {
           // Afficher le code de victoire

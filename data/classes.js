@@ -96,7 +96,8 @@ class Monster extends Sprite {
     rotation = 0,
     isEnemy = false,
     name,
-    attacks
+    attacks,
+    level = 5
   }) {
     super({
       position,
@@ -107,10 +108,43 @@ class Monster extends Sprite {
       animate,
       rotation
     })
-    this.health = 100
+    this.level = level
+    this.experience = 0
+    this.experienceToNextLevel = this.level * 10
+    this.maxHealth = 100 + (this.level - 5) * 10
+    this.health = this.maxHealth
     this.isEnemy = isEnemy
     this.name = name
     this.attacks = attacks
+  }
+
+  gainExperience(amount) {
+    this.experience += amount
+
+    // Check if leveled up
+    while (this.experience >= this.experienceToNextLevel) {
+      this.experience -= this.experienceToNextLevel
+      this.levelUp()
+    }
+  }
+
+  levelUp() {
+    this.level++
+    this.experienceToNextLevel = this.level * 10
+
+    // Increase max health by 10 per level
+    const healthIncrease = 10
+    this.maxHealth += healthIncrease
+    this.health = this.maxHealth
+
+    // Show level up notification
+    const dialogueBox = document.querySelector('#dialogueBoxTrainer') || document.querySelector('#dialogueBox')
+    if (dialogueBox) {
+      dialogueBox.innerHTML = this.name + ' leveled up to level ' + this.level + '!'
+      dialogueBox.style.display = 'block'
+    }
+
+    console.log(`${this.name} leveled up to level ${this.level}! Max HP is now ${this.maxHealth}`)
   }
 
   faint() {
@@ -180,7 +214,7 @@ class Monster extends Sprite {
               audio.fireballHit.play()
             }
             gsap.to(healthBar, {
-              width: recipient.health + '%'
+              width: (recipient.health / recipient.maxHealth * 100) + '%'
             })
 
             gsap.to(recipient.position, {
@@ -219,7 +253,7 @@ class Monster extends Sprite {
                 audio.tackleHit.play()
               }
               gsap.to(healthBar, {
-                width: recipient.health + '%'
+                width: (recipient.health / recipient.maxHealth * 100) + '%'
               })
 
               gsap.to(recipient.position, {
