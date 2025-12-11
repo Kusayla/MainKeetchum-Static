@@ -26,20 +26,27 @@ function initBattl() {
   document.querySelector('#playerHealthBarTrainer').style.width = '100%';
   document.querySelector('#attacksBoxTrainer').replaceChildren();
 
-  // Load player's saved level
+  // Load player's saved level and XP
   const savedLevel = localStorage.getItem('playerLevel');
+  const savedXP = localStorage.getItem('playerXP');
   const playerLevel = savedLevel ? parseInt(savedLevel) : 5;
+  const playerXP = savedXP ? parseInt(savedXP) : 0;
 
   dragkatchu = new Monster(monsters.dragkatchu);
   embyTrainer = new Monster({...monsters.Emby, level: playerLevel});
+  embyTrainer.experience = playerXP;
+  embyTrainer.experienceToNextLevel = embyTrainer.level * 10;
   renderedSpritesTrainer = [dragkatchu, embyTrainer];
   queueTrainer = [];
 
-  // Update level displays
+  // Update level and XP displays
   document.querySelector('#enemyLevelTrainer').textContent = 'Lv' + dragkatchu.level;
   document.querySelector('#playerLevelTrainer').textContent = 'Lv' + embyTrainer.level;
   document.querySelector('#enemyNameTrainer').textContent = dragkatchu.name;
   document.querySelector('#playerNameTrainer').textContent = embyTrainer.name;
+
+  // Update XP display
+  embyTrainer.updateXPDisplay('#playerXPBarTrainer', '#playerXPTrainer', '#playerXPNeededTrainer', '#playerLevelTrainer');
 
   embyTrainer.attacks.forEach((attack, index) => {
     const button = document.createElement('button');
@@ -211,19 +218,33 @@ function trainerAttack(selectedTrainerAttack) {
       dragkatchu.faint();
     });
     queueTrainer.push(() => {
+      // Show XP gained message
+      const experienceGained = dragkatchu.level * 5;
+      document.querySelector('#dialogueBoxTrainer').innerHTML = embyTrainer.name + ' gained ' + experienceGained + ' XP!';
+      document.querySelector('#dialogueBoxTrainer').style.display = 'block';
+    });
+    queueTrainer.push(() => {
       // Grant experience to player
       const experienceGained = dragkatchu.level * 5;
-      const oldLevel = embyTrainer.level;
-      embyTrainer.gainExperience(experienceGained);
+      const result = embyTrainer.gainExperience(experienceGained, '#playerXPBarTrainer', '#playerXPTrainer', '#playerXPNeededTrainer');
 
-      // Save player level
+      // Save player level and XP
       localStorage.setItem('playerLevel', embyTrainer.level.toString());
+      localStorage.setItem('playerXP', embyTrainer.experience.toString());
 
-      // If leveled up, show level up message first
-      if (embyTrainer.level > oldLevel) {
-        queueTrainer.push(() => {
-          document.querySelector('#dialogueBoxTrainer').innerHTML = embyTrainer.name + ' gained ' + experienceGained + ' XP!';
-          document.querySelector('#dialogueBoxTrainer').style.display = 'block';
+      // If leveled up, show level up message
+      if (result.levelsGained && result.levelsGained.length > 0) {
+        result.levelsGained.forEach((levelInfo) => {
+          queueTrainer.push(() => {
+            document.querySelector('#dialogueBoxTrainer').innerHTML =
+              embyTrainer.name + ' leveled up to Lv' + levelInfo.newLevel + '!<br>' +
+              'Max HP increased by ' + levelInfo.healthIncrease + '!<br>' +
+              'New Max HP: ' + levelInfo.newMaxHealth;
+            document.querySelector('#dialogueBoxTrainer').style.display = 'block';
+
+            // Update level display
+            document.querySelector('#playerLevelTrainer').textContent = 'Lv' + embyTrainer.level;
+          });
         });
       }
     });

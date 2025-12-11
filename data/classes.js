@@ -118,17 +118,55 @@ class Monster extends Sprite {
     this.attacks = attacks
   }
 
-  gainExperience(amount) {
+  gainExperience(amount, xpBarId, xpTextId, xpNeededId) {
+    const initialXP = this.experience
     this.experience += amount
 
+    // Animate XP bar filling
+    if (xpBarId && xpTextId && xpNeededId) {
+      const xpBar = document.querySelector(xpBarId)
+      const xpText = document.querySelector(xpTextId)
+      const xpNeeded = document.querySelector(xpNeededId)
+
+      if (xpBar && xpText && xpNeeded) {
+        const xpPercentage = (this.experience / this.experienceToNextLevel) * 100
+        gsap.to(xpBar, {
+          width: Math.min(xpPercentage, 100) + '%',
+          duration: 1
+        })
+        xpText.textContent = this.experience
+        xpNeeded.textContent = this.experienceToNextLevel
+      }
+    }
+
     // Check if leveled up
+    const levelsGained = []
     while (this.experience >= this.experienceToNextLevel) {
       this.experience -= this.experienceToNextLevel
-      this.levelUp()
+      const levelInfo = this.levelUp()
+      levelsGained.push(levelInfo)
+
+      // Update XP bar for new level
+      if (xpBarId && xpTextId && xpNeededId) {
+        const xpText = document.querySelector(xpTextId)
+        const xpNeeded = document.querySelector(xpNeededId)
+        if (xpText && xpNeeded) {
+          xpText.textContent = this.experience
+          xpNeeded.textContent = this.experienceToNextLevel
+        }
+      }
+    }
+
+    return {
+      xpGained: amount,
+      levelsGained: levelsGained,
+      currentXP: this.experience,
+      xpToNext: this.experienceToNextLevel
     }
   }
 
   levelUp() {
+    const oldMaxHealth = this.maxHealth
     this.level++
     this.experienceToNextLevel = this.level * 10
 
@@ -137,14 +175,28 @@ class Monster extends Sprite {
     this.maxHealth += healthIncrease
     this.health = this.maxHealth
 
-    // Show level up notification
-    const dialogueBox = document.querySelector('#dialogueBoxTrainer') || document.querySelector('#dialogueBox')
-    if (dialogueBox) {
-      dialogueBox.innerHTML = this.name + ' leveled up to level ' + this.level + '!'
-      dialogueBox.style.display = 'block'
-    }
+    console.log(`${this.name} leveled up to level ${this.level}! Max HP: ${oldMaxHealth} -> ${this.maxHealth}`)
 
-    console.log(`${this.name} leveled up to level ${this.level}! Max HP is now ${this.maxHealth}`)
+    return {
+      newLevel: this.level,
+      healthIncrease: healthIncrease,
+      newMaxHealth: this.maxHealth
+    }
+  }
+
+  updateXPDisplay(xpBarId, xpTextId, xpNeededId, levelId) {
+    const xpBar = document.querySelector(xpBarId)
+    const xpText = document.querySelector(xpTextId)
+    const xpNeeded = document.querySelector(xpNeededId)
+    const levelDisplay = document.querySelector(levelId)
+
+    if (xpBar) {
+      const xpPercentage = (this.experience / this.experienceToNextLevel) * 100
+      xpBar.style.width = xpPercentage + '%'
+    }
+    if (xpText) xpText.textContent = this.experience
+    if (xpNeeded) xpNeeded.textContent = this.experienceToNextLevel
+    if (levelDisplay) levelDisplay.textContent = 'Lv' + this.level
   }
 
   faint() {
@@ -304,7 +356,8 @@ class Character extends Sprite {
     animate = false,
     rotation = 0,
     scale = 1,
-    dialogue = ['']
+    dialogue = [''],
+    onInteractionComplete
   }) {
     super({
       position,
@@ -319,5 +372,6 @@ class Character extends Sprite {
 
     this.dialogue = dialogue
     this.dialogueIndex = 0
+    this.onInteractionComplete = onInteractionComplete
   }
 }

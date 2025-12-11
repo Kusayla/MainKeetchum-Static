@@ -23,6 +23,7 @@
     position: absolute;
     border: 4px black solid;
     padding: 12px;
+    box-sizing: border-box;
 }
 
 .status-box.enemy {
@@ -57,6 +58,24 @@
     top: 0;
     left: 0;
     right: 0;
+}
+
+.xp-bar {
+    height: 10px;
+    background-color: #4CAF50;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: width 0.3s ease;
+}
+
+.xp-bar-container {
+    margin-top: 8px;
+}
+
+.xp-bar-container .health-bar-background {
+    position: relative;
 }
 
 .battle-options {

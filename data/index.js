@@ -16,6 +16,112 @@ const sprintSpeed = 6;
 
 let currentSpeed = normalSpeed; // Vitesse actuelle
 
+// Fonction globale pour afficher une notification animée
+window.showItemNotification = function(icon, title, description) {
+  const notification = document.getElementById('itemNotification');
+  const notificationIcon = document.getElementById('notificationIcon');
+  const notificationTitle = document.getElementById('notificationTitle');
+  const notificationDescription = document.getElementById('notificationDescription');
+
+  if (!notification) return;
+
+  // Set content
+  notificationIcon.textContent = icon;
+  notificationTitle.textContent = title;
+  notificationDescription.textContent = description;
+
+  // Show with animation
+  notification.style.display = 'block';
+  gsap.fromTo(notification,
+    {
+      opacity: 0,
+      scale: 0.5,
+      y: -50
+    },
+    {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      duration: 0.5,
+      ease: 'back.out(1.7)'
+    }
+  );
+
+  // Auto hide after 3 seconds
+  setTimeout(() => {
+    gsap.to(notification, {
+      opacity: 0,
+      scale: 0.8,
+      y: 50,
+      duration: 0.4,
+      ease: 'back.in(1.7)',
+      onComplete: () => {
+        notification.style.display = 'none';
+      }
+    });
+  }, 3000);
+};
+
+// Fonction globale pour donner le sac au joueur (définie tôt pour être accessible partout)
+window.giveBagToPlayer = function() {
+  if (window.hasReceivedBag) {
+    console.log('Player already has the bag!');
+    return;
+  }
+
+  window.hasReceivedBag = true;
+  localStorage.setItem('hasReceivedBag', 'true');
+
+  // Show bag button
+  const bagButton = document.querySelector('#mobileBagButton');
+  if (bagButton) {
+    bagButton.style.display = 'block';
+  }
+
+  // Update bag system visibility
+  if (typeof window.bagSystem !== 'undefined') {
+    window.bagSystem.updateBagButtonVisibility();
+  }
+
+  // Show notification animation
+  window.showItemNotification(
+    '🎒',
+    'You received a BAG!',
+    'Press I to open your bag anytime!'
+  );
+
+  console.log('✅ Player received the BAG!');
+};
+
+// Variable globale pour suivre si le joueur a reçu le sac
+// Charger depuis localStorage au démarrage
+const savedBagStatus = localStorage.getItem('hasReceivedBag');
+window.hasReceivedBag = savedBagStatus === 'true';
+
+// Fonction globale pour RESET le jeu (pour les tests)
+window.resetGameProgress = function() {
+  // Clear all game progress
+  localStorage.removeItem('hasReceivedBag');
+  localStorage.removeItem('playerLevel');
+  localStorage.removeItem('playerXP');
+
+  // Reset global variables
+  window.hasReceivedBag = false;
+  window.hasDefeatedDragkatchu = false;
+
+  // Hide bag button
+  const bagButton = document.querySelector('#mobileBagButton');
+  if (bagButton) {
+    bagButton.style.display = 'none';
+  }
+
+  console.log('🔄 Game progress RESET! Refresh the page to start fresh.');
+  console.log('Type: location.reload() to refresh');
+};
+
+// Log helper message
+console.log('💡 DEV TIP: Type resetGameProgress() in console to reset all progress for testing!');
+
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, 70 + i))
@@ -100,8 +206,9 @@ const newCharacter = new Character({
   },
   scale: 3,
   dialogue: [
-    "So you think you can handle Dragkatchu?",
-    "Let's see if you're worthy of the password...",
+    "So you think you can handle my Dragkatchu?",
+    "Let's see if you're worthy...",
+    "If you beat me, I'll give you something special!",
     "Get ready to battle!"
   ],
   onComplete: () => {
@@ -114,12 +221,13 @@ newCharacter.dialogueAfterVictory = [
   "Wow, I thought you were a paper hands,",
   "but maybe you have what it takes to be a diamond hands",
   "and hold to the moon.",
-  "I found something... an ancient note.",
+  "You've earned this...",
+  "I found an ancient note with a password.",
   "It's written in Unown alphabet!",
-  "It's now in your BAG.",
-  "Press I to check your bag and decipher it.",
-  "Study the symbols carefully...",
-  "Good luck Degen!"
+  "I've added the note to your BAG.",
+  "Open your bag (Press I) to see it.",
+  "Study the symbols carefully to decipher it...",
+  "Good luck, Degen!"
 ];
 
 newCharacter.dialogueAfterDefeat = [
@@ -389,7 +497,24 @@ charactersMap.forEach((row, i) => {
           },
           scale: 3,
           animate: true,
-          dialogue: ['...', 'Y a que les arabes pour faire des scams?', 'les Israelien sont une sous race']
+          dialogue: [
+            'Ah, a young trainer!',
+            'You look like you\'re on a journey.',
+            'Here, take this BAG.',
+            'It will help you carry items you find.',
+            'Press I to open it anytime!',
+            'Good luck on your adventure!'
+          ],
+          onInteractionComplete: function() {
+            // Give the bag to the player via global function
+            console.log('🎒 onInteractionComplete called!');
+            console.log('window.giveBagToPlayer exists?', typeof window.giveBagToPlayer === 'function');
+            if (typeof window.giveBagToPlayer === 'function') {
+              window.giveBagToPlayer();
+            } else {
+              console.error('❌ window.giveBagToPlayer is not defined!');
+            }
+          }
         })
       )
     }
@@ -407,7 +532,13 @@ charactersMap.forEach((row, i) => {
             hold: 60
           },
           scale: 3,
-          dialogue: ['En vraie rien ne vos un bon scam.']
+          dialogue: [
+            'Hey there, trainer!',
+            'I heard there\'s a tough trainer up ahead...',
+            'They say he guards a secret password.',
+            'You\'ll need to defeat him to get it!',
+            'Train hard and level up your Pokemon!'
+          ]
         })
       )
     }
@@ -797,6 +928,15 @@ window.addEventListener('keydown', (e) => {
         // Sinon, juste fermer le dialogue
         gameState.waitingForBattle = false;
         player.isInteracting = false;
+
+        // Call onInteractionComplete if it exists
+        if (player.interactionAsset && typeof player.interactionAsset.onInteractionComplete === 'function') {
+          console.log('📞 Calling onInteractionComplete...');
+          player.interactionAsset.onInteractionComplete();
+        } else {
+          console.log('ℹ️ No onInteractionComplete function found for this character');
+        }
+
         player.interactionAsset.dialogueIndex = 0;
         document.querySelector('#characterDialogueBox').style.display = 'none';
         break;

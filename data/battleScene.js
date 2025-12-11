@@ -21,20 +21,27 @@ function initBattle() {
   document.querySelector('#playerHealthBar').style.width = '100%'
   document.querySelector('#attacksBox').replaceChildren()
 
-  // Load player's saved level
+  // Load player's saved level and XP
   const savedLevel = localStorage.getItem('playerLevel')
+  const savedXP = localStorage.getItem('playerXP')
   const playerLevel = savedLevel ? parseInt(savedLevel) : 5
+  const playerXP = savedXP ? parseInt(savedXP) : 0
 
   draggle = new Monster(monsters.Draggle)
   emby = new Monster({...monsters.Emby, level: playerLevel})
+  emby.experience = playerXP
+  emby.experienceToNextLevel = emby.level * 10
   renderedSprites = [draggle, emby]
   queue = []
 
-  // Update level displays
+  // Update level and XP displays
   document.querySelector('#enemyLevel').textContent = 'Lv' + draggle.level
   document.querySelector('#playerLevel').textContent = 'Lv' + emby.level
   document.querySelector('#enemyName').textContent = draggle.name
   document.querySelector('#playerName').textContent = emby.name
+
+  // Update XP display
+  emby.updateXPDisplay('#playerXPBar', '#playerXP', '#playerXPNeeded', '#playerLevel')
 
   emby.attacks.forEach((attack) => {
     const button = document.createElement('button')
@@ -59,17 +66,30 @@ function initBattle() {
         queue.push(() => {
           // Grant experience to player
           const experienceGained = draggle.level * 5
-          const oldLevel = emby.level
-          emby.gainExperience(experienceGained)
+          document.querySelector('#dialogueBox').innerHTML = emby.name + ' gained ' + experienceGained + ' XP!'
+          document.querySelector('#dialogueBox').style.display = 'block'
+        })
+        queue.push(() => {
+          const experienceGained = draggle.level * 5
+          const result = emby.gainExperience(experienceGained, '#playerXPBar', '#playerXP', '#playerXPNeeded')
 
-          // Save player level
+          // Save player level and XP
           localStorage.setItem('playerLevel', emby.level.toString())
+          localStorage.setItem('playerXP', emby.experience.toString())
 
-          // If leveled up, show level up message first
-          if (emby.level > oldLevel) {
-            queue.push(() => {
-              document.querySelector('#dialogueBox').innerHTML = emby.name + ' gained ' + experienceGained + ' XP!'
-              document.querySelector('#dialogueBox').style.display = 'block'
+          // If leveled up, show level up message
+          if (result.levelsGained && result.levelsGained.length > 0) {
+            result.levelsGained.forEach((levelInfo) => {
+              queue.push(() => {
+                document.querySelector('#dialogueBox').innerHTML =
+                  emby.name + ' leveled up to Lv' + levelInfo.newLevel + '!<br>' +
+                  'Max HP increased by ' + levelInfo.healthIncrease + '!<br>' +
+                  'New Max HP: ' + levelInfo.newMaxHealth
+                document.querySelector('#dialogueBox').style.display = 'block'
+
+                // Update level display
+                document.querySelector('#playerLevel').textContent = 'Lv' + emby.level
+              })
             })
           }
         })
