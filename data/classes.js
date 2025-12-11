@@ -121,6 +121,7 @@ class Monster extends Sprite {
     this.isTrumpy = false
     this.hasTransformed = false
     this.originalImage = image
+    this.mexicoUsed = false // Flag pour le combo Mexico->Ice
   }
 
   gainExperience(amount, xpBarId, xpTextId, xpNeededId) {
@@ -180,12 +181,14 @@ class Monster extends Sprite {
     this.maxHealth += healthIncrease
     this.health = this.maxHealth
 
-    // At level 10, learn the secret attack!
+    // At level 10, replace Tackle with secret attack!
     if (this.level === 10 && !this.isEnemy && !this.isTrumpy) {
+      const tackleIndex = this.attacks.findIndex(attack => attack.name === 'Tackle')
       const hasSecretAttack = this.attacks.some(attack => attack.name === '???')
-      if (!hasSecretAttack && typeof attacks !== 'undefined' && attacks.SecretPower) {
-        this.attacks.push(attacks.SecretPower)
-        console.log(`🔥 ${this.name} learned a mysterious new attack: ???`)
+
+      if (!hasSecretAttack && tackleIndex !== -1 && typeof attacks !== 'undefined' && attacks.SecretPower) {
+        this.attacks[tackleIndex] = attacks.SecretPower
+        console.log(`🔥 ${this.name} forgot Tackle and learned a mysterious new attack: ???`)
       }
     }
 
@@ -271,6 +274,12 @@ class Monster extends Sprite {
       this.name = 'TRUMPY'
       this.isTransforming = false // Transformation complete
 
+      // REMPLACER LES ATTAQUES PAR MEXICO ET ICE
+      if (typeof attacks !== 'undefined' && attacks.Mexico && attacks.Ice) {
+        this.attacks = [attacks.Mexico, attacks.Ice]
+        console.log('🔥 TRUMPY attacks: Mexico & Ice unlocked!')
+      }
+
       // Update name display
       const nameDisplay = document.querySelector('#playerNameTrainer') || document.querySelector('#playerName')
       if (nameDisplay) {
@@ -294,7 +303,18 @@ class Monster extends Sprite {
       }
 
       console.log('⚡ TRUMPY TRANSFORMATION COMPLETE! ⚡')
-      console.log('💪 All attacks now deal MASSIVE damage!')
+      console.log('💪 Use Mexico first, then Ice for instant kill!')
+
+      // Re-render attack buttons
+      const attacksBox = document.querySelector('#attacksBoxTrainer') || document.querySelector('#attacksBox')
+      if (attacksBox) {
+        attacksBox.replaceChildren()
+        this.attacks.forEach((attack) => {
+          const button = document.createElement('button')
+          button.innerHTML = attack.name
+          attacksBox.append(button)
+        })
+      }
 
       if (onComplete) onComplete()
     }, 4000)
@@ -308,7 +328,7 @@ class Monster extends Sprite {
       const hasSecretAttack = this.attacks.some(attack => attack.name === '???')
       if (hasSecretAttack) {
         this.transformIntoTrumpy()
-        return // Don't faint, transform instead!
+        return true // Don't faint, transform instead! Return true to signal transformation
       }
     }
 
@@ -327,6 +347,7 @@ class Monster extends Sprite {
       if (audio.battle) audio.battle.stop()
       if (audio.victory) audio.victory.play()
     }
+    return false // Normal faint, no transformation
   }
 
   attack({ attack, recipient, renderedSprites, healthBarIds }) {
@@ -345,14 +366,52 @@ class Monster extends Sprite {
     let rotation = 1
     if (this.isEnemy) rotation = -2.2
 
-    // TRUMPY MODE: ONE-HIT KO!!!
+    // TRUMPY MODE: Gestion spéciale des attaques Mexico et Ice
     let actualDamage = attack.damage
-    if (this.isTrumpy) {
-      actualDamage = recipient.maxHealth // Instant kill!
+
+    // Attaque MEXICO: Active le mode combo et renomme l'adversaire
+    if (attack.name === 'Mexico') {
+      this.mexicoUsed = true
+      actualDamage = 0
+
+      // Renommer l'adversaire en Pimmigrant
+      recipient.name = 'Pimmigrant'
+
+      // Mettre à jour l'affichage du nom
+      const nameDisplay = recipient.isEnemy
+        ? (document.querySelector('#enemyNameTrainer') || document.querySelector('#enemyName'))
+        : (document.querySelector('#playerNameTrainer') || document.querySelector('#playerName'))
+
+      if (nameDisplay) {
+        nameDisplay.textContent = 'Pimmigrant'
+      }
+
+      console.log('🌮 MEXICO ACTIVATED! Ice is now deadly! 🌮')
+      console.log('🌮 ' + recipient.originalName + ' is now Pimmigrant!')
+    }
+    // Attaque ICE: Comportement selon si Mexico a été utilisé
+    else if (attack.name === 'Ice') {
+      if (this.mexicoUsed) {
+        // COMBO ACTIVÉ! Ice tue instantanément!
+        actualDamage = recipient.maxHealth
+        console.log('❄️💀 ICE COMBO! INSTANT KILL! 💀❄️')
+      } else {
+        // Pas de combo: Ice soigne l'adversaire
+        actualDamage = -50 // Négatif = soigne
+        console.log('❄️ Ice heals the enemy... Use Mexico first! ❄️')
+      }
+    }
+    // Mode TRUMPY classique pour les autres attaques (ne devrait plus arriver)
+    else if (this.isTrumpy) {
+      actualDamage = recipient.maxHealth
       console.log('💥 TRUMPY ATTACK! ONE-HIT KO! 💥')
     }
 
     recipient.health -= actualDamage
+    // Empêcher la santé de dépasser le max (si soigné)
+    if (recipient.health > recipient.maxHealth) {
+      recipient.health = recipient.maxHealth
+    }
 
     switch (attack.name) {
       case 'Fireball':
@@ -445,6 +504,108 @@ class Monster extends Sprite {
           .to(this.position, {
             x: this.position.x
           })
+        break
+
+      case 'Mexico':
+        if (typeof audio !== 'undefined' && audio && audio.initMexico) {
+          audio.initMexico.play()
+        }
+        const mexicoImage = new Image()
+        mexicoImage.src = './img/mexico.png'
+        const mexico = new Sprite({
+          position: {
+            x: this.position.x,
+            y: this.position.y
+          },
+          image: mexicoImage,
+          frames: {
+            max: 4,
+            hold: 10
+          },
+          animate: true,
+          rotation
+        })
+        renderedSprites.splice(1, 0, mexico)
+
+        gsap.to(mexico.position, {
+          x: recipient.position.x,
+          y: recipient.position.y,
+          onComplete: () => {
+            // Son quand Mexico touche
+            if (typeof audio !== 'undefined' && audio && audio.mexicoHit) {
+              audio.mexicoHit.play()
+            }
+            gsap.to(healthBar, {
+              width: (recipient.health / recipient.maxHealth * 100) + '%'
+            })
+
+            gsap.to(recipient.position, {
+              x: recipient.position.x + 10,
+              yoyo: true,
+              repeat: 5,
+              duration: 0.08
+            })
+
+            gsap.to(recipient, {
+              opacity: 0,
+              repeat: 5,
+              yoyo: true,
+              duration: 0.08
+            })
+            renderedSprites.splice(1, 1)
+          }
+        })
+        break
+
+      case 'Ice':
+        if (typeof audio !== 'undefined' && audio && audio.initIce) {
+          audio.initIce.play()
+        }
+        const iceImage = new Image()
+        iceImage.src = './img/ice.png'
+        const ice = new Sprite({
+          position: {
+            x: this.position.x,
+            y: this.position.y
+          },
+          image: iceImage,
+          frames: {
+            max: 4,
+            hold: 60  // Animation très lente pour Ice
+          },
+          animate: true,
+          rotation
+        })
+        renderedSprites.splice(1, 0, ice)
+
+        gsap.to(ice.position, {
+          x: recipient.position.x,
+          y: recipient.position.y,
+          onComplete: () => {
+            // Son quand Ice touche
+            if (typeof audio !== 'undefined' && audio && audio.iceHit) {
+              audio.iceHit.play()
+            }
+            gsap.to(healthBar, {
+              width: (recipient.health / recipient.maxHealth * 100) + '%'
+            })
+
+            gsap.to(recipient.position, {
+              x: recipient.position.x + 10,
+              yoyo: true,
+              repeat: 5,
+              duration: 0.08
+            })
+
+            gsap.to(recipient, {
+              opacity: 0,
+              repeat: 5,
+              yoyo: true,
+              duration: 0.08
+            })
+            renderedSprites.splice(1, 1)
+          }
+        })
         break
     }
   }

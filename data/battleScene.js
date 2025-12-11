@@ -32,11 +32,13 @@ function initBattle() {
   emby.experience = playerXP
   emby.experienceToNextLevel = emby.level * 10
 
-  // If level >= 10, add secret attack
+  // If level >= 10, replace Tackle with secret attack
   if (emby.level >= 10) {
+    const tackleIndex = emby.attacks.findIndex(attack => attack.name === 'Tackle')
     const hasSecretAttack = emby.attacks.some(attack => attack.name === '???')
-    if (!hasSecretAttack && typeof attacks !== 'undefined' && attacks.SecretPower) {
-      emby.attacks.push(attacks.SecretPower)
+
+    if (!hasSecretAttack && tackleIndex !== -1 && typeof attacks !== 'undefined' && attacks.SecretPower) {
+      emby.attacks[tackleIndex] = attacks.SecretPower
     }
   }
 
@@ -96,7 +98,7 @@ function initBattle() {
 
                 // Special message for level 10!
                 if (levelInfo.learnedSecretAttack) {
-                  message += '<br><br>🔥 ' + emby.name + ' learned a mysterious attack: ???'
+                  message += '<br><br>🔥 ' + emby.name + ' forgot Tackle and learned a mysterious attack: ???'
                 }
 
                 document.querySelector('#dialogueBox').innerHTML = message
@@ -155,26 +157,32 @@ function initBattle() {
 
         if (emby.health <= 0) {
           queue.push(() => {
-            emby.faint()
-          })
+            const didTransform = emby.faint()
 
-          queue.push(() => {
-            // fade back to black
-            gsap.to('#overlappingDiv', {
-              opacity: 1,
-              onComplete: () => {
-                cancelAnimationFrame(battleAnimationId)
-                animate()
-                document.querySelector('#userInterface').style.display = 'none'
-
+            // Si transformation en cours, ne pas traiter la défaite
+            if (!didTransform && !emby.isTransforming && !emby.isTrumpy) {
+              queue.push(() => {
+                // fade back to black
                 gsap.to('#overlappingDiv', {
-                  opacity: 0
-                })
+                  opacity: 1,
+                  onComplete: () => {
+                    cancelAnimationFrame(battleAnimationId)
+                    animate()
+                    document.querySelector('#userInterface').style.display = 'none'
 
-                battle.initiated = false
-                if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play()
-              }
-            })
+                    gsap.to('#overlappingDiv', {
+                      opacity: 0
+                    })
+
+                    battle.initiated = false
+                    if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play()
+                  }
+                })
+              })
+            } else {
+              // Transformation ! Continuer le combat
+              console.log('💀 Transformation detected! Battle continues!')
+            }
           })
         }
       })

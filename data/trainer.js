@@ -37,11 +37,13 @@ function initBattl() {
   embyTrainer.experience = playerXP;
   embyTrainer.experienceToNextLevel = embyTrainer.level * 10;
 
-  // If level >= 10, add secret attack
+  // If level >= 10, replace Tackle with secret attack
   if (embyTrainer.level >= 10) {
+    const tackleIndex = embyTrainer.attacks.findIndex(attack => attack.name === 'Tackle');
     const hasSecretAttack = embyTrainer.attacks.some(attack => attack.name === '???');
-    if (!hasSecretAttack && typeof attacks !== 'undefined' && attacks.SecretPower) {
-      embyTrainer.attacks.push(attacks.SecretPower);
+
+    if (!hasSecretAttack && tackleIndex !== -1 && typeof attacks !== 'undefined' && attacks.SecretPower) {
+      embyTrainer.attacks[tackleIndex] = attacks.SecretPower;
     }
   }
 
@@ -251,7 +253,7 @@ function trainerAttack(selectedTrainerAttack) {
 
             // Special message for level 10!
             if (levelInfo.learnedSecretAttack) {
-              message += '<br><br>🔥 ' + embyTrainer.name + ' learned a mysterious attack: ???';
+              message += '<br><br>🔥 ' + embyTrainer.name + ' forgot Tackle and learned a mysterious attack: ???';
             }
 
             document.querySelector('#dialogueBoxTrainer').innerHTML = message;
@@ -318,33 +320,39 @@ function trainerAttack(selectedTrainerAttack) {
 
       if (embyTrainer.health <= 0) {
         queueTrainer.push(() => {
-          embyTrainer.faint();
-        });
+          const didTransform = embyTrainer.faint();
 
-        queueTrainer.push(() => {
-          // Défaite du joueur
-          gsap.to('#overlappingDiv', {
-            opacity: 1,
-            onComplete: () => {
-              cancelAnimationFrame(battleTrainerAnimationId);
-              animate();
-              document.querySelector('#userInterfaceTrainer').style.display = 'none';
-
+          // Si transformation en cours, ne pas traiter la défaite
+          if (!didTransform && !embyTrainer.isTransforming && !embyTrainer.isTrumpy) {
+            queueTrainer.push(() => {
+              // Défaite du joueur
               gsap.to('#overlappingDiv', {
-                opacity: 0
+                opacity: 1,
+                onComplete: () => {
+                  cancelAnimationFrame(battleTrainerAnimationId);
+                  animate();
+                  document.querySelector('#userInterfaceTrainer').style.display = 'none';
+
+                  gsap.to('#overlappingDiv', {
+                    opacity: 0
+                  });
+
+                  battle.initiated = false;
+                  if (typeof audio !== 'undefined' && audio && audio.Map) {
+                    audio.Map.play();
+                  }
+
+                  // Proposer de refaire le combat
+                  if (typeof window.showDefeatDialogueGlobal === 'function') {
+                    window.showDefeatDialogueGlobal();
+                  }
+                }
               });
-
-              battle.initiated = false;
-              if (typeof audio !== 'undefined' && audio && audio.Map) {
-                audio.Map.play();
-              }
-
-              // Proposer de refaire le combat
-              if (typeof window.showDefeatDialogueGlobal === 'function') {
-                window.showDefeatDialogueGlobal();
-              }
-            }
-          });
+            });
+          } else {
+            // Transformation ! Continuer le combat
+            console.log('💀 Transformation detected! Battle continues!');
+          }
         });
       }
     });

@@ -47,6 +47,7 @@ const monsters = {
     animate: true,
     isEnemy: true,
     name: 'Dragkatchu',
-    attacks: [attacks.Tackle, attacks.Fireball]
+    attacks: [attacks.Tackle, attacks.Fireball],
+    level: 100  // BOSS LEVEL! Impossible à tuer sans TRUMPY
   }
 }
