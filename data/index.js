@@ -319,6 +319,72 @@ newCharacter.dialogueAfterDefeat = [
 // Rendre newCharacter globalement accessible
 window.newCharacter = newCharacter;
 
+// ==================== KK CHARACTER (Satirical anti-racism) ====================
+const kkImg = new Image();
+kkImg.src = './img/kk.png';
+
+const kkCharacter = new Character({
+  position: {
+    x: 1200,  // Déplacé vers la droite
+    y: 1000   // Déplacé vers le bas
+  },
+  image: kkImg,
+  frames: {
+    max: 4,
+    hold: 60
+  },
+  scale: 3,
+  animate: true,  // ACTIVER L'ANIMATION !
+  dialogue: [
+    "Oh look, another 'tourist' in MY America...",
+    "You know what's REALLY destroying this country?",
+    "It's people who think they're 'superior'",
+    "based on something as dumb as skin color!",
+    "Hate doesn't make you powerful.",
+    "It just makes you... pathetic.",
+    "*attacks you with ignorance*"
+  ],
+  onInteractionComplete: () => {
+    // Après le dialogue, "tuer" le joueur et respawn
+    setTimeout(() => {
+      respawnPlayer();
+    }, 1000);
+  }
+});
+
+// Rendre kkCharacter globalement accessible
+window.kkCharacter = kkCharacter;
+
+// Fonction pour respawner le joueur au point de départ
+function respawnPlayer() {
+  console.log('💀 KK killed you with ignorance! Respawning...');
+
+  const overlappingDiv = document.querySelector('#overlappingDiv');
+  const dialogueBox = document.querySelector('#characterDialogueBox');
+
+  // Fermer la boîte de dialogue
+  if (dialogueBox) {
+    dialogueBox.style.display = 'none';
+  }
+
+  // Réinitialiser l'état d'interaction du joueur
+  if (player) {
+    player.isInteracting = false;
+    player.interactionAsset = null;
+  }
+
+  // Fade to black
+  gsap.to(overlappingDiv, {
+    opacity: 1,
+    duration: 1,
+    onComplete: () => {
+      // Recharger la page pour un vrai respawn
+      // C'est la méthode la plus simple et la plus fiable
+      location.reload();
+    }
+  });
+}
+
 // Ajoutez une classe spécifique à la boîte de dialogue de ce personnage
 const dialogueBox = document.querySelector('#characterDialogueBox');
 if (dialogueBox) {
@@ -560,6 +626,7 @@ function startTrainerDialog(character, callback) {
 }
 
 characters.push(newCharacter);
+characters.push(kkCharacter); // Ajouter KK character
 
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
@@ -825,6 +892,26 @@ function animate() {
       characterOffset: { x: 0, y: currentSpeed }
     })
 
+    // Check collision with characters to block movement
+    for (let i = 0; i < characters.length; i++) {
+      const character = characters[i]
+      if (
+        rectangularCollision({
+          rectangle1: player,
+          rectangle2: {
+            ...character,
+            position: {
+              x: character.position.x,
+              y: character.position.y + currentSpeed
+            }
+          }
+        })
+      ) {
+        moving = false
+        break
+      }
+    }
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
       if (
@@ -857,6 +944,26 @@ function animate() {
       player,
       characterOffset: { x: currentSpeed, y: 0 }
     })
+
+    // Check collision with characters to block movement
+    for (let i = 0; i < characters.length; i++) {
+      const character = characters[i]
+      if (
+        rectangularCollision({
+          rectangle1: player,
+          rectangle2: {
+            ...character,
+            position: {
+              x: character.position.x + currentSpeed,
+              y: character.position.y
+            }
+          }
+        })
+      ) {
+        moving = false
+        break
+      }
+    }
 
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
@@ -891,6 +998,26 @@ function animate() {
       characterOffset: { x: 0, y: -currentSpeed }
     })
 
+    // Check collision with characters to block movement
+    for (let i = 0; i < characters.length; i++) {
+      const character = characters[i]
+      if (
+        rectangularCollision({
+          rectangle1: player,
+          rectangle2: {
+            ...character,
+            position: {
+              x: character.position.x,
+              y: character.position.y - currentSpeed
+            }
+          }
+        })
+      ) {
+        moving = false
+        break
+      }
+    }
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
       if (
@@ -923,6 +1050,26 @@ function animate() {
       player,
       characterOffset: { x: -currentSpeed, y: 0 }
     })
+
+    // Check collision with characters to block movement
+    for (let i = 0; i < characters.length; i++) {
+      const character = characters[i]
+      if (
+        rectangularCollision({
+          rectangle1: player,
+          rectangle2: {
+            ...character,
+            position: {
+              x: character.position.x - currentSpeed,
+              y: character.position.y
+            }
+          }
+        })
+      ) {
+        moving = false
+        break
+      }
+    }
 
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]

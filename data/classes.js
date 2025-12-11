@@ -226,6 +226,15 @@ class Monster extends Sprite {
     this.isTransforming = true // Flag pour empêcher la mort
     console.log('🔥💀 TRANSFORMATION TRIGGERED! TRUMPY MODE ACTIVATED! 💀🔥')
 
+    // CHANGE MUSIC TO PUMPTRUMP!
+    if (typeof audio !== 'undefined' && audio) {
+      if (audio.battle) audio.battle.stop()
+      if (audio.pumpTrump) {
+        audio.pumpTrump.play()
+        console.log('🎵 PUMPTRUMP MUSIC STARTED! 🎵')
+      }
+    }
+
     // RESTORE HEALTH IMMEDIATELY to prevent death
     this.health = this.maxHealth
 

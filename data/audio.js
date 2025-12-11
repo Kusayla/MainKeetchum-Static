@@ -105,17 +105,18 @@ function createDummyAudio() {
 
 // Utilisation de la fonction pour créer chaque son
 const audio = audioPathData ? {
-  Map: createLoopingMusic('map', 0.2),          // Musique de map avec loop (volume augmenté pour test)
-  initBattle: createSound('initBattle', 0.3),   // Petit fichier
-  battle: createLoopingMusic('battle', 0.2),    // Musique de combat avec loop (volume augmenté)
-  tackleHit: createSound('tackleHit', 0.3),     // Petit fichier
-  fireballHit: createSound('fireballHit', 0.3), // Petit fichier
-  initFireball: createSound('initFireball', 0.3), // Petit fichier
-  victory: createSound('victory', 0.3),         // Petit fichier
-  initMexico: createSound('initMexico', 0.3),   // Petit fichier
-  mexicoHit: createSound('mexicoHit', 0.3),     // Petit fichier
-  initIce: createSound('initIce', 0.3),         // Petit fichier
-  iceHit: createSound('iceHit', 0.3)            // Petit fichier
+  Map: createLoopingMusic('map', 0.4),          // Musique de map
+  initBattle: createSound('initBattle', 0.6),   // Son de début de combat
+  battle: createLoopingMusic('battle', 0.4),    // Musique de combat
+  pumpTrump: createLoopingMusic('pumpTrump', 0.5), // Musique TRUMPY
+  tackleHit: createSound('tackleHit', 0.7),     // Son d'impact Tackle (augmenté)
+  fireballHit: createSound('fireballHit', 0.7), // Son d'impact Fireball (augmenté)
+  initFireball: createSound('initFireball', 0.7), // Son de lancement Fireball (augmenté)
+  victory: createSound('victory', 0.6),         // Son de victoire (augmenté)
+  initMexico: createSound('initMexico', 0.5),   // Son Mexico (nouveaux sons, bon niveau)
+  mexicoHit: createSound('mexicoHit', 0.7),     // Impact Mexico (augmenté)
+  initIce: createSound('initIce', 0.5),         // Son Ice (nouveaux sons, bon niveau)
+  iceHit: createSound('iceHit', 0.7)            // Impact Ice (augmenté)
 } : null;
 
 if (audio) {

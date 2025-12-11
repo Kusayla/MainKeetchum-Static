@@ -114,7 +114,11 @@ function playerTrainerAttack(selectedTrainerAttack) {
           });
 
           battle.initiated = false;
-          if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play();
+          if (typeof audio !== 'undefined' && audio) {
+            if (audio.pumpTrump) audio.pumpTrump.stop();
+            if (audio.battle) audio.battle.stop();
+            if (audio.Map) audio.Map.play();
+          }
         }
       });
     });
@@ -294,7 +298,11 @@ function trainerAttack(selectedTrainerAttack) {
           });
 
           battle.initiated = false;
-          if (typeof audio !== 'undefined' && audio && audio.Map) audio.Map.play();
+          if (typeof audio !== 'undefined' && audio) {
+            if (audio.pumpTrump) audio.pumpTrump.stop();
+            if (audio.battle) audio.battle.stop();
+            if (audio.Map) audio.Map.play();
+          }
 
           // Afficher le dialogue de victoire avec le newCharacter
           if (typeof window.showVictoryDialogueGlobal === 'function') {
