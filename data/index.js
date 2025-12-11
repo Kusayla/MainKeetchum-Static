@@ -313,7 +313,7 @@ newCharacter.dialogueAfterVictory = [
 
 newCharacter.dialogueAfterDefeat = [
   "You lost against Dragkatchu!",
-  "Want to try again? (Press SPACE to rematch)"
+  "Want to try again?"
 ];
 
 // Rendre newCharacter globalement accessible
@@ -544,6 +544,42 @@ window.showVictoryDialogueGlobal = function() {
       }
     }
   }, 500);
+}
+
+// Variables pour le système de choix
+let currentChoiceIndex = 0;
+let isShowingChoices = false;
+let choiceCallback = null;
+
+function showDialogueChoices(callback) {
+  isShowingChoices = true;
+  currentChoiceIndex = 0;
+  choiceCallback = callback;
+
+  const choicesDiv = document.querySelector('#dialogueChoices');
+  const choices = choicesDiv.querySelectorAll('.choice-option');
+
+  // Réinitialiser les flèches
+  choices.forEach((choice, index) => {
+    const arrow = choice.querySelector('.choice-arrow');
+    arrow.style.visibility = index === 0 ? 'visible' : 'hidden';
+  });
+
+  choicesDiv.style.display = 'block';
+}
+
+function hideDialogueChoices() {
+  isShowingChoices = false;
+  choiceCallback = null;
+  document.querySelector('#dialogueChoices').style.display = 'none';
+}
+
+function updateChoiceSelection() {
+  const choices = document.querySelectorAll('.choice-option');
+  choices.forEach((choice, index) => {
+    const arrow = choice.querySelector('.choice-arrow');
+    arrow.style.visibility = index === currentChoiceIndex ? 'visible' : 'hidden';
+  });
 }
 
 // Fonction globale pour afficher le dialogue de défaite (appelée depuis trainer.js)
@@ -1114,6 +1150,30 @@ if (document.readyState === 'loading') {
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
+  // Gérer la navigation dans les choix
+  if (isShowingChoices) {
+    switch (e.key) {
+      case 'w':
+      case 'ArrowUp':
+        currentChoiceIndex = Math.max(0, currentChoiceIndex - 1);
+        updateChoiceSelection();
+        return;
+      case 's':
+      case 'ArrowDown':
+        currentChoiceIndex = Math.min(1, currentChoiceIndex + 1);
+        updateChoiceSelection();
+        return;
+      case ' ':
+        const selectedChoice = currentChoiceIndex === 0 ? 'yes' : 'no';
+        hideDialogueChoices();
+        if (choiceCallback) {
+          choiceCallback(selectedChoice);
+        }
+        return;
+    }
+    return;
+  }
+
   if (player.isInteracting) {
     switch (e.key) {
       case ' ':
@@ -1128,14 +1188,24 @@ window.addEventListener('keydown', (e) => {
         // Vérifier si on est en attente d'un rematch après une défaite
         if (typeof window.waitingForRematch !== 'undefined' && window.waitingForRematch) {
           window.waitingForRematch = false;
-          player.isInteracting = false;
-          player.interactionAsset.dialogueIndex = 0;
-          document.querySelector('#characterDialogueBox').style.display = 'none';
 
-          // Relancer le combat
-          setTimeout(() => {
-            launchBattle();
-          }, 500);
+          // Afficher les choix Oui/Non
+          showDialogueChoices((choice) => {
+            if (choice === 'yes') {
+              // Oui → Relancer le combat
+              player.isInteracting = false;
+              player.interactionAsset.dialogueIndex = 0;
+              document.querySelector('#characterDialogueBox').style.display = 'none';
+              setTimeout(() => {
+                launchBattle();
+              }, 500);
+            } else {
+              // Non → Quitter le dialogue
+              player.isInteracting = false;
+              player.interactionAsset.dialogueIndex = 0;
+              document.querySelector('#characterDialogueBox').style.display = 'none';
+            }
+          });
           return;
         }
 

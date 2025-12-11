@@ -425,6 +425,16 @@
         <div class="screen-area">
             <canvas class="display" id="mainCanvas"></canvas>
             <div id="characterDialogueBox" class="dialogue-box"></div>
+            <div id="dialogueChoices" class="dialogue-choices" style="display: none;">
+                <div class="choice-option" data-choice="yes">
+                    <span class="choice-arrow">→</span>
+                    <span class="choice-text">Oui</span>
+                </div>
+                <div class="choice-option" data-choice="no">
+                    <span class="choice-arrow" style="visibility: hidden;">→</span>
+                    <span class="choice-text">Non</span>
+                </div>
+            </div>
             <div id="userInterface" class="ui-container" style="display: none;">
                 <div class="status-box enemy">
                     <h1 class="status-title"><span id="enemyName">Draggle</span> <span id="enemyLevel" style="font-size: 12px;">Lv5</span></h1>

@@ -12110,6 +12110,35 @@ button:hover {
   padding: 12px;
 }
 
+.dialogue-choices {
+  background-color: white;
+  position: absolute;
+  bottom: 110px;
+  right: 20px;
+  border: 4px black solid;
+  padding: 10px;
+  display: none;
+  min-width: 100px;
+}
+
+.choice-option {
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 14px;
+}
+
+.choice-arrow {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.choice-text {
+  user-select: none;
+}
+
 .ui-container {
   display: none;
 }
@@ -12531,6 +12560,28 @@ button:hover {
     display: none;
     padding: 12px;
   }
+
+  .dialogue-choices {
+    background-color: white;
+    position: absolute;
+    bottom: 37%;
+    right: 10%;
+    border: 0.3vh black solid;
+    padding: 8px;
+    display: none;
+    min-width: 80px;
+  }
+
+  .choice-option {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .choice-arrow {
+    margin-right: 8px;
+    font-size: 12px;
+  }
+
   /* UI container */
   .ui-container {
     display: none;
