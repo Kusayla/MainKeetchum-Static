@@ -31,6 +31,15 @@ function initBattle() {
   emby = new Monster({...monsters.Emby, level: playerLevel})
   emby.experience = playerXP
   emby.experienceToNextLevel = emby.level * 10
+
+  // If level >= 10, add secret attack
+  if (emby.level >= 10) {
+    const hasSecretAttack = emby.attacks.some(attack => attack.name === '???')
+    if (!hasSecretAttack && typeof attacks !== 'undefined' && attacks.SecretPower) {
+      emby.attacks.push(attacks.SecretPower)
+    }
+  }
+
   renderedSprites = [draggle, emby]
   queue = []
 
@@ -81,14 +90,30 @@ function initBattle() {
           if (result.levelsGained && result.levelsGained.length > 0) {
             result.levelsGained.forEach((levelInfo) => {
               queue.push(() => {
-                document.querySelector('#dialogueBox').innerHTML =
-                  emby.name + ' leveled up to Lv' + levelInfo.newLevel + '!<br>' +
+                let message = emby.name + ' leveled up to Lv' + levelInfo.newLevel + '!<br>' +
                   'Max HP increased by ' + levelInfo.healthIncrease + '!<br>' +
                   'New Max HP: ' + levelInfo.newMaxHealth
+
+                // Special message for level 10!
+                if (levelInfo.learnedSecretAttack) {
+                  message += '<br><br>🔥 ' + emby.name + ' learned a mysterious attack: ???'
+                }
+
+                document.querySelector('#dialogueBox').innerHTML = message
                 document.querySelector('#dialogueBox').style.display = 'block'
 
                 // Update level display
                 document.querySelector('#playerLevel').textContent = 'Lv' + emby.level
+
+                // Re-render attack buttons if secret attack was learned
+                if (levelInfo.learnedSecretAttack) {
+                  document.querySelector('#attacksBox').replaceChildren()
+                  emby.attacks.forEach((attack) => {
+                    const button = document.createElement('button')
+                    button.innerHTML = attack.name
+                    document.querySelector('#attacksBox').append(button)
+                  })
+                }
               })
             })
           }

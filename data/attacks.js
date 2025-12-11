@@ -10,5 +10,12 @@ const attacks = {
     damage: 25,
     type: 'Fire',
     color: 'red'
+  },
+  SecretPower: {
+    name: '???',
+    damage: 0,
+    type: '???',
+    color: '#ff0000',
+    isSecret: true
   }
 }

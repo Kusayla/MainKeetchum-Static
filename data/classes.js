@@ -115,7 +115,12 @@ class Monster extends Sprite {
     this.health = this.maxHealth
     this.isEnemy = isEnemy
     this.name = name
+    this.originalName = name
     this.attacks = attacks
+    this.originalAttacks = [...attacks]
+    this.isTrumpy = false
+    this.hasTransformed = false
+    this.originalImage = image
   }
 
   gainExperience(amount, xpBarId, xpTextId, xpNeededId) {
@@ -175,12 +180,22 @@ class Monster extends Sprite {
     this.maxHealth += healthIncrease
     this.health = this.maxHealth
 
+    // At level 10, learn the secret attack!
+    if (this.level === 10 && !this.isEnemy && !this.isTrumpy) {
+      const hasSecretAttack = this.attacks.some(attack => attack.name === '???')
+      if (!hasSecretAttack && typeof attacks !== 'undefined' && attacks.SecretPower) {
+        this.attacks.push(attacks.SecretPower)
+        console.log(`🔥 ${this.name} learned a mysterious new attack: ???`)
+      }
+    }
+
     console.log(`${this.name} leveled up to level ${this.level}! Max HP: ${oldMaxHealth} -> ${this.maxHealth}`)
 
     return {
       newLevel: this.level,
       healthIncrease: healthIncrease,
-      newMaxHealth: this.maxHealth
+      newMaxHealth: this.maxHealth,
+      learnedSecretAttack: this.level === 10 && !this.isEnemy
     }
   }
 
@@ -199,11 +214,108 @@ class Monster extends Sprite {
     if (levelDisplay) levelDisplay.textContent = 'Lv' + this.level
   }
 
-  faint() {
-    // Essayer d'abord le dialogue trainer, puis le dialogue normal
-    const dialogueBox = document.querySelector('#dialogueBoxTrainer') || document.querySelector('#dialogueBox');
+  transformIntoTrumpy(onComplete) {
+    if (this.hasTransformed || this.isTrumpy) {
+      return false
+    }
+
+    this.hasTransformed = true
+    this.isTransforming = true // Flag pour empêcher la mort
+    console.log('🔥💀 TRANSFORMATION TRIGGERED! TRUMPY MODE ACTIVATED! 💀🔥')
+
+    // RESTORE HEALTH IMMEDIATELY to prevent death
+    this.health = this.maxHealth
+
+    // Update health bar immediately
+    const healthBar = this.isEnemy ? '#enemyHealthBar' : '#playerHealthBar'
+    const healthBarTrainer = this.isEnemy ? '#enemyHealthBarTrainer' : '#playerHealthBarTrainer'
+    const bar = document.querySelector(healthBarTrainer) || document.querySelector(healthBar)
+    if (bar) {
+      gsap.to(bar, {
+        width: '100%',
+        duration: 0.5
+      })
+    }
+
+    // Red screen flash animation
+    const overlappingDiv = document.querySelector('#overlappingDiv')
+    if (overlappingDiv) {
+      overlappingDiv.style.background = 'red'
+      gsap.to(overlappingDiv, {
+        opacity: 1,
+        duration: 0.3,
+        repeat: 5,
+        yoyo: true
+      })
+    }
+
+    // Show transformation dialogue
+    const dialogueBox = document.querySelector('#dialogueBoxTrainer') || document.querySelector('#dialogueBox')
     if (dialogueBox) {
-      dialogueBox.innerHTML = this.name + ' fainted!';
+      dialogueBox.innerHTML = '...'
+      dialogueBox.style.display = 'block'
+      setTimeout(() => {
+        dialogueBox.innerHTML = 'What is this power...?'
+        setTimeout(() => {
+          dialogueBox.innerHTML = `${this.originalName} is transforming...!`
+          setTimeout(() => {
+            dialogueBox.innerHTML = 'TRUMPY MODE ACTIVATED!!!'
+          }, 1000)
+        }, 1000)
+      }, 500)
+    }
+
+    // Transform after animation
+    setTimeout(() => {
+      this.isTrumpy = true
+      this.name = 'TRUMPY'
+      this.isTransforming = false // Transformation complete
+
+      // Update name display
+      const nameDisplay = document.querySelector('#playerNameTrainer') || document.querySelector('#playerName')
+      if (nameDisplay) {
+        nameDisplay.textContent = 'TRUMPY'
+      }
+
+      // Load Trumpy sprite
+      const trumpyImg = new Image()
+      trumpyImg.src = './img/trumpy.png'
+      trumpyImg.onload = () => {
+        this.image = trumpyImg
+      }
+
+      // Reset red screen
+      if (overlappingDiv) {
+        overlappingDiv.style.background = 'black'
+        gsap.to(overlappingDiv, {
+          opacity: 0,
+          duration: 0.5
+        })
+      }
+
+      console.log('⚡ TRUMPY TRANSFORMATION COMPLETE! ⚡')
+      console.log('💪 All attacks now deal MASSIVE damage!')
+
+      if (onComplete) onComplete()
+    }, 4000)
+
+    return true // Transformation initiated
+  }
+
+  faint() {
+    // If player Pokemon and has secret attack but hasn't transformed yet, TRANSFORM!
+    if (!this.isEnemy && !this.hasTransformed && this.level >= 10) {
+      const hasSecretAttack = this.attacks.some(attack => attack.name === '???')
+      if (hasSecretAttack) {
+        this.transformIntoTrumpy()
+        return // Don't faint, transform instead!
+      }
+    }
+
+    // Normal faint
+    const dialogueBox = document.querySelector('#dialogueBoxTrainer') || document.querySelector('#dialogueBox')
+    if (dialogueBox) {
+      dialogueBox.innerHTML = this.name + ' fainted!'
     }
     gsap.to(this.position, {
       y: this.position.y + 20
@@ -233,7 +345,14 @@ class Monster extends Sprite {
     let rotation = 1
     if (this.isEnemy) rotation = -2.2
 
-    recipient.health -= attack.damage
+    // TRUMPY MODE: ONE-HIT KO!!!
+    let actualDamage = attack.damage
+    if (this.isTrumpy) {
+      actualDamage = recipient.maxHealth // Instant kill!
+      console.log('💥 TRUMPY ATTACK! ONE-HIT KO! 💥')
+    }
+
+    recipient.health -= actualDamage
 
     switch (attack.name) {
       case 'Fireball':

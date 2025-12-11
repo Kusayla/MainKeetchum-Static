@@ -36,6 +36,15 @@ function initBattl() {
   embyTrainer = new Monster({...monsters.Emby, level: playerLevel});
   embyTrainer.experience = playerXP;
   embyTrainer.experienceToNextLevel = embyTrainer.level * 10;
+
+  // If level >= 10, add secret attack
+  if (embyTrainer.level >= 10) {
+    const hasSecretAttack = embyTrainer.attacks.some(attack => attack.name === '???');
+    if (!hasSecretAttack && typeof attacks !== 'undefined' && attacks.SecretPower) {
+      embyTrainer.attacks.push(attacks.SecretPower);
+    }
+  }
+
   renderedSpritesTrainer = [dragkatchu, embyTrainer];
   queueTrainer = [];
 
@@ -236,14 +245,33 @@ function trainerAttack(selectedTrainerAttack) {
       if (result.levelsGained && result.levelsGained.length > 0) {
         result.levelsGained.forEach((levelInfo) => {
           queueTrainer.push(() => {
-            document.querySelector('#dialogueBoxTrainer').innerHTML =
-              embyTrainer.name + ' leveled up to Lv' + levelInfo.newLevel + '!<br>' +
+            let message = embyTrainer.name + ' leveled up to Lv' + levelInfo.newLevel + '!<br>' +
               'Max HP increased by ' + levelInfo.healthIncrease + '!<br>' +
               'New Max HP: ' + levelInfo.newMaxHealth;
+
+            // Special message for level 10!
+            if (levelInfo.learnedSecretAttack) {
+              message += '<br><br>🔥 ' + embyTrainer.name + ' learned a mysterious attack: ???';
+            }
+
+            document.querySelector('#dialogueBoxTrainer').innerHTML = message;
             document.querySelector('#dialogueBoxTrainer').style.display = 'block';
 
             // Update level display
             document.querySelector('#playerLevelTrainer').textContent = 'Lv' + embyTrainer.level;
+
+            // Re-render attack buttons if secret attack was learned
+            if (levelInfo.learnedSecretAttack) {
+              document.querySelector('#attacksBoxTrainer').replaceChildren();
+              embyTrainer.attacks.forEach((attack, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = attack.name;
+                if (index === selectedTrainerAttackIndex) {
+                  button.classList.add('selected');
+                }
+                document.querySelector('#attacksBoxTrainer').append(button);
+              });
+            }
           });
         });
       }

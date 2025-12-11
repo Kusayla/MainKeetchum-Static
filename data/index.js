@@ -119,8 +119,89 @@ window.resetGameProgress = function() {
   console.log('Type: location.reload() to refresh');
 };
 
+// Fonction pour forcer le level (DEV ONLY)
+window.setPlayerLevel = function(level) {
+  if (!level || level < 1) {
+    console.log('❌ Usage: setPlayerLevel(10)');
+    return;
+  }
+
+  localStorage.setItem('playerLevel', level.toString());
+  localStorage.setItem('playerXP', '0');
+
+  console.log(`✅ Player level set to ${level}!`);
+  console.log('🔄 Refresh the page or start a new battle to see the changes.');
+  console.log('💡 TIP: Type location.reload() to refresh now!');
+};
+
+// Fonction pour level up instantané pendant un combat
+window.levelUpNow = function(targetLevel = 10) {
+  // Trouver le Pokemon du joueur
+  let playerPokemon = null;
+
+  if (typeof emby !== 'undefined' && emby) {
+    playerPokemon = emby;
+  } else if (typeof embyTrainer !== 'undefined' && embyTrainer) {
+    playerPokemon = embyTrainer;
+  }
+
+  if (!playerPokemon) {
+    console.log('❌ No active battle found! Start a battle first.');
+    return;
+  }
+
+  const oldLevel = playerPokemon.level;
+
+  // Level up to target
+  while (playerPokemon.level < targetLevel) {
+    playerPokemon.levelUp();
+  }
+
+  // Save
+  localStorage.setItem('playerLevel', playerPokemon.level.toString());
+  localStorage.setItem('playerXP', playerPokemon.experience.toString());
+
+  // Update UI
+  const levelDisplay = document.querySelector('#playerLevel') || document.querySelector('#playerLevelTrainer');
+  if (levelDisplay) {
+    levelDisplay.textContent = 'Lv' + playerPokemon.level;
+  }
+
+  // Update XP bar
+  const xpBar = document.querySelector('#playerXPBar') || document.querySelector('#playerXPBarTrainer');
+  const xpText = document.querySelector('#playerXP') || document.querySelector('#playerXPTrainer');
+  const xpNeeded = document.querySelector('#playerXPNeeded') || document.querySelector('#playerXPNeededTrainer');
+
+  if (xpBar) xpBar.style.width = '0%';
+  if (xpText) xpText.textContent = '0';
+  if (xpNeeded) xpNeeded.textContent = playerPokemon.experienceToNextLevel;
+
+  // Re-render attack buttons if secret attack was learned
+  if (playerPokemon.level >= 10) {
+    const attacksBox = document.querySelector('#attacksBox') || document.querySelector('#attacksBoxTrainer');
+    if (attacksBox) {
+      attacksBox.replaceChildren();
+      playerPokemon.attacks.forEach((attack) => {
+        const button = document.createElement('button');
+        button.innerHTML = attack.name;
+        attacksBox.append(button);
+      });
+    }
+  }
+
+  console.log(`🎉 Leveled up from ${oldLevel} to ${playerPokemon.level}!`);
+  if (playerPokemon.level >= 10) {
+    console.log('🔥 Secret attack "???" is now available!');
+    console.log('💀 Next time you faint, you\'ll transform into TRUMPY!');
+  }
+};
+
 // Log helper message
-console.log('💡 DEV TIP: Type resetGameProgress() in console to reset all progress for testing!');
+console.log('💡 DEV TIPS:');
+console.log('  - resetGameProgress() : Reset all game progress');
+console.log('  - setPlayerLevel(10)  : Set level before starting a battle');
+console.log('  - levelUpNow(10)      : Level up to 10 during an active battle');
+console.log('  - location.reload()   : Refresh the page');
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i += 70) {
