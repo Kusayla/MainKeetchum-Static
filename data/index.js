@@ -11,6 +11,14 @@ const c = canvas.getContext('2d')
 canvas.width = 1024
 canvas.height = 576
 
+// Afficher les informations sur les contrôles
+console.log('🎮 Game Controls:');
+console.log('  Movement: WASD (QWERTY) / ZQSD (AZERTY) / Arrow Keys ← ↑ → ↓');
+console.log('  Sprint: B or Shift');
+console.log('  Interact: Space');
+console.log('  Bag: I or 🎒 button');
+console.log('  Multi-keyboard support enabled! ✨');
+
 const normalSpeed = 3;
 const sprintSpeed = 6;
 
@@ -1154,6 +1162,7 @@ window.addEventListener('keydown', (e) => {
   if (isShowingChoices) {
     switch (e.key) {
       case 'w':
+      case 'z': // AZERTY support
       case 'ArrowUp':
         currentChoiceIndex = Math.max(0, currentChoiceIndex - 1);
         updateChoiceSelection();
@@ -1257,18 +1266,24 @@ window.addEventListener('keydown', (e) => {
       player.isInteracting = true;
       break;
     case 'w':
+    case 'z': // AZERTY support
+    case 'ArrowUp':
       keys.w.pressed = true;
       lastKey = 'w';
       break;
     case 'a':
+    case 'q': // AZERTY support
+    case 'ArrowLeft':
       keys.a.pressed = true;
       lastKey = 'a';
       break;
     case 's':
+    case 'ArrowDown':
       keys.s.pressed = true;
       lastKey = 's';
       break;
     case 'd':
+    case 'ArrowRight':
       keys.d.pressed = true;
       lastKey = 'd';
       break;
@@ -1283,15 +1298,21 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
   switch (e.key) {
     case 'w':
+    case 'z': // AZERTY support
+    case 'ArrowUp':
       keys.w.pressed = false;
       break;
     case 'a':
+    case 'q': // AZERTY support
+    case 'ArrowLeft':
       keys.a.pressed = false;
       break;
     case 's':
+    case 'ArrowDown':
       keys.s.pressed = false;
       break;
     case 'd':
+    case 'ArrowRight':
       keys.d.pressed = false;
       break;
     case 'b':

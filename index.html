@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,13 +58,23 @@
         }
 
         @keyframes scrollLeftRight {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(100%); }
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(100%);
+            }
         }
 
         @keyframes scrollRightLeft {
-            from { transform: translateX(100%); }
-            to { transform: translateX(-100%); }
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(-100%);
+            }
         }
 
         /* Bag/Inventory Interface */
@@ -121,6 +132,13 @@
             background: #444;
             border-color: #fff;
             transform: scale(1.05);
+        }
+
+        .bag-item.selected {
+            background: #4CAF50;
+            border-color: #8BC34A;
+            transform: scale(1.08);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
         }
 
         .bag-item-icon {
@@ -272,7 +290,8 @@
             text-align: center;
             transition: all 0.2s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
         }
 
         .bag-button:hover {
@@ -327,8 +346,15 @@
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         @media (max-width: 768px) {
@@ -417,596 +443,824 @@
         }
     </style>
 </head>
+
 <body>
-<div class="background-container"></div>
-<div class="game-container">
-    <div id="overlappingDiv" class="overlay"></div>
-    <div class="gameboy" id="GameBoy">
-        <div class="screen-area">
-            <canvas class="display" id="mainCanvas"></canvas>
-            <div id="characterDialogueBox" class="dialogue-box"></div>
-            <div id="dialogueChoices" class="dialogue-choices" style="display: none;">
-                <div class="choice-option" data-choice="yes">
-                    <span class="choice-arrow">→</span>
-                    <span class="choice-text">Oui</span>
-                </div>
-                <div class="choice-option" data-choice="no">
-                    <span class="choice-arrow" style="visibility: hidden;">→</span>
-                    <span class="choice-text">Non</span>
-                </div>
+    <div class="background-container"></div>
+
+    <!-- Boutons flottants (version web desktop) -->
+    <button id="openCodeModalBtn" class="floating-code-btn" title="Enter code">
+        <span>🔑</span>
+    </button>
+
+    <button id="floatingBagBtn" class="floating-bag-btn" title="Open BAG" style="display: none;">
+        <span>🎒</span>
+    </button>
+
+    <!-- Modal pour entrer le code -->
+    <div id="codeModal" class="code-modal" style="display: none;">
+        <div class="code-modal-content">
+            <h2 class="code-modal-title">Enter Access Code</h2>
+            <p class="code-modal-text">Beat Dragkatchu and find the code!</p>
+            <input type="text" id="codeModalInput" class="code-modal-input" placeholder="Enter code here..."
+                autocomplete="off">
+            <div class="code-modal-buttons">
+                <button id="submitCodeBtn" class="code-modal-btn submit-btn">Submit</button>
+                <button id="closeCodeModalBtn" class="code-modal-btn cancel-btn">Cancel</button>
             </div>
-            <div id="userInterface" class="ui-container" style="display: none;">
-                <div class="status-box enemy">
-                    <h1 class="status-title"><span id="enemyName">Draggle</span> <span id="enemyLevel" style="font-size: 12px;">Lv5</span></h1>
-                    <div class="health-bar-container">
-                        <div class="health-bar-background"></div>
-                        <div id="enemyHealthBar" class="health-bar"></div>
+            <div id="codeError" class="code-error" style="display: none;">Incorrect code!</div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div id="overlappingDiv" class="overlay"></div>
+        <div class="gameboy" id="GameBoy">
+            <div class="screen-area">
+                <canvas class="display" id="mainCanvas"></canvas>
+                <div id="characterDialogueBox" class="dialogue-box"></div>
+                <div id="dialogueChoices" class="dialogue-choices" style="display: none;">
+                    <div class="choice-option" data-choice="yes">
+                        <span class="choice-arrow">→</span>
+                        <span class="choice-text">Oui</span>
+                    </div>
+                    <div class="choice-option" data-choice="no">
+                        <span class="choice-arrow" style="visibility: hidden;">→</span>
+                        <span class="choice-text">Non</span>
                     </div>
                 </div>
-                <div class="status-box player">
-                    <h1 class="status-title"><span id="playerName">Emby</span> <span id="playerLevel" style="font-size: 12px;">Lv5</span></h1>
-                    <div class="health-bar-container">
-                        <div class="health-bar-background"></div>
-                        <div id="playerHealthBar" class="health-bar"></div>
-                    </div>
-                    <div class="xp-bar-container" style="margin-top: 5px;">
-                        <div style="font-size: 10px; margin-bottom: 2px;">
-                            <span>XP: </span><span id="playerXP">0</span>/<span id="playerXPNeeded">50</span>
-                        </div>
-                        <div class="health-bar-background">
-                            <div id="playerXPBar" class="xp-bar" style="width: 0%; background-color: #4CAF50;"></div>
-                        </div>
-                    </div>
+                <!-- Indicateur des contrôles -->
+                <div class="controls-hint">
+                    <span>WASD / ZQSD / ← ↑ → ↓</span>
                 </div>
-                <div class="battle-options">
-                    <div id="dialogueBox" class="dialogue"></div>
-                    <div id="attacksBox" class="attacks-box"></div>
-                    <div class="attack-type-container">
-                        <h1 id="attackType" class="attack-type-title">Attack Type</h1>
-                    </div>
-                </div>
-            </div>
-            <div id="userInterfaceTrainer" class="ui-container" style="display: none;">
-                <div class="status-box enemy">
-                    <h1 class="status-title"><span id="enemyNameTrainer">Dragkatchu</span> <span id="enemyLevelTrainer" style="font-size: 12px;">Lv5</span></h1>
-                    <div class="health-bar-container">
-                        <div class="health-bar-background"></div>
-                        <div id="enemyHealthBarTrainer" class="health-bar"></div>
-                    </div>
-                </div>
-                <div class="status-box player">
-                    <h1 class="status-title"><span id="playerNameTrainer">Emby</span> <span id="playerLevelTrainer" style="font-size: 12px;">Lv5</span></h1>
-                    <div class="health-bar-container">
-                        <div class="health-bar-background"></div>
-                        <div id="playerHealthBarTrainer" class="health-bar"></div>
-                    </div>
-                    <div class="xp-bar-container" style="margin-top: 5px;">
-                        <div style="font-size: 10px; margin-bottom: 2px;">
-                            <span>XP: </span><span id="playerXPTrainer">0</span>/<span id="playerXPNeededTrainer">50</span>
-                        </div>
-                        <div class="health-bar-background">
-                            <div id="playerXPBarTrainer" class="xp-bar" style="width: 0%; background-color: #4CAF50;"></div>
+                <div id="userInterface" class="ui-container" style="display: none;">
+                    <div class="status-box enemy">
+                        <h1 class="status-title"><span id="enemyName">Draggle</span> <span id="enemyLevel"
+                                style="font-size: 12px;">Lv5</span></h1>
+                        <div class="health-bar-container">
+                            <div class="health-bar-background"></div>
+                            <div id="enemyHealthBar" class="health-bar"></div>
                         </div>
                     </div>
-                </div>
-                <div class="battle-options">
-                    <div id="dialogueBoxTrainer" class="dialogue"></div>
-                    <div id="attacksBoxTrainer" class="attacks-box"></div>
-                    <div class="attack-type-container">
-                        <h1 id="attackTypeTrainer" class="attack-type-title">Attack Type</h1>
+                    <div class="status-box player">
+                        <h1 class="status-title"><span id="playerName">Emby</span> <span id="playerLevel"
+                                style="font-size: 12px;">Lv5</span></h1>
+                        <div class="health-bar-container">
+                            <div class="health-bar-background"></div>
+                            <div id="playerHealthBar" class="health-bar"></div>
+                        </div>
+                        <div class="xp-bar-container" style="margin-top: 5px;">
+                            <div style="font-size: 10px; margin-bottom: 2px;">
+                                <span>XP: </span><span id="playerXP">0</span>/<span id="playerXPNeeded">50</span>
+                            </div>
+                            <div class="health-bar-background">
+                                <div id="playerXPBar" class="xp-bar" style="width: 0%; background-color: #4CAF50;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="battle-options">
+                        <div id="dialogueBox" class="dialogue"></div>
+                        <div id="attacksBox" class="attacks-box"></div>
+                        <div class="attack-type-container">
+                            <h1 id="attackType" class="attack-type-title">Attack Type</h1>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="label">
-                <div class="title none">A$$ GAME</div>
-                <div class="subtitle">
-                    <span class="none c">C</span><!--
+                <div id="userInterfaceTrainer" class="ui-container" style="display: none;">
+                    <div class="status-box enemy">
+                        <h1 class="status-title"><span id="enemyNameTrainer">Dragkatchu</span> <span
+                                id="enemyLevelTrainer" style="font-size: 12px;">Lv5</span></h1>
+                        <div class="health-bar-container">
+                            <div class="health-bar-background"></div>
+                            <div id="enemyHealthBarTrainer" class="health-bar"></div>
+                        </div>
+                    </div>
+                    <div class="status-box player">
+                        <h1 class="status-title"><span id="playerNameTrainer">Emby</span> <span id="playerLevelTrainer"
+                                style="font-size: 12px;">Lv5</span></h1>
+                        <div class="health-bar-container">
+                            <div class="health-bar-background"></div>
+                            <div id="playerHealthBarTrainer" class="health-bar"></div>
+                        </div>
+                        <div class="xp-bar-container" style="margin-top: 5px;">
+                            <div style="font-size: 10px; margin-bottom: 2px;">
+                                <span>XP: </span><span id="playerXPTrainer">0</span>/<span
+                                    id="playerXPNeededTrainer">50</span>
+                            </div>
+                            <div class="health-bar-background">
+                                <div id="playerXPBarTrainer" class="xp-bar"
+                                    style="width: 0%; background-color: #4CAF50;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="battle-options">
+                        <div id="dialogueBoxTrainer" class="dialogue"></div>
+                        <div id="attacksBoxTrainer" class="attacks-box"></div>
+                        <div class="attack-type-container">
+                            <h1 id="attackTypeTrainer" class="attack-type-title">Attack Type</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="label">
+                    <div class="title none">A$$ GAME</div>
+                    <div class="subtitle">
+                        <span class="none c">C</span><!--
                     --><span class="o1 none">O</span><!--
                     --><span class="none l">L</span><!--
                     --><span class="none o2">O</span><!--
                     --><span class="none r">R</span>
-                </div>
-            </div>
-
-            <!-- Inventory/Bag Interface -->
-            <div id="bagInterface" class="bag-interface" style="display: none;">
-                <div class="bag-header">
-                    <h2>BAG</h2>
-                    <p class="bag-instruction">Press I or tap to close</p>
-                </div>
-                <div class="bag-content">
-                    <div id="bagItems" class="bag-items">
-                        <!-- Items will be added here dynamically -->
-                    </div>
-                    <div id="emptyBagMessage" class="empty-bag-message">
-                        Your bag is empty.
                     </div>
                 </div>
-            </div>
 
-            <!-- Item Detail View (Paper with password) -->
-            <div id="itemDetailView" class="item-detail-view" style="display: none;">
-                <div class="paper-container">
-                    <div class="paper-content">
-                        <h3 class="paper-title">MYSTERIOUS NOTE</h3>
-                        <div class="paper-text">
-                            <p>Ancient Unown symbols reveal the secret password:</p>
-                            <div class="password-display" id="passwordDisplay">pikasschu</div>
-                            <p class="password-hint-text">(Decipher the Unown alphabet to read it)</p>
-                            <div class="unown-legend">
-                                <p style="font-family: 'Unown', monospace; font-size: 16px; letter-spacing: 3px; color: #1a0d06;">abcdefghijklmnopqrstuvwxyz</p>
-                                <p style="font-family: 'Press Start 2P', cursive; font-size: 8px; letter-spacing: 2px; color: #666;">abcdefghijklmnopqrstuvwxyz</p>
-                            </div>
-                            <p class="paper-hint">Use this password to unlock the website!</p>
+                <!-- Inventory/Bag Interface -->
+                <div id="bagInterface" class="bag-interface" style="display: none;">
+                    <div class="bag-header">
+                        <h2>BAG</h2>
+                        <p class="bag-instruction">Press I or tap to close</p>
+                    </div>
+                    <div class="bag-content">
+                        <div id="bagItems" class="bag-items">
+                            <!-- Items will be added here dynamically -->
+                        </div>
+                        <div id="emptyBagMessage" class="empty-bag-message">
+                            Your bag is empty.
                         </div>
                     </div>
-                    <button class="close-paper-btn">CLOSE</button>
                 </div>
-            </div>
 
-            <!-- Item Received Notification -->
-            <div id="itemNotification" class="item-notification">
-                <div class="item-notification-icon" id="notificationIcon">🎒</div>
-                <div class="item-notification-title" id="notificationTitle">You received a BAG!</div>
-                <div class="item-notification-description" id="notificationDescription">Press I to open your bag anytime!</div>
-            </div>
-        </div>
-        <form onsubmit="event.preventDefault(); checkGameboyPassword();" class="nintendo">
-            <input class="formSolana" type="text" id="gameboy-password" name="password" placeholder="Pa$$ word" required>
-            <button type="submit">SOLANA</button>
-        </form>
-
-        <div class="controls">
-            <div class="dpad">
-                <div class="up"><i class="fa fa-caret-up"></i></div>
-                <div class="right"><i class="fa fa-caret-right"></i></div>
-                <div class="down"><i class="fa fa-caret-down"></i></div>
-                <div class="left"><i class="fa fa-caret-left"></i></div>
-                <div class="middle"></div>
-            </div>
-            <div class="a-b">
-                <div class="b none">B</div>
-                <div class="a none">A</div>
-            </div>
-            <div class="bag-button-container">
-                <div class="bag-button" id="mobileBagButton">
-                    <i class="fa fa-suitcase"></i> BAG
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Site content (hidden by default) -->
-<div id="site-content" style="display: none;">
-    <div class="container">
-        <div class="row logoR">
-            <div class="col-4"></div>
-            <div class="col-6 mt-5">
-                <a href="https://x.com/asskeetchumcoin?s=21">
-                    <img src="img/token.png" class="img-fluid justify-content-end" alt="">
-                </a>
-            </div>
-            <div class="col-1 mt-5">
-                <a href="https://x.com/asskeetchumcoin?s=21">
-                    <img src="img/tel.png" class="img-fluid justify-content-end" alt="">
-                </a>
-            </div>
-            <div class="col-1 mt-5">
-                <a href="https://x.com/asskeetchumcoin?s=21">
-                    <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row align-items-center my-row">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <div class="text-column mt-5 image-overlay-text text-beside-image">
-                    <h2 class="ms-5">A$$ KEETCHUM!</h2>
-                </div>
-            </div>
-            <div class="col-2"></div>
-        </div>
-    </div>
-
-    <div class="row p-3 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-7">
-                    <img class="img-fluid picka" src="img/pikatchoum.png" alt="Pikatchoum">
-                </div>
-                <div class="col-5">
-                    <div class="container">
-                        <div class="row align-items-center my-row">
-                            <div class="text-column mt-5 image-overlay-text text-beside-image">
-                                <h2>A$$!</h2>
-                                <p>A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
-                                    <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to
-                                        not just catch Pokémon, but <br> also the boundless potential of
-                                        cryptocurrency! </span> Gonna catch 'em all!
-                                </p>
+                <!-- Item Detail View (Paper with password) -->
+                <div id="itemDetailView" class="item-detail-view" style="display: none;">
+                    <div class="paper-container">
+                        <div class="paper-content">
+                            <h3 class="paper-title">MYSTERIOUS NOTE</h3>
+                            <div class="paper-text">
+                                <p>Ancient Unown symbols reveal the secret password:</p>
+                                <div class="password-display" id="passwordDisplay">pikasschu</div>
+                                <p class="password-hint-text">(Decipher the Unown alphabet to read it)</p>
+                                <div class="unown-legend">
+                                    <p
+                                        style="font-family: 'Unown', monospace; font-size: 16px; letter-spacing: 3px; color: #1a0d06;">
+                                        abcdefghijklmnopqrstuvwxyz</p>
+                                    <p
+                                        style="font-family: 'Press Start 2P', cursive; font-size: 8px; letter-spacing: 2px; color: #666;">
+                                        abcdefghijklmnopqrstuvwxyz</p>
+                                </div>
+                                <p class="paper-hint">Use this password to unlock the website!</p>
                             </div>
                         </div>
+                        <button class="close-paper-btn">CLOSE</button>
+                    </div>
+                </div>
+
+                <!-- Item Received Notification -->
+                <div id="itemNotification" class="item-notification">
+                    <div class="item-notification-icon" id="notificationIcon">🎒</div>
+                    <div class="item-notification-title" id="notificationTitle">You received a BAG!</div>
+                    <div class="item-notification-description" id="notificationDescription">Press I to open your bag
+                        anytime!</div>
+                </div>
+            </div>
+            <div class="gameboy-buttons-container">
+                <button id="mobileBagButton" class="gameboy-round-btn" title="Open BAG"
+                    style="display: none;">BAG</button>
+                <form onsubmit="event.preventDefault(); checkGameboyPassword();" class="nintendo">
+                    <input class="formSolana" type="text" id="gameboy-password" name="password" placeholder="Pa$$ word"
+                        required>
+                    <button type="submit">SOLANA</button>
+                </form>
+            </div>
+
+            <div class="controls">
+                <div class="dpad">
+                    <div class="up"><i class="fa fa-caret-up"></i></div>
+                    <div class="right"><i class="fa fa-caret-right"></i></div>
+                    <div class="down"><i class="fa fa-caret-down"></i></div>
+                    <div class="left"><i class="fa fa-caret-left"></i></div>
+                    <div class="middle"></div>
+                </div>
+                <div class="a-b">
+                    <div class="b none">B</div>
+                    <div class="a none">A</div>
+                </div>
+                <div class="bag-button-container">
+                    <div class="bag-button" id="mobileBagButton">
+                        <i class="fa fa-suitcase"></i> BAG
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="black-band">
-        <div class="row">
-            <div class="col-12">
-                <img src="img/adressTitle.png" alt="" class="img-fluid">
-            </div>
-            <div>
-                <div class="contract-address">
-                    <button class="button-wl" onclick="copyToClipboard()">
-                        <span id="contractText">
-                            <h2>FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR</h2>
-                        </span>
-                    </button>
+    <!-- Site content (hidden by default) -->
+    <div id="site-content" style="display: none;">
+        <div class="container">
+            <div class="row logoR">
+                <div class="col-4"></div>
+                <div class="col-6 mt-5">
+                    <a href="https://x.com/asskeetchumcoin?s=21">
+                        <img src="img/token.png" class="img-fluid justify-content-end" alt="">
+                    </a>
+                </div>
+                <div class="col-1 mt-5">
+                    <a href="https://x.com/asskeetchumcoin?s=21">
+                        <img src="img/tel.png" class="img-fluid justify-content-end" alt="">
+                    </a>
+                </div>
+                <div class="col-1 mt-5">
+                    <a href="https://x.com/asskeetchumcoin?s=21">
+                        <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-8">
-                <img src="img/slem.webp" alt="Image Description" class="img-fluid picka mt-5">
-            </div>
-            <div class="col-4 mx-auto mxt">
-                <div class="text-image-container">
-                    <div class="text-beside-image">
-                        <h2>JOIN THE </h2>
-                        <h1>A$$!</h1>
-                        <h2>COMMUNITY </h2>
+        <div class="container">
+            <div class="row align-items-center my-row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="text-column mt-5 image-overlay-text text-beside-image">
+                        <h2 class="ms-5">A$$ KEETCHUM!</h2>
                     </div>
-                    <div class="row">
-                        <div class="col-6 mt-5">
-                            <a href="">
-                                <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center"
-                                    alt="">
-                            </a>
+                </div>
+                <div class="col-2"></div>
+            </div>
+        </div>
+
+        <div class="row p-3 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-7">
+                        <img class="img-fluid picka" src="img/pikatchoum.png" alt="Pikatchoum">
+                    </div>
+                    <div class="col-5">
+                        <div class="container">
+                            <div class="row align-items-center my-row">
+                                <div class="text-column mt-5 image-overlay-text text-beside-image">
+                                    <h2>A$$!</h2>
+                                    <p>A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
+                                        <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to
+                                            not just catch Pokémon, but <br> also the boundless potential of
+                                            cryptocurrency! </span> Gonna catch 'em all!
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6 mt-5">
-                            <a href="https://x.com/asskeetchumcoin?s=21">
-                                <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="PurpleBlack-band">
+        <div class="black-band">
+            <div class="row">
+                <div class="col-12">
+                    <img src="img/adressTitle.png" alt="" class="img-fluid">
+                </div>
+                <div>
+                    <div class="contract-address">
+                        <button class="button-wl" onclick="copyToClipboard()">
+                            <span id="contractText">
+                                <h2>FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR</h2>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="container">
             <div class="row">
-                <div class="col-4"></div>
-                <div class="col-4 mxt">
-                    <h1 class="htba">HOW TO BUY A$$!!!</h1>
+                <div class="col-8">
+                    <img src="img/slem.webp" alt="Image Description" class="img-fluid picka mt-5">
                 </div>
-                <div class="col-4"></div>
-                <div class="col-4"></div>
-                <div class="col-4 mxt">
-                    <img src="img/Ask.png" alt="">
+                <div class="col-4 mx-auto mxt">
+                    <div class="text-image-container">
+                        <div class="text-beside-image">
+                            <h2>JOIN THE </h2>
+                            <h1>A$$!</h1>
+                            <h2>COMMUNITY </h2>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mt-5">
+                                <a href="">
+                                    <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center"
+                                        alt="">
+                                </a>
+                            </div>
+                            <div class="col-6 mt-5">
+                                <a href="https://x.com/asskeetchumcoin?s=21">
+                                    <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-4"></div>
-                <div class="col-4 mxt">
-                    <h2 class="htba">Creat SOLANA Wallet</h2>
-                    <p class="htba">creer ton wallet sur Phanto suis simplement le guide</p>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-6 mxt">
-                    <img src="img/wallet.png" alt="" class="logoR">
-                </div>
-                <div class="col-6">
-                    <img src="img/solToken.png" alt="" class="logoR">
-                </div>
-                <div class="col-2"></div>
-                <div class="col-4">
-                    <h2 class="htba">Buy some SOL</h2>
-                    <p class="htba">Bravo tu a créer ton wallet maintenant remplie le de SOL</p>
-                </div>
-                <div class="col-4">
-                    <h2 class="htba">Swap your SOL to A$$</h2>
-                    <p class="htba">Maintenant utilise Raydium afin de swap tes SOL en A$$</p>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-6">
-                    <img src="img/Raydium.png" alt="" class="logoR">
+            </div>
+        </div>
+
+        <div class="PurpleBlack-band">
+            <div class="container">
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4 mxt">
+                        <h1 class="htba">HOW TO BUY A$$!!!</h1>
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4"></div>
+                    <div class="col-4 mxt">
+                        <img src="img/Ask.png" alt="">
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4 mxt">
+                        <h2 class="htba">Creat SOLANA Wallet</h2>
+                        <p class="htba">creer ton wallet sur Phanto suis simplement le guide</p>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-6 mxt">
+                        <img src="img/wallet.png" alt="" class="logoR">
+                    </div>
+                    <div class="col-6">
+                        <img src="img/solToken.png" alt="" class="logoR">
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <h2 class="htba">Buy some SOL</h2>
+                        <p class="htba">Bravo tu a créer ton wallet maintenant remplie le de SOL</p>
+                    </div>
+                    <div class="col-4">
+                        <h2 class="htba">Swap your SOL to A$$</h2>
+                        <p class="htba">Maintenant utilise Raydium afin de swap tes SOL en A$$</p>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-6">
+                        <img src="img/Raydium.png" alt="" class="logoR">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Audio Paths Configuration -->
-<div id="audioPaths" style="display: none;"
-     data-map="./audio/map.ogg"
-     data-init-battle="./audio/initBattle.wav"
-     data-battle="./audio/battle.ogg"
-     data-pump-trump="./audio/pumpTrump.ogg"
-     data-tackle-hit="./audio/tackleHit.wav"
-     data-fireball-hit="./audio/fireballHit.wav"
-     data-init-fireball="./audio/initFireball.wav"
-     data-victory="./audio/victory.wav"
-     data-init-mexico="./audio/mexicoSong.ogg"
-     data-mexico-hit="./audio/fireballHit.wav"
-     data-init-ice="./audio/fahhSound.ogg"
-     data-ice-hit="./audio/tackleHit.wav">
-</div>
+    <!-- Audio Paths Configuration -->
+    <div id="audioPaths" style="display: none;" data-map="./audio/map.ogg" data-init-battle="./audio/initBattle.wav"
+        data-battle="./audio/battle.ogg" data-pump-trump="./audio/pumpTrump.ogg" data-tackle-hit="./audio/tackleHit.wav"
+        data-fireball-hit="./audio/fireballHit.wav" data-init-fireball="./audio/initFireball.wav"
+        data-victory="./audio/victory.wav" data-init-mexico="./audio/mexicoSong.ogg"
+        data-mexico-hit="./audio/fireballHit.wav" data-init-ice="./audio/fahhSound.ogg"
+        data-ice-hit="./audio/tackleHit.wav">
+    </div>
 
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-<script>window.gsap = gsap;</script>
-<script src="data/classes.js?v=10"></script>
-<script src="data/utils.js?v=10"></script>
-<script src="data/attacks.js?v=10"></script>
-<script src="data/monsters.js?v=10"></script>
-<script src="data/characters.js?v=10"></script>
-<script src="data/collisions.js?v=10"></script>
-<script src="data/battleZones.js?v=10"></script>
-<script src="data/audio.js?v=10"></script>
-<script src="data/battleScene.js?v=10"></script>
-<script src="data/trainer.js?v=10"></script>
-<script src="data/index.js?v=10"></script>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script>window.gsap = gsap;</script>
+    <script src="data/classes.js?v=10"></script>
+    <script src="data/utils.js?v=10"></script>
+    <script src="data/attacks.js?v=10"></script>
+    <script src="data/monsters.js?v=10"></script>
+    <script src="data/characters.js?v=10"></script>
+    <script src="data/collisions.js?v=10"></script>
+    <script src="data/battleZones.js?v=10"></script>
+    <script src="data/audio.js?v=10"></script>
+    <script src="data/battleScene.js?v=10"></script>
+    <script src="data/trainer.js?v=10"></script>
+    <script src="data/index.js?v=10"></script>
 
-<script>
-    // Remplir le background avec du texte animé
-    function fillBackgroundWithText() {
-        const container = document.querySelector('.background-container');
-        if (!container) return;
+    <script>
+        // Remplir le background avec du texte animé
+        function fillBackgroundWithText() {
+            const container = document.querySelector('.background-container');
+            if (!container) return;
 
-        const text = 'A$$KEETCHUM ';
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        const textHeight = 40;
-        const verticalRepeats = Math.ceil(screenHeight / textHeight);
+            const text = 'A$$KEETCHUM ';
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const textHeight = 40;
+            const verticalRepeats = Math.ceil(screenHeight / textHeight);
 
-        container.innerHTML = '';
+            container.innerHTML = '';
 
-        for (let i = 0; i < verticalRepeats; i++) {
-            const textLine = document.createElement('div');
-            textLine.className = 'scrolling-text';
-            textLine.textContent = text.repeat(Math.ceil(screenWidth / 100));
-            if (i % 2 === 0) {
-                textLine.classList.add('scroll-left-right');
-            } else {
-                textLine.classList.add('scroll-right-left');
+            for (let i = 0; i < verticalRepeats; i++) {
+                const textLine = document.createElement('div');
+                textLine.className = 'scrolling-text';
+                textLine.textContent = text.repeat(Math.ceil(screenWidth / 100));
+                if (i % 2 === 0) {
+                    textLine.classList.add('scroll-left-right');
+                } else {
+                    textLine.classList.add('scroll-right-left');
+                }
+                textLine.style.top = `${i * textHeight}px`;
+                container.appendChild(textLine);
             }
-            textLine.style.top = `${i * textHeight}px`;
-            container.appendChild(textLine);
         }
-    }
 
-    fillBackgroundWithText();
-    window.addEventListener('resize', fillBackgroundWithText);
+        fillBackgroundWithText();
+        window.addEventListener('resize', fillBackgroundWithText);
 
-    // Vérifier le code depuis le formulaire GameBoy
-    function checkGameboyPassword() {
-        const input = document.getElementById('gameboy-password').value.toLowerCase();
-        const correctCode = 'pikasschu';
+        // Vérifier le code depuis le formulaire GameBoy
+        function checkGameboyPassword() {
+            const input = document.getElementById('gameboy-password').value.toLowerCase();
+            const correctCode = 'pikasschu';
 
-        if (input === correctCode) {
-            localStorage.setItem('codeEntered', 'true');
+            if (input === correctCode) {
+                localStorage.setItem('codeEntered', 'true');
+                document.querySelector('.game-container').style.display = 'none';
+                document.getElementById('site-content').style.display = 'block';
+                document.getElementById('openCodeModalBtn').style.display = 'none'; // Cacher le bouton
+                alert('Félicitations ! Code correct !');
+            } else {
+                alert('Code incorrect ! Parlez au dresseur après avoir battu Dragkatchu.');
+            }
+        }
+
+        // ===== MODAL DE CODE (VERSION WEB) =====
+        const codeModal = document.getElementById('codeModal');
+        const openCodeModalBtn = document.getElementById('openCodeModalBtn');
+        const closeCodeModalBtn = document.getElementById('closeCodeModalBtn');
+        const submitCodeBtn = document.getElementById('submitCodeBtn');
+        const codeModalInput = document.getElementById('codeModalInput');
+        const codeError = document.getElementById('codeError');
+
+        // Ouvrir le modal
+        openCodeModalBtn.addEventListener('click', () => {
+            codeModal.style.display = 'flex';
+            codeModalInput.value = '';
+            codeError.style.display = 'none';
+            codeModalInput.focus();
+        });
+
+        // Fermer le modal
+        closeCodeModalBtn.addEventListener('click', () => {
+            codeModal.style.display = 'none';
+        });
+
+        // Fermer le modal en cliquant en dehors
+        codeModal.addEventListener('click', (e) => {
+            if (e.target === codeModal) {
+                codeModal.style.display = 'none';
+            }
+        });
+
+        // Soumettre le code
+        function submitCode() {
+            const input = codeModalInput.value.toLowerCase();
+            const correctCode = 'pikasschu';
+
+            if (input === correctCode) {
+                localStorage.setItem('codeEntered', 'true');
+                document.querySelector('.game-container').style.display = 'none';
+                document.getElementById('site-content').style.display = 'block';
+                codeModal.style.display = 'none';
+                openCodeModalBtn.style.display = 'none'; // Cacher le bouton
+                alert('Félicitations ! Code correct ! 🎉');
+            } else {
+                codeError.style.display = 'block';
+                codeModalInput.value = '';
+                codeModalInput.focus();
+            }
+        }
+
+        submitCodeBtn.addEventListener('click', submitCode);
+
+        // Soumettre avec Enter
+        codeModalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitCode();
+            }
+        });
+
+        // Fermer avec Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && codeModal.style.display === 'flex') {
+                codeModal.style.display = 'none';
+            }
+        });
+
+        // Vérifier si le code est déjà entré
+        if (localStorage.getItem('codeEntered') === 'true') {
             document.querySelector('.game-container').style.display = 'none';
             document.getElementById('site-content').style.display = 'block';
-            alert('Félicitations ! Code correct !');
-        } else {
-            alert('Code incorrect ! Parlez au dresseur après avoir battu Dragkatchu.');
+            // Cacher le bouton de code si déjà débloqué
+            openCodeModalBtn.style.display = 'none';
         }
-    }
 
-    // Vérifier si le code est déjà entré
-    if (localStorage.getItem('codeEntered') === 'true') {
-        document.querySelector('.game-container').style.display = 'none';
-        document.getElementById('site-content').style.display = 'block';
-    }
+        // Fonction pour copier l'adresse du contrat
+        function copyToClipboard() {
+            const text = 'FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR';
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Adresse copiée !');
+            });
+        }
 
-    // Fonction pour copier l'adresse du contrat
-    function copyToClipboard() {
-        const text = 'FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR';
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Adresse copiée !');
-        });
-    }
+        // ===== BAG/INVENTORY SYSTEM =====
+        const bagSystem = {
+            items: [],
+            isOpen: false,
+            selectedItemIndex: 0,
 
-    // ===== BAG/INVENTORY SYSTEM =====
-    const bagSystem = {
-        items: [],
-        isOpen: false,
-
-        init() {
-            // Charger l'état du sac depuis localStorage
-            const hasReceivedBag = localStorage.getItem('hasReceivedBag');
-            if (hasReceivedBag === 'true') {
-                window.hasReceivedBag = true;
-            }
-
-            // Gestion de la touche "i" pour ouvrir/fermer le sac
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'i' || e.key === 'I') {
-                    this.toggleBag();
+            init() {
+                // Charger l'état du sac depuis localStorage
+                const hasReceivedBag = localStorage.getItem('hasReceivedBag');
+                if (hasReceivedBag === 'true') {
+                    window.hasReceivedBag = true;
                 }
-            });
 
-            // Gestion du clic sur le sac pour le fermer
-            document.getElementById('bagInterface').addEventListener('click', (e) => {
-                if (e.target.id === 'bagInterface') {
-                    this.closeBag();
-                }
-            });
+                // Gestion des touches clavier
+                document.addEventListener('keydown', (e) => {
+                    // Touche "i" pour ouvrir/fermer le sac
+                    if (e.key === 'i' || e.key === 'I') {
+                        this.toggleBag();
+                        return;
+                    }
 
-            // Gestion du bouton de fermeture du papier
-            document.querySelector('.close-paper-btn').addEventListener('click', () => {
-                this.closeItemDetail();
-            });
+                    // Navigation dans le sac avec le clavier (seulement si le sac est ouvert)
+                    if (this.isOpen) {
+                        // Si le détail d'un item est ouvert, Escape le ferme
+                        const itemDetailView = document.getElementById('itemDetailView');
+                        if (itemDetailView && itemDetailView.style.display === 'flex' && e.key === 'Escape') {
+                            e.preventDefault();
+                            this.closeItemDetail();
+                            return;
+                        }
 
-            // Gestion du clic sur le papier en arrière-plan
-            document.getElementById('itemDetailView').addEventListener('click', (e) => {
-                if (e.target.id === 'itemDetailView') {
+                        // Navigation dans les items (seulement si on a des items)
+                        if (this.items.length > 0) {
+                            switch (e.key) {
+                                case 'ArrowLeft':
+                                case 'a':
+                                case 'q': // AZERTY
+                                    e.preventDefault();
+                                    this.selectPreviousItem();
+                                    break;
+                                case 'ArrowRight':
+                                case 'd':
+                                    e.preventDefault();
+                                    this.selectNextItem();
+                                    break;
+                                case 'ArrowUp':
+                                case 'w':
+                                case 'z': // AZERTY
+                                    e.preventDefault();
+                                    this.selectItemAbove();
+                                    break;
+                                case 'ArrowDown':
+                                case 's':
+                                    e.preventDefault();
+                                    this.selectItemBelow();
+                                    break;
+                                case 'Enter':
+                                case ' ':
+                                    e.preventDefault();
+                                    this.selectCurrentItem();
+                                    break;
+                                case 'Escape':
+                                    e.preventDefault();
+                                    this.closeBag();
+                                    break;
+                            }
+                        } else if (e.key === 'Escape') {
+                            // Si le sac est vide, on peut quand même le fermer avec Escape
+                            e.preventDefault();
+                            this.closeBag();
+                        }
+                    }
+                });
+
+                // Gestion du clic sur le sac pour le fermer
+                document.getElementById('bagInterface').addEventListener('click', (e) => {
+                    if (e.target.id === 'bagInterface') {
+                        this.closeBag();
+                    }
+                });
+
+                // Gestion du bouton de fermeture du papier
+                document.querySelector('.close-paper-btn').addEventListener('click', () => {
                     this.closeItemDetail();
+                });
+
+                // Gestion du clic sur le papier en arrière-plan
+                document.getElementById('itemDetailView').addEventListener('click', (e) => {
+                    if (e.target.id === 'itemDetailView') {
+                        this.closeItemDetail();
+                    }
+                });
+
+                // Gestion du bouton BAG mobile
+                const mobileBagButton = document.getElementById('mobileBagButton');
+                if (mobileBagButton) {
+                    mobileBagButton.addEventListener('click', () => {
+                        this.toggleBag();
+                    });
+                    mobileBagButton.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.toggleBag();
+                    });
                 }
-            });
 
-            // Gestion du bouton BAG mobile
-            const mobileBagButton = document.getElementById('mobileBagButton');
-            if (mobileBagButton) {
-                mobileBagButton.addEventListener('click', () => {
-                    this.toggleBag();
-                });
-                mobileBagButton.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.toggleBag();
-                });
-            }
+                // Gestion du bouton BAG desktop (flottant)
+                const floatingBagBtn = document.getElementById('floatingBagBtn');
+                if (floatingBagBtn) {
+                    floatingBagBtn.addEventListener('click', () => {
+                        this.toggleBag();
+                    });
+                }
 
-            // Cacher le bouton BAG initialement
-            this.updateBagButtonVisibility();
-
-            // Vérifier régulièrement l'état pour mettre à jour la visibilité du bouton
-            setInterval(() => {
+                // Cacher les boutons BAG initialement
                 this.updateBagButtonVisibility();
 
-                // Fermer le sac si un combat commence pendant qu'il est ouvert
-                if (this.isOpen && !this.canAccessBag()) {
+                // Vérifier régulièrement l'état pour mettre à jour la visibilité du bouton
+                setInterval(() => {
+                    this.updateBagButtonVisibility();
+
+                    // Fermer le sac si un combat commence pendant qu'il est ouvert
+                    if (this.isOpen && !this.canAccessBag()) {
+                        this.closeBag();
+                    }
+                }, 500);
+            },
+
+            canAccessBag() {
+                // Vérifier si le joueur a reçu le sac de oldMan
+                if (typeof window.hasReceivedBag === 'undefined' || !window.hasReceivedBag) {
+                    return false;
+                }
+
+                // Vérifier si on n'est pas en combat
+                if (typeof battle !== 'undefined' && battle.initiated) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            toggleBag() {
+                if (!this.canAccessBag()) {
+                    // Afficher un message si le joueur n'a pas encore le sac
+                    if (!window.hasReceivedBag) {
+                        console.log("You need to get a BAG first! Talk to the old man on the left.");
+                        // Optionnel: afficher une notification visuelle
+                    } else if (typeof battle !== 'undefined' && battle.initiated) {
+                        console.log("Cannot open bag during battle!");
+                    }
+                    return;
+                }
+
+                if (this.isOpen) {
                     this.closeBag();
-                }
-            }, 500);
-        },
-
-        canAccessBag() {
-            // Vérifier si le joueur a reçu le sac de oldMan
-            if (typeof window.hasReceivedBag === 'undefined' || !window.hasReceivedBag) {
-                return false;
-            }
-
-            // Vérifier si on n'est pas en combat
-            if (typeof battle !== 'undefined' && battle.initiated) {
-                return false;
-            }
-
-            return true;
-        },
-
-        toggleBag() {
-            if (!this.canAccessBag()) {
-                // Afficher un message si le joueur n'a pas encore le sac
-                if (!window.hasReceivedBag) {
-                    console.log("You need to get a BAG first! Talk to the old man on the left.");
-                    // Optionnel: afficher une notification visuelle
-                } else if (typeof battle !== 'undefined' && battle.initiated) {
-                    console.log("Cannot open bag during battle!");
-                }
-                return;
-            }
-
-            if (this.isOpen) {
-                this.closeBag();
-            } else {
-                this.openBag();
-            }
-        },
-
-        openBag() {
-            if (!this.canAccessBag()) {
-                return;
-            }
-
-            this.isOpen = true;
-            document.getElementById('bagInterface').style.display = 'block';
-            this.renderItems();
-        },
-
-        closeBag() {
-            this.isOpen = false;
-            document.getElementById('bagInterface').style.display = 'none';
-        },
-
-        updateBagButtonVisibility() {
-            const mobileBagButton = document.getElementById('mobileBagButton');
-            if (mobileBagButton) {
-                if (this.canAccessBag()) {
-                    mobileBagButton.style.display = 'block';
                 } else {
-                    mobileBagButton.style.display = 'none';
+                    this.openBag();
                 }
-            }
-        },
+            },
 
-        addItem(item) {
-            // Vérifier si l'item n'existe pas déjà
-            if (!this.items.find(i => i.id === item.id)) {
-                this.items.push(item);
-                console.log('Item added to bag:', item);
+            openBag() {
+                if (!this.canAccessBag()) {
+                    return;
+                }
 
-                // Mettre à jour la visibilité du bouton BAG
-                this.updateBagButtonVisibility();
+                this.isOpen = true;
+                this.selectedItemIndex = 0;
+                document.getElementById('bagInterface').style.display = 'block';
+                this.renderItems();
+            },
 
-                // Afficher une notification
-                this.showNotification(`You received: ${item.name}!`);
-            }
-        },
+            closeBag() {
+                this.isOpen = false;
+                document.getElementById('bagInterface').style.display = 'none';
+            },
 
-        showNotification(message) {
-            // Use the global animated notification
-            if (typeof window.showItemNotification === 'function') {
-                window.showItemNotification('📜', message, 'Press I to open your bag');
-            }
-        },
+            updateBagButtonVisibility() {
+                const mobileBagButton = document.getElementById('mobileBagButton');
+                const floatingBagBtn = document.getElementById('floatingBagBtn');
 
-        renderItems() {
-            const bagItemsContainer = document.getElementById('bagItems');
-            const emptyMessage = document.getElementById('emptyBagMessage');
+                const canAccess = this.canAccessBag();
 
-            if (this.items.length === 0) {
-                bagItemsContainer.style.display = 'none';
-                emptyMessage.style.display = 'block';
-            } else {
-                bagItemsContainer.style.display = 'grid';
-                emptyMessage.style.display = 'none';
-                bagItemsContainer.innerHTML = '';
+                // Mettre à jour le bouton mobile (seulement si on peut y accéder, sinon le CSS s'occupe de le cacher)
+                if (mobileBagButton) {
+                    // Le CSS gère déjà le display pour desktop/mobile, on ajoute juste la visibilité
+                    if (canAccess) {
+                        mobileBagButton.classList.add('bag-accessible');
+                    } else {
+                        mobileBagButton.classList.remove('bag-accessible');
+                    }
+                }
 
-                this.items.forEach(item => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'bag-item';
-                    itemDiv.innerHTML = `
+                // Mettre à jour le bouton desktop flottant
+                if (floatingBagBtn) {
+                    floatingBagBtn.style.display = canAccess ? 'flex' : 'none';
+                }
+            },
+
+            addItem(item) {
+                // Vérifier si l'item n'existe pas déjà
+                if (!this.items.find(i => i.id === item.id)) {
+                    this.items.push(item);
+                    console.log('Item added to bag:', item);
+
+                    // Mettre à jour la visibilité du bouton BAG
+                    this.updateBagButtonVisibility();
+
+                    // Afficher une notification
+                    this.showNotification(`You received: ${item.name}!`);
+                }
+            },
+
+            showNotification(message) {
+                // Use the global animated notification
+                if (typeof window.showItemNotification === 'function') {
+                    window.showItemNotification('📜', message, 'Press I to open your bag');
+                }
+            },
+
+            renderItems() {
+                const bagItemsContainer = document.getElementById('bagItems');
+                const emptyMessage = document.getElementById('emptyBagMessage');
+
+                if (this.items.length === 0) {
+                    bagItemsContainer.style.display = 'none';
+                    emptyMessage.style.display = 'block';
+                } else {
+                    bagItemsContainer.style.display = 'grid';
+                    emptyMessage.style.display = 'none';
+                    bagItemsContainer.innerHTML = '';
+
+                    this.items.forEach((item, index) => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'bag-item';
+                        if (index === this.selectedItemIndex) {
+                            itemDiv.classList.add('selected');
+                        }
+                        itemDiv.innerHTML = `
                         <div class="bag-item-icon">${item.icon}</div>
                         <div class="bag-item-name">${item.name}</div>
                     `;
-                    itemDiv.addEventListener('click', () => this.showItemDetail(item));
-                    bagItemsContainer.appendChild(itemDiv);
-                });
+                        itemDiv.addEventListener('click', () => this.showItemDetail(item));
+                        bagItemsContainer.appendChild(itemDiv);
+                    });
+                }
+            },
+
+            showItemDetail(item) {
+                document.getElementById('itemDetailView').style.display = 'flex';
+                // On pourrait personnaliser le contenu selon l'item ici si nécessaire
+            },
+
+            closeItemDetail() {
+                document.getElementById('itemDetailView').style.display = 'none';
+            },
+
+            // Navigation au clavier
+            selectPreviousItem() {
+                if (this.items.length === 0) return;
+                this.selectedItemIndex = (this.selectedItemIndex - 1 + this.items.length) % this.items.length;
+                this.renderItems();
+            },
+
+            selectNextItem() {
+                if (this.items.length === 0) return;
+                this.selectedItemIndex = (this.selectedItemIndex + 1) % this.items.length;
+                this.renderItems();
+            },
+
+            selectItemAbove() {
+                if (this.items.length === 0) return;
+                // Supposons une grille de 3 colonnes (ajustez selon votre layout)
+                const columns = 3;
+                const newIndex = this.selectedItemIndex - columns;
+                if (newIndex >= 0) {
+                    this.selectedItemIndex = newIndex;
+                    this.renderItems();
+                }
+            },
+
+            selectItemBelow() {
+                if (this.items.length === 0) return;
+                // Supposons une grille de 3 colonnes (ajustez selon votre layout)
+                const columns = 3;
+                const newIndex = this.selectedItemIndex + columns;
+                if (newIndex < this.items.length) {
+                    this.selectedItemIndex = newIndex;
+                    this.renderItems();
+                }
+            },
+
+            selectCurrentItem() {
+                if (this.items.length === 0) return;
+                const selectedItem = this.items[this.selectedItemIndex];
+                if (selectedItem) {
+                    this.showItemDetail(selectedItem);
+                }
             }
-        },
+        };
 
-        showItemDetail(item) {
-            document.getElementById('itemDetailView').style.display = 'flex';
-            // On pourrait personnaliser le contenu selon l'item ici si nécessaire
-        },
-
-        closeItemDetail() {
-            document.getElementById('itemDetailView').style.display = 'none';
-        }
-    };
-
-    // Initialiser le système de sac quand le document est prêt
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialiser le système de sac quand le document est prêt
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                bagSystem.init();
+            });
+        } else {
             bagSystem.init();
-        });
-    } else {
-        bagSystem.init();
-    }
+        }
 
-    // Rendre bagSystem globalement accessible
-    window.bagSystem = bagSystem;
-</script>
+        // Rendre bagSystem globalement accessible
+        window.bagSystem = bagSystem;
+    </script>
 </body>
+
 </html>

@@ -18,6 +18,8 @@ let renderedSpritesTrainer;
 let battleTrainerAnimationId;
 let queueTrainer;
 let selectedTrainerAttackIndex = 0;
+let isTrainerAttacking = false;
+let canProcessQueueTrainer = true;
 
 function initBattl() {
   document.querySelector('#userInterfaceTrainer').style.display = 'block';
@@ -25,6 +27,9 @@ function initBattl() {
   document.querySelector('#enemyHealthBarTrainer').style.width = '100%';
   document.querySelector('#playerHealthBarTrainer').style.width = '100%';
   document.querySelector('#attacksBoxTrainer').replaceChildren();
+  isTrainerAttacking = false;
+  selectedTrainerAttackIndex = 0;
+  canProcessQueueTrainer = true;
 
   // Load player's saved level and XP
   const savedLevel = localStorage.getItem('playerLevel');
@@ -33,7 +38,7 @@ function initBattl() {
   const playerXP = savedXP ? parseInt(savedXP) : 0;
 
   dragkatchu = new Monster(monsters.dragkatchu);
-  embyTrainer = new Monster({...monsters.Emby, level: playerLevel});
+  embyTrainer = new Monster({ ...monsters.Emby, level: playerLevel });
   embyTrainer.experience = playerXP;
   embyTrainer.experienceToNextLevel = embyTrainer.level * 10;
 
@@ -68,8 +73,17 @@ function initBattl() {
     document.querySelector('#attacksBoxTrainer').append(button);
   });
 
+  // Attacher les événements aux boutons d'attaque
+  attachTrainerAttackListeners();
+}
+
+// Fonction pour attacher les événements de clic aux boutons d'attaque du trainer
+function attachTrainerAttackListeners() {
   document.querySelectorAll('#attacksBoxTrainer button').forEach((button, index) => {
     button.addEventListener('click', (e) => {
+      // Empêcher le spam d'attaques
+      if (isTrainerAttacking) return;
+
       const selectedTrainerAttack = attacks[e.currentTarget.innerHTML];
       trainerAttack(selectedTrainerAttack);
     });
@@ -186,9 +200,18 @@ function animateTrainerBattle() {
 // animate() - Retiré car appelé depuis index.js
 
 document.querySelector('#dialogueBoxTrainer').addEventListener('click', (e) => {
+  // Empêcher le spam de clics sur le dialogue
+  if (!canProcessQueueTrainer) return;
+
   if (queueTrainer.length > 0) {
+    canProcessQueueTrainer = false;
     queueTrainer[0]();
     queueTrainer.shift();
+
+    // Réactiver après un délai (temps pour les animations)
+    setTimeout(() => {
+      canProcessQueueTrainer = true;
+    }, 300); // 300ms = empêche le spam sans ralentir le jeu
   } else {
     e.currentTarget.style.display = 'none';
   }
@@ -200,9 +223,12 @@ window.addEventListener('keydown', (e) => {
 
   switch (e.key) {
     case 'a':
+    case 'q': // AZERTY support
+    case 'ArrowLeft':
       selectTrainerPreviousAttack();
       break;
     case 'd':
+    case 'ArrowRight':
       selectTrainerNextAttack();
       break;
     case ' ':
@@ -217,6 +243,10 @@ window.addEventListener('keydown', (e) => {
 
 
 function trainerAttack(selectedTrainerAttack) {
+  // Empêcher le spam d'attaques
+  if (isTrainerAttacking) return;
+  isTrainerAttacking = true;
+
   embyTrainer.attack({
     attack: selectedTrainerAttack,
     recipient: dragkatchu,
@@ -325,7 +355,9 @@ function trainerAttack(selectedTrainerAttack) {
           player: '#playerHealthBarTrainer'
         }
       });
+    });
 
+    queueTrainer.push(() => {
       if (embyTrainer.health <= 0) {
         queueTrainer.push(() => {
           const didTransform = embyTrainer.faint();
@@ -363,6 +395,9 @@ function trainerAttack(selectedTrainerAttack) {
           }
         });
       }
+
+      // IMPORTANT: Réinitialiser le flag seulement APRÈS toutes les animations
+      isTrainerAttacking = false;
     });
   }
 
@@ -384,6 +419,9 @@ function selectTrainerNextAttack() {
 
 function selectTrainerCurrentAttack() {
   if (!embyTrainer || !embyTrainer.attacks) return;
+  // Empêcher le spam d'attaques
+  if (isTrainerAttacking) return;
+
   const selectedTrainerAttack = embyTrainer.attacks[selectedTrainerAttackIndex];
   trainerAttack(selectedTrainerAttack);
 }
@@ -400,9 +438,18 @@ function updateTrainerAttackSelection() {
 }
 
 function processTrainerQueue() {
+  // Empêcher le spam de la barre espace
+  if (!canProcessQueueTrainer) return;
+
   if (queueTrainer.length > 0) {
+    canProcessQueueTrainer = false;
     queueTrainer[0]();
     queueTrainer.shift();
+
+    // Réactiver après un délai (temps pour les animations)
+    setTimeout(() => {
+      canProcessQueueTrainer = true;
+    }, 300); // 300ms = empêche le spam sans ralentir le jeu
   } else {
     document.querySelector('#dialogueBoxTrainer').style.display = 'none';
   }

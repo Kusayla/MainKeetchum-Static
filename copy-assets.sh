@@ -42,3 +42,4 @@ echo "1. Vérifiez que tous les fichiers sont bien copiés"
 echo "2. Testez le site localement (ouvrez index.html dans un navigateur)"
 echo "3. Poussez sur GitHub et activez GitHub Pages"
 
+

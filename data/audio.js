@@ -21,13 +21,13 @@ function createSound(soundKey, volume = 0.1, isLargeFile = false) {
   const config = {
     src: [path],
     volume: volume,
-    onload: function() {
+    onload: function () {
       console.log(`✅ ${soundKey} loaded successfully`);
     },
-    onloaderror: function(id, error) {
+    onloaderror: function (id, error) {
       console.error(`❌ Failed to load ${soundKey}:`, error);
     },
-    onplay: function() {
+    onplay: function () {
       console.log(`▶️ Playing: ${soundKey}`);
     }
   };
@@ -66,20 +66,20 @@ function createLoopingMusic(soundKey, volume = 0.1) {
       loop: true,  // Musique en boucle
       preload: true, // Précharger la musique
       format: ['ogg'], // Spécifier le format
-      onload: function() {
+      onload: function () {
         console.log(`✅ ${soundKey} music loaded successfully`);
       },
-      onloaderror: function(id, error) {
+      onloaderror: function (id, error) {
         console.error(`❌ Failed to load music ${soundKey}:`, error);
       },
-      onplay: function() {
+      onplay: function () {
         console.log(`▶️ Playing music: ${soundKey}`);
       },
-      onplayerror: function(id, error) {
+      onplayerror: function (id, error) {
         console.error(`❌ Error playing music ${soundKey}:`, error);
         console.log('🔓 Attempting to unlock audio...');
         const self = this;
-        this.once('unlock', function() {
+        this.once('unlock', function () {
           console.log('🔓 Audio unlocked! Retrying play...');
           self.play();
         });
@@ -95,28 +95,28 @@ function createLoopingMusic(soundKey, volume = 0.1) {
 function createDummyAudio() {
   console.log('⚠️ Creating dummy audio object');
   return {
-    play: function() { console.log('🔇 Dummy audio play called'); return this; },
-    stop: function() { console.log('🔇 Dummy audio stop called'); return this; },
-    pause: function() { console.log('🔇 Dummy audio pause called'); return this; },
-    volume: function() { return this; },
-    fade: function() { return this; }
+    play: function () { console.log('🔇 Dummy audio play called'); return this; },
+    stop: function () { console.log('🔇 Dummy audio stop called'); return this; },
+    pause: function () { console.log('🔇 Dummy audio pause called'); return this; },
+    volume: function () { return this; },
+    fade: function () { return this; }
   };
 }
 
 // Utilisation de la fonction pour créer chaque son
 const audio = audioPathData ? {
-  Map: createLoopingMusic('map', 0.4),          // Musique de map
-  initBattle: createSound('initBattle', 0.6),   // Son de début de combat
-  battle: createLoopingMusic('battle', 0.4),    // Musique de combat
-  pumpTrump: createLoopingMusic('pumpTrump', 0.5), // Musique TRUMPY
-  tackleHit: createSound('tackleHit', 0.7),     // Son d'impact Tackle (augmenté)
-  fireballHit: createSound('fireballHit', 0.7), // Son d'impact Fireball (augmenté)
-  initFireball: createSound('initFireball', 0.7), // Son de lancement Fireball (augmenté)
-  victory: createSound('victory', 0.6),         // Son de victoire (augmenté)
-  initMexico: createSound('initMexico', 0.5),   // Son Mexico (nouveaux sons, bon niveau)
-  mexicoHit: createSound('mexicoHit', 0.7),     // Impact Mexico (augmenté)
-  initIce: createSound('initIce', 0.5),         // Son Ice (nouveaux sons, bon niveau)
-  iceHit: createSound('iceHit', 0.7)            // Impact Ice (augmenté)
+  Map: createLoopingMusic('map', 0.7),          // Musique de map (augmenté: 0.4 -> 0.7)
+  initBattle: createSound('initBattle', 0.4),   // Son de début de combat (diminué: 0.9 -> 0.4)
+  battle: createLoopingMusic('battle', 0.7),    // Musique de combat (augmenté: 0.4 -> 0.7)
+  pumpTrump: createLoopingMusic('pumpTrump', 0.3), // Musique TRUMPY (diminué: 0.5 -> 0.3)
+  tackleHit: createSound('tackleHit', 0.8),     // Son d'impact Tackle (augmenté: 0.7 -> 0.8)
+  fireballHit: createSound('fireballHit', 0.8), // Son d'impact Fireball (augmenté: 0.7 -> 0.8)
+  initFireball: createSound('initFireball', 0.7), // Son de lancement Fireball
+  victory: createSound('victory', 0.9),         // Son de victoire (augmenté: 0.6 -> 0.9)
+  initMexico: createSound('initMexico', 0.8),   // Son Mexico (augmenté: 0.5 -> 0.8)
+  mexicoHit: createSound('mexicoHit', 1.0),     // Impact Mexico (augmenté: 0.7 -> 1.0)
+  initIce: createSound('initIce', 0.8),         // Son Ice (augmenté: 0.5 -> 0.8)
+  iceHit: createSound('iceHit', 1.0)            // Impact Ice (augmenté: 0.7 -> 1.0)
 } : null;
 
 if (audio) {

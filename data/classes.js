@@ -323,6 +323,31 @@ class Monster extends Sprite {
           button.innerHTML = attack.name
           attacksBox.append(button)
         })
+
+        // Réattacher les événements de clic aux nouveaux boutons
+        if (attacksBox.id === 'attacksBox') {
+          // Combat normal (battleScene)
+          if (typeof attachBattleAttackListeners === 'function') {
+            attachBattleAttackListeners()
+          }
+        } else if (attacksBox.id === 'attacksBoxTrainer') {
+          // Combat trainer
+          // Réattacher les événements manuellement pour le trainer
+          document.querySelectorAll('#attacksBoxTrainer button').forEach((button, index) => {
+            button.addEventListener('click', (e) => {
+              const selectedTrainerAttack = attacks[e.currentTarget.innerHTML]
+              if (typeof trainerAttack === 'function') {
+                trainerAttack(selectedTrainerAttack)
+              }
+            })
+
+            button.addEventListener('mouseenter', (e) => {
+              const selectedTrainerAttack = attacks[e.currentTarget.innerHTML]
+              document.querySelector('#attackTypeTrainer').innerHTML = selectedTrainerAttack.type
+              document.querySelector('#attackTypeTrainer').style.color = selectedTrainerAttack.color
+            })
+          })
+        }
       }
 
       if (onComplete) onComplete()
@@ -423,6 +448,52 @@ class Monster extends Sprite {
     }
 
     switch (attack.name) {
+      case '???':
+        // Attaque secrète : Déclenche la transformation en TRUMPY !
+        console.log('🔥 SECRET POWER ACTIVATED! 🔥')
+
+        // Animation spéciale
+        const secretTl = gsap.timeline()
+
+        let secretDistance = 20
+        if (this.isEnemy) secretDistance = -20
+
+        secretTl.to(this.position, {
+          x: this.position.x - secretDistance,
+          duration: 0.2
+        })
+        .to(this.position, {
+          x: this.position.x + secretDistance * 3,
+          duration: 0.3,
+          onComplete: () => {
+            // Effet visuel sur l'adversaire
+            gsap.to(recipient.position, {
+              x: recipient.position.x + 15,
+              yoyo: true,
+              repeat: 7,
+              duration: 0.05
+            })
+
+            gsap.to(recipient, {
+              opacity: 0,
+              repeat: 7,
+              yoyo: true,
+              duration: 0.05
+            })
+
+            // Appliquer les dégâts
+            gsap.to(healthBar, {
+              width: (recipient.health / recipient.maxHealth * 100) + '%',
+              duration: 0.5
+            })
+          }
+        })
+        .to(this.position, {
+          x: this.position.x,
+          duration: 0.2
+        })
+        break
+
       case 'Fireball':
         if (typeof audio !== 'undefined' && audio && audio.initFireball) {
           audio.initFireball.play()
