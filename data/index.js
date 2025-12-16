@@ -324,6 +324,9 @@ newCharacter.dialogueAfterDefeat = [
   "Want to try again?"
 ];
 
+// SAUVEGARDER le dialogue original IMMÉDIATEMENT (avant qu'il ne soit jamais modifié)
+newCharacter.originalDialogue = [...newCharacter.dialogue];
+
 // Rendre newCharacter globalement accessible
 window.newCharacter = newCharacter;
 
@@ -438,32 +441,35 @@ function calculateDistance(position1, position2) {
 }
 
 function checkProximityAndLaunchBattle() {
-  if (!shouldCheckDistance) {
-    return;
-  }
-
   const p = window.player;
   const nc = window.newCharacter;
 
-  if (!p || !nc) return;
+  if (!p || !nc) {
+    requestAnimationFrame(checkProximityAndLaunchBattle);
+    return;
+  }
+
+  // Si le joueur a vaincu le boss, arrêter complètement
+  if (window.hasDefeatedDragkatchu) {
+    return;
+  }
 
   const playerPosition = p.position;
   const newCharacterPosition = nc.position;
   const distance = calculateDistance(playerPosition, newCharacterPosition);
 
-  const proximityThreshold = 75;
+  const proximityThreshold = 150;
+  const resetThreshold = 250;
 
-  if (distance <= proximityThreshold) {
-    // Vérifier si le joueur a déjà vaincu Dragkatchu
-    if (window.hasDefeatedDragkatchu) {
-      // Ne pas relancer le combat, juste désactiver la vérification
-      shouldCheckDistance = false;
-      return;
-    } else {
-      // Afficher d'abord le dialogue initial
-      showPreBattleDialogue();
-      shouldCheckDistance = false;
-    }
+  // Si le joueur est très loin, réactiver la détection
+  if (distance > resetThreshold) {
+    shouldCheckDistance = true;
+  }
+
+  // Vérifier la proximité
+  if (shouldCheckDistance && distance <= proximityThreshold) {
+    showPreBattleDialogue();
+    shouldCheckDistance = false;
   }
 
   requestAnimationFrame(checkProximityAndLaunchBattle);
@@ -477,19 +483,32 @@ function showPreBattleDialogue() {
     return;
   }
 
+  // Ne pas relancer si déjà en attente de combat
+  if (gameState.waitingForBattle) {
+    return;
+  }
+
+  const nc = window.newCharacter;
+  const p = window.player;
+
+  // STOPPER LE JOUEUR IMMÉDIATEMENT
+  if (p) {
+    // Désactiver toutes les touches
+    keys.w.pressed = false;
+    keys.a.pressed = false;
+    keys.s.pressed = false;
+    keys.d.pressed = false;
+    // Bloquer les interactions
+    p.isInteracting = true;
+    gameState.waitingForBattle = true;
+  }
+
   setTimeout(() => {
-    const nc = window.newCharacter;
-    const p = window.player;
-
     if (nc) {
-      // Sauvegarder le dialogue original seulement la première fois
-      if (!nc.originalDialogue && !window.hasDefeatedDragkatchu) {
-        nc.originalDialogue = [...nc.dialogue];
-      }
-
-      // Si on n'a pas encore vaincu Dragkatchu, utiliser le dialogue original
+      // TOUJOURS restaurer le dialogue original (sauvegardé à la création du personnage)
       if (!window.hasDefeatedDragkatchu && nc.originalDialogue) {
         nc.dialogue = [...nc.originalDialogue];
+        console.log('✅ Dialogue restauré à l\'original (4 lignes)');
       }
 
       nc.dialogueIndex = 0;
@@ -497,12 +516,10 @@ function showPreBattleDialogue() {
       if (dialogueBox) {
         dialogueBox.innerHTML = nc.dialogue[0];
         dialogueBox.style.display = 'flex';
-        p.isInteracting = true;
         p.interactionAsset = nc;
-        gameState.waitingForBattle = true;
       }
     }
-  }, 500);
+  }, 100);
 }
 
 function launchBattle() {
@@ -621,6 +638,18 @@ function forceStartBattle() {
   // Fermer le sac si il est ouvert
   if (typeof window.bagSystem !== 'undefined' && window.bagSystem.isOpen) {
     window.bagSystem.closeBag();
+  }
+
+  // CACHER IMMÉDIATEMENT la boîte de dialogue des personnages
+  const characterDialogue = document.querySelector('#characterDialogueBox');
+  if (characterDialogue) characterDialogue.style.display = 'none';
+  const dialogueChoices = document.querySelector('#dialogueChoices');
+  if (dialogueChoices) dialogueChoices.style.display = 'none';
+
+  // RÉINITIALISER les états d'interaction du joueur
+  if (window.player) {
+    window.player.isInteracting = false;
+    window.player.interactionAsset = null;
   }
 
   if (typeof audio !== 'undefined' && audio) {
@@ -1186,8 +1215,17 @@ window.addEventListener('keydown', (e) => {
   if (player.isInteracting) {
     switch (e.key) {
       case ' ':
+        // BLOQUER les interactions pendant un combat
+        if (battle.initiated) {
+          return;
+        }
+
         player.interactionAsset.dialogueIndex++;
         const { dialogueIndex, dialogue } = player.interactionAsset;
+
+        console.log('Dialogue index:', dialogueIndex, '/ Dialogue length:', dialogue.length);
+        console.log('waitingForBattle:', gameState.waitingForBattle);
+
         if (dialogueIndex <= dialogue.length - 1) {
           document.querySelector('#characterDialogueBox').innerHTML =
             player.interactionAsset.dialogue[dialogueIndex];
@@ -1218,12 +1256,24 @@ window.addEventListener('keydown', (e) => {
           return;
         }
 
+        // DEBUG : Vérifier les valeurs
+        console.log('🔍 Check conditions:');
+        console.log('  gameState.waitingForBattle:', gameState.waitingForBattle);
+        console.log('  window.hasDefeatedDragkatchu:', window.hasDefeatedDragkatchu);
+        console.log('  Condition complète:', gameState.waitingForBattle && !window.hasDefeatedDragkatchu);
+
         // Vérifier si on est en attente du combat initial (et qu'on n'a pas encore vaincu Dragkatchu)
         if (gameState.waitingForBattle && !window.hasDefeatedDragkatchu) {
+          console.log('🚀 Lancement du combat depuis le dialogue !');
+
+          // RÉINITIALISER IMMÉDIATEMENT tous les états pour empêcher le dialogue de réapparaître
           gameState.waitingForBattle = false;
           player.isInteracting = false;
-          player.interactionAsset.dialogueIndex = 0;
-          document.querySelector('#characterDialogueBox').style.display = 'none';
+          player.interactionAsset = null;  // ← IMPORTANT: mettre à null immédiatement
+
+          // Cacher le dialogue
+          const dialogueBox = document.querySelector('#characterDialogueBox');
+          if (dialogueBox) dialogueBox.style.display = 'none';
 
           // Lancer le combat
           setTimeout(() => {
@@ -1231,6 +1281,12 @@ window.addEventListener('keydown', (e) => {
           }, 500);
           return;
         }
+
+        // Si on arrive ici, c'est un dialogue normal qui se termine
+        console.log('❌ Fin du dialogue normal (combat NON lancé)');
+        player.isInteracting = false;
+        player.interactionAsset.dialogueIndex = 0;
+        document.querySelector('#characterDialogueBox').style.display = 'none';
 
         // Sinon, juste fermer le dialogue
         gameState.waitingForBattle = false;
@@ -1253,6 +1309,9 @@ window.addEventListener('keydown', (e) => {
 
   switch (e.key) {
     case ' ':
+      // BLOQUER si un combat est en cours
+      if (battle.initiated) return;
+
       if (!player.interactionAsset) return;
 
       // Si le joueur a déjà vaincu Dragkatchu et interagit avec newCharacter, ne pas lancer le combat

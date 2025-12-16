@@ -23,6 +23,11 @@ function initBattle() {
   document.querySelector('#enemyHealthBar').style.width = '100%'
   document.querySelector('#playerHealthBar').style.width = '100%'
   document.querySelector('#attacksBox').replaceChildren()
+  // Cacher la boîte de dialogue des personnages et les choix
+  const characterDialogue = document.querySelector('#characterDialogueBox')
+  if (characterDialogue) characterDialogue.style.display = 'none'
+  const dialogueChoices = document.querySelector('#dialogueChoices')
+  if (dialogueChoices) dialogueChoices.style.display = 'none'
   isBattleAttacking = false
   selectedAttackIndex = 0
   canProcessQueue = true

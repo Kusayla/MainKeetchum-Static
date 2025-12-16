@@ -27,6 +27,11 @@ function initBattl() {
   document.querySelector('#enemyHealthBarTrainer').style.width = '100%';
   document.querySelector('#playerHealthBarTrainer').style.width = '100%';
   document.querySelector('#attacksBoxTrainer').replaceChildren();
+  // Cacher la boîte de dialogue des personnages et les choix
+  const characterDialogue = document.querySelector('#characterDialogueBox');
+  if (characterDialogue) characterDialogue.style.display = 'none';
+  const dialogueChoices = document.querySelector('#dialogueChoices');
+  if (dialogueChoices) dialogueChoices.style.display = 'none';
   isTrainerAttacking = false;
   selectedTrainerAttackIndex = 0;
   canProcessQueueTrainer = true;

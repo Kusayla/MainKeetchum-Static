@@ -25,12 +25,12 @@
     user-select: none;
 }
 
-/* Boîte de dialogue des personnages - 50px alignée avec .battle-options */
+/* Boîte de dialogue des personnages - responsive */
 .dialogue-box {
     background-color: white;
-    height: 50px;
+    height: 100px;
     position: absolute;
-    bottom: 50px;
+    bottom: 0px;
     left: 0px;
     right: 0px;
     border-top: 4px black solid;
