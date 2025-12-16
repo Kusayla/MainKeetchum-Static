@@ -25,6 +25,77 @@
     user-select: none;
 }
 
+/* Boîte de dialogue des personnages - 50px alignée avec .battle-options */
+.dialogue-box {
+    background-color: white;
+    height: 50px;
+    position: absolute;
+    bottom: 50px;
+    left: 0px;
+    right: 0px;
+    border-top: 4px black solid;
+    display: none;
+    padding: 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    cursor: pointer;
+    box-sizing: border-box;
+    z-index: 15;
+    line-height: 1.4;
+}
+
+/* Choix de dialogue - au-dessus de la boîte de dialogue */
+.dialogue-choices {
+    background-color: white;
+    position: absolute;
+    bottom: 110px;
+    right: 50px;
+    border: 4px black solid;
+    padding: 12px;
+    display: none;
+    min-width: 120px;
+    font-family: 'Press Start 2P', cursive;
+    z-index: 16;
+}
+
+.choice-option {
+    padding: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.choice-option.selected {
+    background-color: #f0f0f0;
+}
+
+.choice-arrow {
+    margin-right: 10px;
+    color: black;
+}
+
+.choice-text {
+    user-select: none;
+}
+
+/* Controls hint - indicateur des touches */
+.controls-hint {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    z-index: 14;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
 /* Combat UI Styles */
 .ui-container {
     display: none;
@@ -570,40 +641,43 @@ body {
         font-size: 12px;
     }
 
-    /* Dialogue box des personnages en mobile */
+    /* Dialogue box des personnages en mobile - 50px alignée avec .battle-options */
     .dialogue-box {
-        height: 80px !important;
-        padding: 10px !important;
-        font-size: 12px !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        border-top: 3px black solid !important;
-        transform: scale(0.32);
-        transform-origin: bottom left;
-        width: 312.5%;
+        height: 50px;
+        padding: 8px;
+        font-size: 10px;
+        bottom: 50px;
+        left: 0;
+        right: 0;
+        border-top: 3px black solid;
+        line-height: 1.2;
     }
 
-    /* Choices dialog */
+    /* Choices dialog - juste au-dessus de la dialogue box */
     .dialogue-choices {
-        bottom: 25px !important;
-        font-size: 12px !important;
-        transform: scale(0.32);
-        transform-origin: bottom left;
-        width: 312.5%;
+        bottom: 110px;
+        right: 20px;
+        padding: 8px;
+        border: 3px black solid;
+        min-width: 100px;
     }
 
     .choice-option {
-        padding: 8px !important;
+        padding: 6px;
+        font-size: 10px;
     }
 
-    /* Controls hint */
+    .choice-arrow {
+        margin-right: 6px;
+        font-size: 10px;
+    }
+
+    /* Controls hint - en bas du canvas */
     .controls-hint {
-        font-size: 11px !important;
-        padding: 6px !important;
-        transform: scale(0.32);
-        transform-origin: top left;
-        width: 312.5%;
+        font-size: 8px;
+        padding: 5px 8px;
+        bottom: 3px;
+        transform: translateX(-50%);
     }
 
     /* Bag system responsive mobile */
