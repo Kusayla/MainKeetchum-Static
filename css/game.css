@@ -682,12 +682,11 @@ body {
 
     /* Bag system responsive mobile */
     .bag-interface {
-        transform: scale(0.32);
-        transform-origin: center;
-        width: 312.5%;
-        height: 312.5%;
-        left: -106.25%;
-        top: -106.25%;
+        width: 100% !important;
+        height: 100% !important;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
     }
 
     .bag-header h2 {
@@ -724,12 +723,11 @@ body {
 
     /* Item detail view responsive */
     .item-detail-view {
-        transform: scale(0.32);
-        transform-origin: center;
-        width: 312.5%;
-        height: 312.5%;
-        left: -106.25%;
-        top: -106.25%;
+        width: 100% !important;
+        height: 100% !important;
+        left: 0 !important;
+        top: 0 !important;
+        transform: none !important;
     }
 
     .paper-container {

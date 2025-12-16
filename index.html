@@ -996,6 +996,18 @@
                     window.hasReceivedBag = true;
                 }
 
+                // Charger les items du sac depuis localStorage
+                const savedItems = localStorage.getItem('bagItems');
+                if (savedItems) {
+                    try {
+                        this.items = JSON.parse(savedItems);
+                        console.log('Loaded items from localStorage:', this.items);
+                    } catch (e) {
+                        console.error('Error loading bag items:', e);
+                        this.items = [];
+                    }
+                }
+
                 // Gestion des touches clavier
                 document.addEventListener('keydown', (e) => {
                     // Touche "i" pour ouvrir/fermer le sac
@@ -1193,11 +1205,23 @@
                     this.items.push(item);
                     console.log('Item added to bag:', item);
 
+                    // Sauvegarder dans localStorage
+                    this.saveToLocalStorage();
+
                     // Mettre à jour la visibilité du bouton BAG
                     this.updateBagButtonVisibility();
 
                     // Afficher une notification avec le bon icône
                     this.showNotification(`You received: ${item.name}!`, item.icon || '📜');
+                }
+            },
+
+            saveToLocalStorage() {
+                try {
+                    localStorage.setItem('bagItems', JSON.stringify(this.items));
+                    console.log('Bag items saved to localStorage');
+                } catch (e) {
+                    console.error('Error saving bag items:', e);
                 }
             },
 
