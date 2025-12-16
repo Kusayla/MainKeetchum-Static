@@ -12,6 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/lastversion.css?v=10">
     <link rel="stylesheet" href="css/game.css?v=10">
+    <link rel="stylesheet" href="css/site.css?v=1">
 
     <!-- Unown Font -->
     <style>
@@ -658,149 +659,127 @@
 
     <!-- Site content (hidden by default) -->
     <div id="site-content" style="display: none;">
-        <div class="container">
-            <div class="row logoR">
-                <div class="col-4"></div>
-                <div class="col-6 mt-5">
-                    <a href="https://x.com/asskeetchumcoin?s=21">
-                        <img src="img/token.png" class="img-fluid justify-content-end" alt="">
-                    </a>
-                </div>
-                <div class="col-1 mt-5">
-                    <a href="https://x.com/asskeetchumcoin?s=21">
-                        <img src="img/tel.png" class="img-fluid justify-content-end" alt="">
-                    </a>
-                </div>
-                <div class="col-1 mt-5">
-                    <a href="https://x.com/asskeetchumcoin?s=21">
-                        <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
-                    </a>
-                </div>
-            </div>
-        </div>
+        <!-- Animated Background -->
+        <div class="site-background"></div>
 
-        <div class="container">
-            <div class="row align-items-center my-row">
-                <div class="col-2"></div>
-                <div class="col-8">
-                    <div class="text-column mt-5 image-overlay-text text-beside-image">
-                        <h2 class="ms-5">A$$ KEETCHUM!</h2>
+        <!-- Floating A$$ Text -->
+        <div class="floating-text"></div>
+
+        <!-- Header -->
+        <header class="site-header">
+            <div>
+                <a href="https://x.com/asskeetchumcoin?s=21">
+                    <img src="img/token.png" class="site-logo" alt="A$$ Keetchum Logo">
+                </a>
+            </div>
+            <div class="social-links">
+                <a href="https://x.com/asskeetchumcoin?s=21" target="_blank">
+                    <img src="img/tel.png" class="social-icon" alt="Telegram">
+                </a>
+                <a href="https://x.com/asskeetchumcoin?s=21" target="_blank">
+                    <img src="img/X.png" class="social-icon" alt="Twitter">
+                </a>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title glitch" data-text="A$$ KEETCHUM!">
+                A$$ KEETCHUM! <span class="troll-emoji">🍑</span>
+            </h1>
+            <p class="hero-subtitle">GOTTA PUMP 'EM ALL! 🚀</p>
+        </section>
+
+        <!-- Main Container -->
+        <div class="site-container">
+            <!-- About Section -->
+            <section class="content-section reveal">
+                <div class="section-grid">
+                    <div>
+                        <img src="img/pikatchoum.png" class="section-image" alt="Pikatchoum">
+                    </div>
+                    <div class="section-text">
+                        <h2>WHAT IS A$$? 🍑</h2>
+                        <p>
+                            A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
+                            of the ultimate Pokémon Master. Get ready to not just catch Pokémon, but also
+                            the boundless potential of cryptocurrency!
+                            <br><br>
+                            <strong>Gonna catch 'em all!</strong> 💰🚀
+                        </p>
                     </div>
                 </div>
-                <div class="col-2"></div>
-            </div>
-        </div>
+            </section>
 
-        <div class="row p-3 mt-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-7">
-                        <img class="img-fluid picka" src="img/pikatchoum.png" alt="Pikatchoum">
-                    </div>
-                    <div class="col-5">
-                        <div class="container">
-                            <div class="row align-items-center my-row">
-                                <div class="text-column mt-5 image-overlay-text text-beside-image">
-                                    <h2>A$$!</h2>
-                                    <p>A$$ Keetchum! Embark on a blockchain adventure imbued with the indomitable spirit
-                                        <br> of the ultimate Pokémon Master. <span class="text-to-hide"> Get ready to
-                                            not just catch Pokémon, but <br> also the boundless potential of
-                                            cryptocurrency! </span> Gonna catch 'em all!
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Contract Address -->
+            <section class="contract-band">
+                <div class="contract-title">
+                    <img src="img/adressTitle.png" alt="Contract Address">
                 </div>
-            </div>
-        </div>
+                <div class="contract-address-box" onclick="copyContractAddress()">
+                    <h2 id="contractText">FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR</h2>
+                    <p style="font-size: 0.7rem; margin-top: 1rem; color: #f093fb;">
+                        👆 CLICK TO COPY 👆
+                    </p>
+                </div>
+            </section>
 
-        <div class="black-band">
-            <div class="row">
-                <div class="col-12">
-                    <img src="img/adressTitle.png" alt="" class="img-fluid">
-                </div>
+            <!-- Community Section -->
+            <section class="content-section community-section reveal">
                 <div>
-                    <div class="contract-address">
-                        <button class="button-wl" onclick="copyToClipboard()">
-                            <span id="contractText">
-                                <h2>FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR</h2>
-                            </span>
-                        </button>
+                    <img src="img/slem.webp" class="section-image" alt="Slem" style="max-width: 500px; margin: 0 auto 2rem; display: block;">
+                </div>
+                <h2 class="community-title">
+                    JOIN THE A$$ <span class="troll-emoji">🍑</span> COMMUNITY!
+                </h2>
+                <div class="community-icons">
+                    <a href="https://x.com/asskeetchumcoin?s=21" target="_blank">
+                        <img src="img/tel.png" class="community-icon" alt="Telegram">
+                    </a>
+                    <a href="https://x.com/asskeetchumcoin?s=21" target="_blank">
+                        <img src="img/X.png" class="community-icon" alt="Twitter">
+                    </a>
+                </div>
+            </section>
+
+            <!-- How To Buy Section -->
+            <section class="htb-section reveal">
+                <h2 class="htb-title">HOW TO BUY A$$!!! 🚀</h2>
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <img src="img/Ask.png" alt="How to buy" style="max-width: 150px;">
+                </div>
+                <div class="htb-steps">
+                    <div class="htb-step">
+                        <img src="img/wallet.png" alt="Create Wallet">
+                        <h3>1. CREATE WALLET</h3>
+                        <p>Create your Solana wallet on Phantom. Just follow the simple guide!</p>
+                    </div>
+                    <div class="htb-step">
+                        <img src="img/solToken.png" alt="Buy SOL">
+                        <h3>2. BUY SOL</h3>
+                        <p>Congrats! You created your wallet. Now fill it with SOL!</p>
+                    </div>
+                    <div class="htb-step">
+                        <img src="img/Raydium.png" alt="Swap to A$$">
+                        <h3>3. SWAP TO A$$</h3>
+                        <p>Now use Raydium to swap your SOL for A$$!</p>
                     </div>
                 </div>
-            </div>
+                <div style="text-align: center; margin-top: 3rem; font-size: 1.5rem;">
+                    <p>🍑 TO THE MOON! 🚀</p>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer style="text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.7); font-size: 0.7rem;">
+                <p>A$$ Keetchum is a meme coin with no intrinsic value or expectation of financial return.</p>
+                <p style="margin-top: 1rem;">© 2024 A$$ Keetchum. All rights reserved. 🍑</p>
+            </footer>
         </div>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-8">
-                    <img src="img/slem.webp" alt="Image Description" class="img-fluid picka mt-5">
-                </div>
-                <div class="col-4 mx-auto mxt">
-                    <div class="text-image-container">
-                        <div class="text-beside-image">
-                            <h2>JOIN THE </h2>
-                            <h1>A$$!</h1>
-                            <h2>COMMUNITY </h2>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mt-5">
-                                <a href="">
-                                    <img src="img/tel.png" class="img-fluid d-block header-logo justify-content-center"
-                                        alt="">
-                                </a>
-                            </div>
-                            <div class="col-6 mt-5">
-                                <a href="https://x.com/asskeetchumcoin?s=21">
-                                    <img src="img/X.png" class="img-fluid d-block header-logo" alt="">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="PurpleBlack-band">
-            <div class="container">
-                <div class="row">
-                    <div class="col-4"></div>
-                    <div class="col-4 mxt">
-                        <h1 class="htba">HOW TO BUY A$$!!!</h1>
-                    </div>
-                    <div class="col-4"></div>
-                    <div class="col-4"></div>
-                    <div class="col-4 mxt">
-                        <img src="img/Ask.png" alt="">
-                    </div>
-                    <div class="col-4"></div>
-                    <div class="col-4 mxt">
-                        <h2 class="htba">Creat SOLANA Wallet</h2>
-                        <p class="htba">creer ton wallet sur Phanto suis simplement le guide</p>
-                    </div>
-                    <div class="col-2"></div>
-                    <div class="col-6 mxt">
-                        <img src="img/wallet.png" alt="" class="logoR">
-                    </div>
-                    <div class="col-6">
-                        <img src="img/solToken.png" alt="" class="logoR">
-                    </div>
-                    <div class="col-2"></div>
-                    <div class="col-4">
-                        <h2 class="htba">Buy some SOL</h2>
-                        <p class="htba">Bravo tu a créer ton wallet maintenant remplie le de SOL</p>
-                    </div>
-                    <div class="col-4">
-                        <h2 class="htba">Swap your SOL to A$$</h2>
-                        <p class="htba">Maintenant utilise Raydium afin de swap tes SOL en A$$</p>
-                    </div>
-                    <div class="col-2"></div>
-                    <div class="col-6">
-                        <img src="img/Raydium.png" alt="" class="logoR">
-                    </div>
-                </div>
-            </div>
+        <!-- Copy Notification -->
+        <div id="copyNotification" class="copy-notification">
+            ✅ CONTRACT ADDRESS COPIED! ✅
         </div>
     </div>
 
@@ -975,12 +954,106 @@
             console.log(isMuted ? '🔇 Son désactivé' : '🔊 Son activé');
         });
 
+        // ===== SITE WEB ANIMATIONS =====
+
         // Fonction pour copier l'adresse du contrat
-        function copyToClipboard() {
+        function copyContractAddress() {
             const text = 'FUYRMRSRV2FUJSSNY9GHCA97UBNEP1SDU5YRQSV4RZFR';
             navigator.clipboard.writeText(text).then(() => {
-                alert('Adresse copiée !');
+                // Show notification
+                const notification = document.getElementById('copyNotification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                // Fallback pour les anciens navigateurs
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                const notification = document.getElementById('copyNotification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 2000);
             });
+        }
+
+        // Animation du texte flottant A$$
+        function createFloatingText() {
+            const floatingContainer = document.querySelector('.floating-text');
+            if (!floatingContainer) return;
+
+            setInterval(() => {
+                const floatingText = document.createElement('div');
+                floatingText.className = 'floating-ass';
+                floatingText.textContent = 'A$$ 🍑';
+                floatingText.style.left = Math.random() * 100 + '%';
+                floatingText.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                floatingText.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+
+                floatingContainer.appendChild(floatingText);
+
+                // Supprimer après l'animation
+                setTimeout(() => {
+                    floatingText.remove();
+                }, 25000);
+            }, 3000);
+        }
+
+        // Scroll reveal animation
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            reveals.forEach(reveal => {
+                observer.observe(reveal);
+            });
+        }
+
+        // Initialiser les animations du site quand il est affiché
+        const siteContent = document.getElementById('site-content');
+        if (siteContent) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'style') {
+                        if (siteContent.style.display !== 'none') {
+                            // Le site est maintenant visible, lancer les animations
+                            createFloatingText();
+                            revealOnScroll();
+                        }
+                    }
+                });
+            });
+
+            observer.observe(siteContent, {
+                attributes: true,
+                attributeFilter: ['style']
+            });
+
+            // Si déjà visible au chargement
+            if (siteContent.style.display !== 'none') {
+                createFloatingText();
+                revealOnScroll();
+            }
+        }
+
+        // Ancienne fonction pour compatibilité
+        function copyToClipboard() {
+            copyContractAddress();
         }
 
         // ===== BAG/INVENTORY SYSTEM =====
