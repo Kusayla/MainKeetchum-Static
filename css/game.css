@@ -7,6 +7,19 @@
     font-style: normal;
 }
 
+/* Overlay pour les animations (écran noir/rouge) - Par défaut couvre le canvas */
+.overlay {
+    background-color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
 .newCharacterDialogue {
     font-family: 'Unown';
     user-select: none;
@@ -120,7 +133,8 @@
 }
 
 /* Styles pour les boutons d'attaque */
-#attacksBox button, #attacksBoxTrainer button {
+#attacksBox button,
+#attacksBoxTrainer button {
     font-family: 'Press Start 2P', cursive;
     font-size: 14px;
     padding: 12px;
@@ -132,11 +146,13 @@
     text-align: center;
 }
 
-#attacksBox button:hover, #attacksBoxTrainer button:hover {
+#attacksBox button:hover,
+#attacksBoxTrainer button:hover {
     background-color: #f0f0f0;
 }
 
-#attacksBox button.selected, #attacksBoxTrainer button.selected {
+#attacksBox button.selected,
+#attacksBoxTrainer button.selected {
     background-color: #4CAF50;
     color: white;
 }
@@ -476,5 +492,229 @@ body {
         top: 0;
         right: 0;
     }
-}
 
+    /* Responsive UI pour combat sur mobile */
+    .ui-container {
+        transform: scale(0.32);
+        transform-origin: top left;
+        width: 312.5%;
+        height: 312.5%;
+    }
+
+    .status-box {
+        width: 280px;
+        padding: 8px;
+        border: 3px black solid;
+    }
+
+    .status-box.enemy {
+        top: -780px;
+        left: 15px;
+    }
+
+    .status-box.player {
+        top: auto;
+        bottom: 135px;
+        right: 15px;
+    }
+
+    .status-title {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .health-bar-background {
+        height: 8px;
+        margin-top: 6px;
+    }
+
+    .health-bar {
+        height: 8px;
+    }
+
+    .xp-bar {
+        height: 8px;
+    }
+
+    .xp-bar-container {
+        margin-top: 6px;
+    }
+
+    .xp-bar-container>div {
+        font-size: 9px !important;
+        margin-bottom: 3px !important;
+    }
+
+    .battle-options {
+        height: 100px;
+    }
+
+    .dialogue {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    #attacksBox button,
+    #attacksBoxTrainer button {
+        font-size: 11px;
+        padding: 8px 6px;
+        margin: 2px;
+        border: 2px solid black;
+    }
+
+    .attack-type-container {
+        border-left: 3px black solid;
+    }
+
+    .attack-type-title {
+        font-size: 12px;
+    }
+
+    /* Dialogue box des personnages en mobile */
+    .dialogue-box {
+        height: 80px !important;
+        padding: 10px !important;
+        font-size: 12px !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-top: 3px black solid !important;
+        transform: scale(0.32);
+        transform-origin: bottom left;
+        width: 312.5%;
+    }
+
+    /* Choices dialog */
+    .dialogue-choices {
+        bottom: 25px !important;
+        font-size: 12px !important;
+        transform: scale(0.32);
+        transform-origin: bottom left;
+        width: 312.5%;
+    }
+
+    .choice-option {
+        padding: 8px !important;
+    }
+
+    /* Controls hint */
+    .controls-hint {
+        font-size: 11px !important;
+        padding: 6px !important;
+        transform: scale(0.32);
+        transform-origin: top left;
+        width: 312.5%;
+    }
+
+    /* Bag system responsive mobile */
+    .bag-interface {
+        transform: scale(0.32);
+        transform-origin: center;
+        width: 312.5%;
+        height: 312.5%;
+        left: -106.25%;
+        top: -106.25%;
+    }
+
+    .bag-header h2 {
+        font-size: 22px !important;
+    }
+
+    .bag-instruction {
+        font-size: 13px !important;
+    }
+
+    .bag-items {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        gap: 12px !important;
+        padding: 15px !important;
+    }
+
+    .bag-item {
+        padding: 12px !important;
+        border: 2px solid #666 !important;
+    }
+
+    .bag-item-icon {
+        font-size: 28px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .bag-item-name {
+        font-size: 11px !important;
+    }
+
+    .empty-bag-message {
+        font-size: 14px !important;
+    }
+
+    /* Item detail view responsive */
+    .item-detail-view {
+        transform: scale(0.32);
+        transform-origin: center;
+        width: 312.5%;
+        height: 312.5%;
+        left: -106.25%;
+        top: -106.25%;
+    }
+
+    .paper-container {
+        max-width: 90% !important;
+        padding: 20px !important;
+    }
+
+    .paper-title {
+        font-size: 18px !important;
+    }
+
+    .paper-text {
+        font-size: 13px !important;
+    }
+
+    .password-display {
+        font-size: 20px !important;
+        padding: 12px !important;
+    }
+
+    .password-hint-text {
+        font-size: 11px !important;
+    }
+
+    .unown-legend p {
+        font-size: 14px !important;
+        letter-spacing: 1px !important;
+    }
+
+    .close-paper-btn {
+        font-size: 12px !important;
+        padding: 10px 20px !important;
+    }
+
+    /* Boutons flottants sur mobile */
+    .floating-code-btn,
+    .floating-bag-btn,
+    .floating-mute-btn {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 24px !important;
+        top: 10px !important;
+    }
+
+    .floating-code-btn {
+        right: 10px !important;
+    }
+
+    .floating-bag-btn {
+        right: 70px !important;
+    }
+
+    .floating-mute-btn {
+        right: 130px !important;
+    }
+
+    /* Notification d'item */
+    .item-notification {
+        transform: scale(0.8);
+        transform-origin: top center;
+    }
+}

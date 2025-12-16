@@ -456,6 +456,10 @@
         <span>🎒</span>
     </button>
 
+    <button id="muteBtn" class="floating-mute-btn" title="Toggle sound">
+        <span id="muteBtnIcon">🔊</span>
+    </button>
+
     <!-- Modal pour entrer le code -->
     <div id="codeModal" class="code-modal" style="display: none;">
         <div class="code-modal-content">
@@ -472,10 +476,10 @@
     </div>
 
     <div class="game-container">
-        <div id="overlappingDiv" class="overlay"></div>
         <div class="gameboy" id="GameBoy">
             <div class="screen-area">
                 <canvas class="display" id="mainCanvas"></canvas>
+                <div id="overlappingDiv" class="overlay"></div>
                 <div id="characterDialogueBox" class="dialogue-box"></div>
                 <div id="dialogueChoices" class="dialogue-choices" style="display: none;">
                     <div class="choice-option" data-choice="yes">
@@ -940,6 +944,34 @@
             // Cacher le bouton de code si déjà débloqué
             openCodeModalBtn.style.display = 'none';
         }
+
+        // ===== BOUTON MUTE/UNMUTE =====
+        const muteBtn = document.getElementById('muteBtn');
+        const muteBtnIcon = document.getElementById('muteBtnIcon');
+        let isMuted = localStorage.getItem('soundMuted') === 'true';
+
+        // Appliquer l'état sauvegardé au chargement
+        if (isMuted && typeof Howler !== 'undefined') {
+            Howler.mute(true);
+            muteBtnIcon.textContent = '🔇';
+        }
+
+        // Gérer le clic sur le bouton mute
+        muteBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+
+            if (typeof Howler !== 'undefined') {
+                Howler.mute(isMuted);
+            }
+
+            // Mettre à jour l'icône
+            muteBtnIcon.textContent = isMuted ? '🔇' : '🔊';
+
+            // Sauvegarder l'état
+            localStorage.setItem('soundMuted', isMuted.toString());
+
+            console.log(isMuted ? '🔇 Son désactivé' : '🔊 Son activé');
+        });
 
         // Fonction pour copier l'adresse du contrat
         function copyToClipboard() {

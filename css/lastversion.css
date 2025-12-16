@@ -12141,7 +12141,8 @@ button:hover {
 
 /* Boutons flottants pour le code et le sac */
 .floating-code-btn,
-.floating-bag-btn {
+.floating-bag-btn,
+.floating-mute-btn {
   position: fixed;
   top: 20px;
   width: 60px;
@@ -12168,14 +12169,20 @@ button:hover {
   right: 90px; /* À gauche du bouton de code */
 }
 
+.floating-mute-btn {
+  right: 160px; /* À gauche du bouton de sac */
+}
+
 .floating-code-btn:hover,
-.floating-bag-btn:hover {
+.floating-bag-btn:hover,
+.floating-mute-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 .floating-code-btn:active,
-.floating-bag-btn:active {
+.floating-bag-btn:active,
+.floating-mute-btn:active {
   transform: scale(0.95);
 }
 
@@ -12784,7 +12791,8 @@ button:hover {
 
   /* Cacher les boutons flottants sur mobile (on utilise les boutons du GameBoy à la place) */
   .floating-code-btn,
-  .floating-bag-btn {
+  .floating-bag-btn,
+  .floating-mute-btn {
     display: none !important;
   }
 
@@ -12852,7 +12860,7 @@ button:hover {
     padding: 1vh;
   }
   .status-box.enemy {
-    top: 15vh;
+    top: -80vh;
     left: 5vh;
   }
   .status-box.player {
