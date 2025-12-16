@@ -310,7 +310,7 @@
 
         /* Item Received Notification */
         .item-notification {
-            position: fixed;
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -325,6 +325,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             opacity: 0;
             display: none;
+            max-width: 80%;
         }
 
         .item-notification-icon {
@@ -615,7 +616,7 @@
                     </div>
                 </div>
 
-                <!-- Item Received Notification -->
+                <!-- Item Received Notification - Dans screen-area pour centrer sur le canvas -->
                 <div id="itemNotification" class="item-notification">
                     <div class="item-notification-icon" id="notificationIcon">🎒</div>
                     <div class="item-notification-title" id="notificationTitle">You received a BAG!</div>
@@ -623,6 +624,7 @@
                         anytime!</div>
                 </div>
             </div>
+
             <div class="gameboy-buttons-container">
                 <button id="mobileBagButton" class="gameboy-round-btn" title="Open BAG"
                     style="display: none;">BAG</button>
@@ -1017,23 +1019,29 @@
                             switch (e.key) {
                                 case 'ArrowLeft':
                                 case 'a':
+                                case 'A':
                                 case 'q': // AZERTY
+                                case 'Q':
                                     e.preventDefault();
                                     this.selectPreviousItem();
                                     break;
                                 case 'ArrowRight':
                                 case 'd':
+                                case 'D':
                                     e.preventDefault();
                                     this.selectNextItem();
                                     break;
                                 case 'ArrowUp':
                                 case 'w':
+                                case 'W':
                                 case 'z': // AZERTY
+                                case 'Z':
                                     e.preventDefault();
                                     this.selectItemAbove();
                                     break;
                                 case 'ArrowDown':
                                 case 's':
+                                case 'S':
                                     e.preventDefault();
                                     this.selectItemBelow();
                                     break;
@@ -1188,15 +1196,15 @@
                     // Mettre à jour la visibilité du bouton BAG
                     this.updateBagButtonVisibility();
 
-                    // Afficher une notification
-                    this.showNotification(`You received: ${item.name}!`);
+                    // Afficher une notification avec le bon icône
+                    this.showNotification(`You received: ${item.name}!`, item.icon || '📜');
                 }
             },
 
-            showNotification(message) {
+            showNotification(message, icon = '📜') {
                 // Use the global animated notification
                 if (typeof window.showItemNotification === 'function') {
-                    window.showItemNotification('📜', message, 'Press I to open your bag');
+                    window.showItemNotification(icon, message, 'Press I to open your bag');
                 }
             },
 
@@ -1229,8 +1237,156 @@
             },
 
             showItemDetail(item) {
+                const paperTitle = document.querySelector('.paper-title');
+                const paperText = document.querySelector('.paper-text');
+
+                // Afficher le contenu selon le type d'item
+                if (item.id === 'mysterious_note') {
+                    paperTitle.textContent = 'MYSTERIOUS NOTE';
+                    paperText.innerHTML = `
+                        <p>Ancient Unown symbols reveal the secret password:</p>
+                        <div class="password-display" id="passwordDisplay">pikasschu</div>
+                        <p class="password-hint-text">(Decipher the Unown alphabet to read it)</p>
+                        <div class="unown-legend">
+                            <p style="font-family: 'Unown', monospace; font-size: 16px; letter-spacing: 3px; color: #1a0d06;">
+                                abcdefghijklmnopqrstuvwxyz</p>
+                            <p style="font-family: 'Press Start 2P', cursive; font-size: 8px; letter-spacing: 2px; color: #666;">
+                                abcdefghijklmnopqrstuvwxyz</p>
+                        </div>
+                        <p class="paper-hint">Use this password to unlock the website!</p>
+                    `;
+                } else if (item.id === 'shotgun') {
+                    paperTitle.textContent = '🔫 SHOTGUN';
+                    paperText.innerHTML = `
+                        <p style="font-size: 12px; margin-bottom: 15px;">${item.description}</p>
+                        <div style="background: #ff6b6b; padding: 10px; border-radius: 5px; margin: 15px 0; text-align: center;">
+                            <p style="color: white; font-size: 10px; font-weight: bold; margin: 0;">⚠️ USE AT THE RIGHT TIME ⚠️</p>
+                        </div>
+                        <button id="useShotgunBtn" style="width: 100%; padding: 10px; background: #2d2d2d; color: white; border: 2px solid #666; cursor: pointer; font-family: 'Press Start 2P', cursive; font-size: 10px; margin-top: 10px;">
+                            USE SHOTGUN
+                        </button>
+                    `;
+
+                    // Attacher l'événement au bouton USE
+                    setTimeout(() => {
+                        const useBtn = document.getElementById('useShotgunBtn');
+                        if (useBtn) {
+                            useBtn.addEventListener('click', () => {
+                                this.useShotgun();
+                            });
+                        }
+                    }, 100);
+                }
+
                 document.getElementById('itemDetailView').style.display = 'flex';
-                // On pourrait personnaliser le contenu selon l'item ici si nécessaire
+            },
+
+            useShotgun() {
+                // Fermer le sac
+                this.closeBag();
+                this.closeItemDetail();
+
+                // Vérifier la proximité avec KK
+                const kkChar = window.kkCharacter;
+                const p = window.player;
+
+                if (!kkChar || !p) {
+                    console.log('⚠️ Cannot use shotgun right now');
+                    return;
+                }
+
+                // DÉBLOQUER le joueur
+                if (p) {
+                    p.isInteracting = false;
+                    p.interactionAsset = null;
+                }
+
+                // Calculer la distance
+                const distance = Math.sqrt(
+                    Math.pow(kkChar.position.x - p.position.x, 2) +
+                    Math.pow(kkChar.position.y - p.position.y, 2)
+                );
+
+                console.log('Distance to KK:', distance);
+
+                // Si trop loin (plus de 200 pixels)
+                if (distance > 200) {
+                    // Afficher un message "Too far..."
+                    const dialogueBox = document.querySelector('#characterDialogueBox');
+                    if (dialogueBox) {
+                        dialogueBox.innerHTML = '*You are too far from your target...*';
+                        dialogueBox.style.display = 'flex';
+                        setTimeout(() => {
+                            dialogueBox.style.display = 'none';
+                        }, 2000);
+                    }
+                    return;
+                }
+
+                // BANG! Utiliser le shotgun sur KK
+                console.log('💥 BANG! Shooting KK!');
+
+                // Animation écran blanc + son
+                const overlappingDiv = document.querySelector('#overlappingDiv');
+                overlappingDiv.style.backgroundColor = 'white';
+
+                // Son de fusil à pompe (si disponible)
+                if (typeof audio !== 'undefined' && audio.initBattle) {
+                    // Utiliser le son de combat comme substitut
+                    audio.initBattle.play();
+                }
+
+                gsap.to(overlappingDiv, {
+                    opacity: 1,
+                    duration: 0.1,
+                    onComplete: () => {
+                        gsap.to(overlappingDiv, {
+                            opacity: 0,
+                            duration: 0.5,
+                            onComplete: () => {
+                                overlappingDiv.style.backgroundColor = 'black';
+                            }
+                        });
+                    }
+                });
+
+                // Remplacer KK par le sprite mort
+                setTimeout(() => {
+                    // Remplacer l'image de KK par kkdie
+                    if (kkChar && typeof window.kkdieImg !== 'undefined') {
+                        kkChar.image = window.kkdieImg;
+                        kkChar.animate = false;  // Désactiver l'animation
+                        kkChar.frames.max = 1;   // Une seule frame (image fixe)
+                        kkChar.frames.val = 0;   // IMPORTANT: Réinitialiser à la frame 0
+                        kkChar.frames.elapsed = 0;  // Réinitialiser le compteur d'animation
+                        kkChar.dialogue = [];    // Retirer le dialogue
+                        kkChar.onInteractionComplete = null;  // Retirer le callback
+                        kkChar.blockMovement = false;  // IMPORTANT: Permettre au joueur de passer
+
+                        // Recalculer les dimensions pour la nouvelle image
+                        kkChar.image.onload = () => {
+                            kkChar.width = (kkChar.image.width / kkChar.frames.max) * kkChar.scale;
+                            kkChar.height = kkChar.image.height * kkChar.scale;
+                        };
+
+                        console.log('💀 KK transformed into dead sprite!');
+                    } else {
+                        console.log('⚠️ Cannot transform KK - kkChar or kkdieImg not found');
+                    }
+
+                    // Sauvegarder que KK a été tué
+                    localStorage.setItem('kkDefeated', 'true');
+
+                    // Message de victoire
+                    const dialogueBox = document.querySelector('#characterDialogueBox');
+                    if (dialogueBox) {
+                        dialogueBox.innerHTML = '*The hateful creature has been eliminated...*';
+                        dialogueBox.style.display = 'flex';
+                        setTimeout(() => {
+                            dialogueBox.style.display = 'none';
+                        }, 3000);
+                    }
+                }, 200);
             },
 
             closeItemDetail() {

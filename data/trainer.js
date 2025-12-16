@@ -47,6 +47,12 @@ function initBattl() {
   embyTrainer.experience = playerXP;
   embyTrainer.experienceToNextLevel = embyTrainer.level * 10;
 
+  // IMPORTANT: Réinitialiser les positions pour chaque combat
+  dragkatchu.position.x = 800;
+  dragkatchu.position.y = 100;
+  embyTrainer.position.x = 280;
+  embyTrainer.position.y = 325;
+
   // If level >= 10, replace Tackle with secret attack
   if (embyTrainer.level >= 10) {
     const tackleIndex = embyTrainer.attacks.findIndex(attack => attack.name === 'Tackle');
@@ -228,11 +234,14 @@ window.addEventListener('keydown', (e) => {
 
   switch (e.key) {
     case 'a':
+    case 'A':
     case 'q': // AZERTY support
+    case 'Q':
     case 'ArrowLeft':
       selectTrainerPreviousAttack();
       break;
     case 'd':
+    case 'D':
     case 'ArrowRight':
       selectTrainerNextAttack();
       break;
@@ -292,7 +301,10 @@ function trainerAttack(selectedTrainerAttack) {
 
             // Special message for level 10!
             if (levelInfo.learnedSecretAttack) {
-              message += '<br><br>🔥 ' + embyTrainer.name + ' forgot Tackle and learned a mysterious attack: ???';
+              message += '<br><br>⚡️ SPECIAL EVENT ⚡️<br>' +
+                '🔥 ' + embyTrainer.name + ' forgot Tackle<br>' +
+                '✨ ' + embyTrainer.name + ' learned: ??? ✨<br>' +
+                '<span style="color: #ffcc00;">A mysterious new power awakens!</span>';
             }
 
             document.querySelector('#dialogueBoxTrainer').innerHTML = message;
@@ -312,6 +324,13 @@ function trainerAttack(selectedTrainerAttack) {
                 }
                 document.querySelector('#attacksBoxTrainer').append(button);
               });
+
+              // Afficher une notification spéciale
+              setTimeout(() => {
+                if (typeof window.showItemNotification === 'function') {
+                  window.showItemNotification('⚡', 'NEW ATTACK UNLOCKED!', 'Tackle replaced by ???');
+                }
+              }, 4000); // Après le message de dialogue
             }
           });
         });

@@ -38,13 +38,18 @@ window.showItemNotification = function(icon, title, description) {
   notificationTitle.textContent = title;
   notificationDescription.textContent = description;
 
+  // IMPORTANT: Réinitialiser complètement le transform avant l'animation
+  gsap.set(notification, {
+    clearProps: 'all'
+  });
+
   // Show with animation
   notification.style.display = 'block';
   gsap.fromTo(notification,
     {
       opacity: 0,
       scale: 0.5,
-      y: -50
+      y: -30
     },
     {
       opacity: 1,
@@ -60,11 +65,15 @@ window.showItemNotification = function(icon, title, description) {
     gsap.to(notification, {
       opacity: 0,
       scale: 0.8,
-      y: 50,
+      y: 30,
       duration: 0.4,
       ease: 'back.in(1.7)',
       onComplete: () => {
         notification.style.display = 'none';
+        // Réinitialiser complètement après avoir caché
+        gsap.set(notification, {
+          clearProps: 'all'
+        });
       }
     });
   }, 3000);
@@ -265,6 +274,7 @@ battleZonesMap.forEach((row, i) => {
 })
 
 const characters = []
+window.characters = characters  // Rendre globalement accessible pour pouvoir modifier depuis le bagSystem
 const villagerImg = new Image()
 villagerImg.src = './img/villager/Idle.png'
 
@@ -334,19 +344,25 @@ window.newCharacter = newCharacter;
 const kkImg = new Image();
 kkImg.src = './img/kk.png';
 
+const kkdieImg = new Image();
+kkdieImg.src = './img/kkdie.png';
+
+// Vérifier si KK a déjà été tué
+const isKKDefeated = localStorage.getItem('kkDefeated') === 'true';
+
 const kkCharacter = new Character({
   position: {
     x: 1200,  // Déplacé vers la droite
     y: 1000   // Déplacé vers le bas
   },
-  image: kkImg,
+  image: isKKDefeated ? kkdieImg : kkImg,  // Utiliser kkdie si déjà tué
   frames: {
-    max: 4,
+    max: isKKDefeated ? 1 : 4,  // 1 frame si mort, 4 si vivant
     hold: 60
   },
   scale: 3,
-  animate: true,  // ACTIVER L'ANIMATION !
-  dialogue: [
+  animate: !isKKDefeated,  // Pas d'animation si mort
+  dialogue: isKKDefeated ? [] : [
     "Oh look, another 'tourist' in MY America...",
     "You know what's REALLY destroying this country?",
     "It's people who think they're 'superior'",
@@ -355,7 +371,7 @@ const kkCharacter = new Character({
     "It just makes you... pathetic.",
     "*attacks you with ignorance*"
   ],
-  onInteractionComplete: () => {
+  onInteractionComplete: isKKDefeated ? null : () => {
     // Après le dialogue, "tuer" le joueur et respawn
     setTimeout(() => {
       respawnPlayer();
@@ -363,12 +379,19 @@ const kkCharacter = new Character({
   }
 });
 
-// Rendre kkCharacter globalement accessible
+// Ajouter une propriété pour savoir si le personnage bloque le passage
+kkCharacter.blockMovement = !isKKDefeated;  // Ne bloque pas si mort
+
+// Rendre kkCharacter et kkdieImg globalement accessibles
 window.kkCharacter = kkCharacter;
+window.kkdieImg = kkdieImg;
 
 // Fonction pour respawner le joueur au point de départ
 function respawnPlayer() {
   console.log('💀 KK killed you with ignorance! Respawning...');
+
+  // SAUVEGARDER que le joueur a été tué par KK
+  localStorage.setItem('wasKilledByKK', 'true');
 
   const overlappingDiv = document.querySelector('#overlappingDiv');
   const dialogueBox = document.querySelector('#characterDialogueBox');
@@ -699,7 +722,9 @@ function startTrainerDialog(character, callback) {
 }
 
 characters.push(newCharacter);
-characters.push(kkCharacter); // Ajouter KK character
+
+// Ajouter KK character (mort ou vivant selon l'état)
+characters.push(kkCharacter);
 
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
@@ -741,6 +766,67 @@ charactersMap.forEach((row, i) => {
     }
     // 1031 === oldMan
     else if (symbol === 1031) {
+      // Vérifier si le joueur a été tué par KK
+      const wasKilledByKK = localStorage.getItem('wasKilledByKK') === 'true';
+      const alreadyGotShotgun = localStorage.getItem('gotShotgunFromOldMan') === 'true';
+
+      console.log('🔍 OldMan check:');
+      console.log('  wasKilledByKK:', wasKilledByKK);
+      console.log('  alreadyGotShotgun:', alreadyGotShotgun);
+
+      let oldManDialogue;
+      let oldManCallback = null;
+
+      if (wasKilledByKK && !alreadyGotShotgun) {
+        console.log('✅ OldMan will give shotgun!');
+        // Dialogue après avoir été tué par KK - donne le fusil
+        oldManDialogue = [
+          'Oh my... you look shaken.',
+          'You met THAT guy, didn\'t you?',
+          'That hateful creature in white...',
+          'I\'m sorry you had to experience that.',
+          'Here, take this. It\'s dangerous to go alone.',
+          '*hands you a shotgun*',
+          'Use it wisely, trainer.'
+        ];
+        oldManCallback = () => {
+          console.log('🎯 oldManCallback CALLED!');
+          // Donner le fusil à pompe
+          if (typeof window.bagSystem !== 'undefined') {
+            console.log('📦 bagSystem is available, adding shotgun...');
+            window.bagSystem.addItem({
+              id: 'shotgun',
+              name: 'Shotgun',
+              icon: '🔫',
+              description: 'A pump-action shotgun. For self-defense only.'
+            });
+            console.log('🔫 Shotgun added to inventory!');
+          } else {
+            console.log('❌ bagSystem NOT available!');
+          }
+          // Marquer qu'on a déjà donné le fusil
+          localStorage.setItem('gotShotgunFromOldMan', 'true');
+          console.log('✅ Marked shotgun as received in localStorage');
+        };
+      } else if (wasKilledByKK && alreadyGotShotgun) {
+        console.log('ℹ️ OldMan: Already gave shotgun');
+        // Dialogue après avoir déjà reçu le fusil
+        oldManDialogue = [
+          'Stay safe out there, trainer.',
+          'And remember: hate has no place in our world.'
+        ];
+      } else {
+        console.log('ℹ️ OldMan: Normal dialogue (not killed by KK yet)');
+        // Dialogue normal (avant de rencontrer KK)
+        oldManDialogue = [
+          'Hey there, trainer!',
+          'I heard there\'s a tough trainer up ahead...',
+          'They say he guards a secret password.',
+          'You\'ll need to defeat him to get it!',
+          'Train hard and level up your Pokemon!'
+        ];
+      }
+
       characters.push(
         new Character({
           position: {
@@ -753,13 +839,8 @@ charactersMap.forEach((row, i) => {
             hold: 60
           },
           scale: 3,
-          dialogue: [
-            'Hey there, trainer!',
-            'I heard there\'s a tough trainer up ahead...',
-            'They say he guards a secret password.',
-            'You\'ll need to defeat him to get it!',
-            'Train hard and level up your Pokemon!'
-          ]
+          dialogue: oldManDialogue,
+          onInteractionComplete: oldManCallback
         })
       )
     }
@@ -968,6 +1049,9 @@ function animate() {
     // Check collision with characters to block movement
     for (let i = 0; i < characters.length; i++) {
       const character = characters[i]
+      // Ignorer les personnages qui ne bloquent pas le mouvement (comme KK mort)
+      if (character.blockMovement === false) continue;
+
       if (
         rectangularCollision({
           rectangle1: player,
@@ -1021,6 +1105,9 @@ function animate() {
     // Check collision with characters to block movement
     for (let i = 0; i < characters.length; i++) {
       const character = characters[i]
+      // Ignorer les personnages qui ne bloquent pas le mouvement (comme KK mort)
+      if (character.blockMovement === false) continue;
+
       if (
         rectangularCollision({
           rectangle1: player,
@@ -1074,6 +1161,9 @@ function animate() {
     // Check collision with characters to block movement
     for (let i = 0; i < characters.length; i++) {
       const character = characters[i]
+      // Ignorer les personnages qui ne bloquent pas le mouvement (comme KK mort)
+      if (character.blockMovement === false) continue;
+
       if (
         rectangularCollision({
           rectangle1: player,
@@ -1127,6 +1217,9 @@ function animate() {
     // Check collision with characters to block movement
     for (let i = 0; i < characters.length; i++) {
       const character = characters[i]
+      // Ignorer les personnages qui ne bloquent pas le mouvement (comme KK mort)
+      if (character.blockMovement === false) continue;
+
       if (
         rectangularCollision({
           rectangle1: player,
@@ -1191,12 +1284,15 @@ window.addEventListener('keydown', (e) => {
   if (isShowingChoices) {
     switch (e.key) {
       case 'w':
+      case 'W':
       case 'z': // AZERTY support
+      case 'Z':
       case 'ArrowUp':
         currentChoiceIndex = Math.max(0, currentChoiceIndex - 1);
         updateChoiceSelection();
         return;
       case 's':
+      case 'S':
       case 'ArrowDown':
         currentChoiceIndex = Math.min(1, currentChoiceIndex + 1);
         updateChoiceSelection();
@@ -1325,28 +1421,35 @@ window.addEventListener('keydown', (e) => {
       player.isInteracting = true;
       break;
     case 'w':
+    case 'W':
     case 'z': // AZERTY support
+    case 'Z':
     case 'ArrowUp':
       keys.w.pressed = true;
       lastKey = 'w';
       break;
     case 'a':
+    case 'A':
     case 'q': // AZERTY support
+    case 'Q':
     case 'ArrowLeft':
       keys.a.pressed = true;
       lastKey = 'a';
       break;
     case 's':
+    case 'S':
     case 'ArrowDown':
       keys.s.pressed = true;
       lastKey = 's';
       break;
     case 'd':
+    case 'D':
     case 'ArrowRight':
       keys.d.pressed = true;
       lastKey = 'd';
       break;
     case 'b':
+    case 'B':
     case 'Shift':
       keys.b.pressed = true;
       currentSpeed = sprintSpeed;
@@ -1357,24 +1460,31 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
   switch (e.key) {
     case 'w':
+    case 'W':
     case 'z': // AZERTY support
+    case 'Z':
     case 'ArrowUp':
       keys.w.pressed = false;
       break;
     case 'a':
+    case 'A':
     case 'q': // AZERTY support
+    case 'Q':
     case 'ArrowLeft':
       keys.a.pressed = false;
       break;
     case 's':
+    case 'S':
     case 'ArrowDown':
       keys.s.pressed = false;
       break;
     case 'd':
+    case 'D':
     case 'ArrowRight':
       keys.d.pressed = false;
       break;
     case 'b':
+    case 'B':
     case 'Shift':
       keys.b.pressed = false;
       currentSpeed = normalSpeed;

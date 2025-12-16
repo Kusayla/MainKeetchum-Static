@@ -43,6 +43,12 @@ function initBattle() {
   emby.experience = playerXP
   emby.experienceToNextLevel = emby.level * 10
 
+  // IMPORTANT: Réinitialiser les positions pour chaque combat
+  draggle.position.x = 800
+  draggle.position.y = 100
+  emby.position.x = 280
+  emby.position.y = 325
+
   // If level >= 10, replace Tackle with secret attack
   if (emby.level >= 10) {
     const tackleIndex = emby.attacks.findIndex(attack => attack.name === 'Tackle')
@@ -123,7 +129,10 @@ function attachBattleAttackListeners() {
 
                 // Special message for level 10!
                 if (levelInfo.learnedSecretAttack) {
-                  message += '<br><br>🔥 ' + emby.name + ' forgot Tackle and learned a mysterious attack: ???'
+                  message += '<br><br>⚡️ SPECIAL EVENT ⚡️<br>' +
+                    '🔥 ' + emby.name + ' forgot Tackle<br>' +
+                    '✨ ' + emby.name + ' learned: ??? ✨<br>' +
+                    '<span style="color: #ffcc00;">A mysterious new power awakens!</span>'
                 }
 
                 document.querySelector('#dialogueBox').innerHTML = message
@@ -145,6 +154,13 @@ function attachBattleAttackListeners() {
                   })
                   // Réattacher les événements de clic aux nouveaux boutons
                   attachBattleAttackListeners()
+
+                  // Afficher une notification spéciale
+                  setTimeout(() => {
+                    if (typeof window.showItemNotification === 'function') {
+                      window.showItemNotification('⚡', 'NEW ATTACK UNLOCKED!', 'Tackle replaced by ???')
+                    }
+                  }, 4000) // Après le message de dialogue
                 }
               })
             })
@@ -304,11 +320,14 @@ window.addEventListener('keydown', (e) => {
 
   switch (e.key) {
     case 'a':
+    case 'A':
     case 'q': // AZERTY support
+    case 'Q':
     case 'ArrowLeft':
       selectPreviousAttack()
       break
     case 'd':
+    case 'D':
     case 'ArrowRight':
       selectNextAttack()
       break
