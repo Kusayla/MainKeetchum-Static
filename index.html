@@ -659,41 +659,67 @@
 
     <!-- Site content (hidden by default) -->
     <div id="site-content" style="display: none;">
-        <!-- Animated Background -->
-        <div class="site-background"></div>
-
-        <!-- Floating A$$ Text -->
-        <div class="floating-text"></div>
-
         <!-- Header -->
         <header class="site-header">
             <div>
-                <a href="https://x.com/asskeetchumcoin?s=21">
+                <a href="#home">
                     <img src="img/token.png" class="site-logo" alt="A$$ Keetchum Logo">
                 </a>
             </div>
-            <div class="social-links">
-                <a href="https://x.com/asskeetchumcoin?s=21" target="_blank">
-                    <img src="img/tel.png" class="social-icon" alt="Telegram">
+
+            <!-- Navigation Menu -->
+            <nav class="site-nav">
+                <a href="#about">About</a>
+                <a href="#tokenomics">Tokenomics</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="#howtobuy">Buy</a>
+                <a href="#community">Community</a>
+            </nav>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <a href="https://x.com/asskeetchumcoin?s=21" target="_blank" class="header-btn btn-join">
+                    JOIN X
                 </a>
-                <a href="https://x.com/asskeetchumcoin?s=21" target="_blank">
-                    <img src="img/X.png" class="social-icon" alt="Twitter">
+                <a href="https://raydium.io" target="_blank" class="header-btn btn-buy">
+                    BUY A$$
                 </a>
             </div>
         </header>
 
         <!-- Hero Section -->
-        <section class="hero-section">
-            <h1 class="hero-title glitch" data-text="A$$ KEETCHUM!">
+        <section class="hero-section" id="home">
+            <h1 class="hero-title">
                 A$$ KEETCHUM! <span class="troll-emoji">🍑</span>
             </h1>
             <p class="hero-subtitle">GOTTA PUMP 'EM ALL! 🚀</p>
+            <div class="cta-container">
+                <a href="https://raydium.io" target="_blank" class="cta-button">
+                    <span>🚀 BUY A$$ NOW! 🍑</span>
+                </a>
+            </div>
         </section>
 
         <!-- Main Container -->
         <div class="site-container">
+            <!-- Stats Section -->
+            <section class="stats-section reveal" id="stats">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="1000000000">0</div>
+                    <div class="stat-label">Total Supply</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="10000">0</div>
+                    <div class="stat-label">Holders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$<span data-target="5000000">0</span></div>
+                    <div class="stat-label">Market Cap</div>
+                </div>
+            </section>
+
             <!-- About Section -->
-            <section class="content-section reveal">
+            <section class="content-section reveal" id="about">
                 <div class="section-grid">
                     <div>
                         <img src="img/pikatchoum.png" class="section-image" alt="Pikatchoum">
@@ -707,6 +733,29 @@
                             <br><br>
                             <strong>Gonna catch 'em all!</strong> 💰🚀
                         </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tokenomics Section -->
+            <section class="tokenomics-section reveal" id="tokenomics">
+                <h2 class="tokenomics-title">TOKENOMICS 📊</h2>
+                <div class="tokenomics-grid">
+                    <div class="tokenomics-item">
+                        <h3>🔥 TOTAL SUPPLY</h3>
+                        <p>1,000,000,000 A$$ tokens ready to be caught! No minting, no funny business!</p>
+                    </div>
+                    <div class="tokenomics-item">
+                        <h3>💧 LIQUIDITY</h3>
+                        <p>100% liquidity locked! Your A$$ is safe and pumping!</p>
+                    </div>
+                    <div class="tokenomics-item">
+                        <h3>🎯 TAX</h3>
+                        <p>0% buy/sell tax! Trade freely and catch 'em all without fees!</p>
+                    </div>
+                    <div class="tokenomics-item">
+                        <h3>🍑 DISTRIBUTION</h3>
+                        <p>Fair launch! No team allocation, no presale BS. Pure community power!</p>
                     </div>
                 </div>
             </section>
@@ -725,7 +774,7 @@
             </section>
 
             <!-- Community Section -->
-            <section class="content-section community-section reveal">
+            <section class="content-section community-section reveal" id="community">
                 <div>
                     <img src="img/slem.webp" class="section-image" alt="Slem" style="max-width: 500px; margin: 0 auto 2rem; display: block;">
                 </div>
@@ -742,8 +791,51 @@
                 </div>
             </section>
 
+            <!-- Roadmap Section -->
+            <section class="roadmap-section reveal" id="roadmap">
+                <h2 class="roadmap-title">ROADMAP 🗺️</h2>
+                <div class="roadmap-timeline">
+                    <div class="roadmap-item completed">
+                        <div class="roadmap-phase">PHASE 1: LAUNCH</div>
+                        <div class="roadmap-content">
+                            • Launch on Solana blockchain<br>
+                            • Build initial community<br>
+                            • Lock liquidity forever<br>
+                            • Launch meme campaign
+                        </div>
+                    </div>
+                    <div class="roadmap-item completed">
+                        <div class="roadmap-phase">PHASE 2: GROWTH</div>
+                        <div class="roadmap-content">
+                            • 5,000+ holders milestone<br>
+                            • First CEX listing<br>
+                            • Community partnerships<br>
+                            • Meme competition 🎨
+                        </div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-phase">PHASE 3: DOMINATION</div>
+                        <div class="roadmap-content">
+                            • Major exchange listings<br>
+                            • 50,000+ holders<br>
+                            • A$$ merchandise drop 🍑<br>
+                            • Influencer partnerships
+                        </div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-phase">PHASE 4: TO THE MOON</div>
+                        <div class="roadmap-content">
+                            • 100,000+ holders<br>
+                            • Top 10 meme coin<br>
+                            • A$$ Keetchum NFT collection<br>
+                            • CATCH 'EM ALL! 🚀🌙
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- How To Buy Section -->
-            <section class="htb-section reveal">
+            <section class="htb-section reveal" id="howtobuy">
                 <h2 class="htb-title">HOW TO BUY A$$!!! 🚀</h2>
                 <div style="text-align: center; margin-bottom: 3rem;">
                     <img src="img/Ask.png" alt="How to buy" style="max-width: 150px;">
@@ -765,8 +857,10 @@
                         <p>Now use Raydium to swap your SOL for A$$!</p>
                     </div>
                 </div>
-                <div style="text-align: center; margin-top: 3rem; font-size: 1.5rem;">
-                    <p>🍑 TO THE MOON! 🚀</p>
+                <div class="cta-container">
+                    <a href="https://raydium.io" target="_blank" class="cta-button">
+                        <span>🚀 START BUYING NOW! 🍑</span>
+                    </a>
                 </div>
             </section>
 
@@ -1013,6 +1107,11 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
+
+                        // Animate counters when stats section is revealed
+                        if (entry.target.classList.contains('stats-section')) {
+                            animateCounters();
+                        }
                     }
                 });
             }, {
@@ -1024,6 +1123,67 @@
             });
         }
 
+        // Animate stat counters
+        function animateCounters() {
+            const counters = document.querySelectorAll('[data-target]');
+
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000; // 2 seconds
+                const increment = target / (duration / 16); // 60fps
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target.toLocaleString();
+                    }
+                };
+
+                updateCounter();
+            });
+        }
+
+        // Create Pokéball particles
+        function createParticles() {
+            const particleContainer = document.getElementById('particleContainer');
+            if (!particleContainer) return;
+
+            // Array of Pokemon-themed emojis
+            const particleEmojis = ['⚪', '🔴', '⭐', '💰', '🚀', '🔥', '⚡', '🍑', '💎'];
+
+            // Create a pokeball particle
+            function createPokeballParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'pokeball-particle';
+                particle.textContent = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+
+                particleContainer.appendChild(particle);
+
+                // Remove after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 20000);
+            }
+
+            // Create initial particles
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => createPokeballParticle(), i * 500);
+            }
+
+            // Continuously create new particles
+            setInterval(() => {
+                createPokeballParticle();
+            }, 3000);
+        }
+
         // Initialiser les animations du site quand il est affiché
         const siteContent = document.getElementById('site-content');
         if (siteContent) {
@@ -1033,6 +1193,7 @@
                         if (siteContent.style.display !== 'none') {
                             // Le site est maintenant visible, lancer les animations
                             createFloatingText();
+                            createParticles();
                             revealOnScroll();
                         }
                     }
@@ -1047,6 +1208,7 @@
             // Si déjà visible au chargement
             if (siteContent.style.display !== 'none') {
                 createFloatingText();
+                createParticles();
                 revealOnScroll();
             }
         }
