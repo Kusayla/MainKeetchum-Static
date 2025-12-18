@@ -662,3 +662,25 @@ footer p {
 .particle-container {
     display: none;
 }
+
+/* Cards Gallery Section - Basic Styles */
+.cards-gallery-section {
+    position: relative;
+    z-index: 100;
+    padding: 3rem 2rem;
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.gallery-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+    color: #fbbf24;
+    font-style: italic;
+}
+
+.gallery-subtitle {
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
+    color: #fff;
+    margin-bottom: 3rem;
+}

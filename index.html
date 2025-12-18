@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/lastversion.css?v=10">
     <link rel="stylesheet" href="css/game.css?v=10">
     <link rel="stylesheet" href="css/site.css?v=1">
+    <link rel="stylesheet" href="css/cards.css?v=1">
 
     <!-- Unown Font -->
     <style>
@@ -671,9 +672,9 @@
             <nav class="site-nav">
                 <a href="#about">About</a>
                 <a href="#tokenomics">Tokenomics</a>
+                <a href="#cards">Cards</a>
                 <a href="#roadmap">Roadmap</a>
                 <a href="#howtobuy">Buy</a>
-                <a href="#community">Community</a>
             </nav>
 
             <!-- Header Actions -->
@@ -772,6 +773,114 @@
                     </p>
                 </div>
             </section>
+
+            <!-- Cards Gallery Section -->
+            <section class="cards-gallery-section reveal" id="cards">
+                <h2 class="gallery-title">COLLECT 'EM ALL! 🎴</h2>
+                <p class="gallery-subtitle">Legendary A$$ Cards with holographic effects!</p>
+
+                <div class="showcase">
+                    <div class="cards-grid">
+                        <!-- Card 1: Trumpy -->
+                        <div class="card interactive"
+                             data-number="001"
+                             data-rarity="rare secret"
+                             data-card-name="trumpy"
+                             style="
+                                --pointer-x: 50%;
+                                --pointer-y: 50%;
+                                --pointer-from-center: 0;
+                                --pointer-from-top: 0.5;
+                                --pointer-from-left: 0.5;
+                                --card-opacity: 1;
+                                --rotate-x: 0deg;
+                                --rotate-y: 0deg;
+                                --background-x: 50%;
+                                --background-y: 50%;
+                                --card-scale: 1;
+                                --translate-x: 0px;
+                                --translate-y: 0px;">
+                            <div class="card__translater">
+                                <button class="card__rotator" aria-label="Trumpy Card" tabindex="0">
+                                    <div class="card__front">
+                                        <img src="img/TrumpyCard.png" alt="Trumpy Card" loading="lazy">
+                                        <div class="card__shine"></div>
+                                        <div class="card__glare"></div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: ICE -->
+                        <div class="card interactive"
+                             data-number="002"
+                             data-rarity="rare secret"
+                             data-card-name="ice"
+                             style="
+                                --pointer-x: 50%;
+                                --pointer-y: 50%;
+                                --pointer-from-center: 0;
+                                --pointer-from-top: 0.5;
+                                --pointer-from-left: 0.5;
+                                --card-opacity: 1;
+                                --rotate-x: 0deg;
+                                --rotate-y: 0deg;
+                                --background-x: 50%;
+                                --background-y: 50%;
+                                --card-scale: 1;
+                                --translate-x: 0px;
+                                --translate-y: 0px;">
+                            <div class="card__translater">
+                                <button class="card__rotator" aria-label="ICE Card" tabindex="0">
+                                    <div class="card__front">
+                                        <img src="img/ICECard.png" alt="ICE Card" loading="lazy">
+                                        <div class="card__shine"></div>
+                                        <div class="card__glare"></div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: KK -->
+                        <div class="card interactive"
+                             data-number="003"
+                             data-rarity="rare secret"
+                             data-card-name="kk"
+                             style="
+                                --pointer-x: 50%;
+                                --pointer-y: 50%;
+                                --pointer-from-center: 0;
+                                --pointer-from-top: 0.5;
+                                --pointer-from-left: 0.5;
+                                --card-opacity: 1;
+                                --rotate-x: 0deg;
+                                --rotate-y: 0deg;
+                                --background-x: 50%;
+                                --background-y: 50%;
+                                --card-scale: 1;
+                                --translate-x: 0px;
+                                --translate-y: 0px;">
+                            <div class="card__translater">
+                                <button class="card__rotator" aria-label="KK Card" tabindex="0">
+                                    <div class="card__front">
+                                        <img src="img/kkCard.png" alt="KK Card" loading="lazy">
+                                        <div class="card__shine"></div>
+                                        <div class="card__glare"></div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Card Modal -->
+            <div class="card-modal" id="cardModal">
+                <button class="card-modal-close" id="closeCardModal">✕</button>
+                <div class="card-modal-content" id="modalCardContainer">
+                    <!-- Card will be cloned here -->
+                </div>
+            </div>
 
             <!-- Community Section -->
             <section class="content-section community-section reveal" id="community">
@@ -1216,6 +1325,180 @@
         // Ancienne fonction pour compatibilité
         function copyToClipboard() {
             copyContractAddress();
+        }
+
+        // ===== HOLOGRAPHIC CARD EFFECTS (Pokemon Style) =====
+        function attachCardEvents(card) {
+            // Mouse move handler
+            const handleMouseMove = (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const percentX = (x / rect.width) * 100;
+                const percentY = (y / rect.height) * 100;
+
+                const deltaX = x - centerX;
+                const deltaY = y - centerY;
+
+                const rotateX = (deltaY / centerY) * -20;
+                const rotateY = (deltaX / centerX) * 20;
+
+                const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+                const maxDistance = Math.sqrt(centerX ** 2 + centerY ** 2);
+                const pointerFromCenter = distance / maxDistance;
+
+                const pointerFromTop = y / rect.height;
+                const pointerFromLeft = x / rect.width;
+
+                // Update CSS variables
+                card.style.setProperty('--pointer-x', `${percentX}%`);
+                card.style.setProperty('--pointer-y', `${percentY}%`);
+                card.style.setProperty('--pointer-from-center', pointerFromCenter);
+                card.style.setProperty('--pointer-from-top', pointerFromTop);
+                card.style.setProperty('--pointer-from-left', pointerFromLeft);
+                card.style.setProperty('--rotate-x', `${rotateX}deg`);
+                card.style.setProperty('--rotate-y', `${rotateY}deg`);
+                card.style.setProperty('--background-x', `${percentX}%`);
+                card.style.setProperty('--background-y', `${percentY}%`);
+                card.style.setProperty('--card-scale', '1.1');
+                card.style.setProperty('--card-opacity', '1');
+
+                card.classList.add('interacting');
+            };
+
+            // Mouse leave handler
+            const handleMouseLeave = () => {
+                card.style.setProperty('--rotate-x', '0deg');
+                card.style.setProperty('--rotate-y', '0deg');
+                card.style.setProperty('--card-scale', '1');
+                card.style.setProperty('--pointer-from-center', '0');
+                card.style.setProperty('--background-x', '50%');
+                card.style.setProperty('--background-y', '50%');
+
+                card.classList.remove('interacting');
+            };
+
+            // Mouse enter handler
+            const handleMouseEnter = () => {
+                card.style.setProperty('--card-opacity', '1');
+            };
+
+            // Attach events
+            card.addEventListener('mousemove', handleMouseMove);
+            card.addEventListener('mouseleave', handleMouseLeave);
+            card.addEventListener('mouseenter', handleMouseEnter);
+
+            // Touch support for mobile
+            card.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                card.dispatchEvent(mouseEvent);
+            });
+
+            card.addEventListener('touchend', () => {
+                card.dispatchEvent(new Event('mouseleave'));
+            });
+        }
+
+        function initHoloCards() {
+            const cards = document.querySelectorAll('.card.interactive');
+
+            cards.forEach(card => {
+                attachCardEvents(card);
+
+                // Click handler to open modal
+                const cardRotator = card.querySelector('.card__rotator');
+                cardRotator.addEventListener('click', () => {
+                    openCardModal(card);
+                });
+            });
+        }
+
+        // ===== CARD MODAL SYSTEM =====
+        function openCardModal(originalCard) {
+            const modal = document.getElementById('cardModal');
+            const modalContainer = document.getElementById('modalCardContainer');
+
+            // Clone the card
+            const clonedCard = originalCard.cloneNode(true);
+            clonedCard.style.maxWidth = '500px';
+            clonedCard.style.width = '100%';
+
+            // Clear previous content
+            modalContainer.innerHTML = '';
+            modalContainer.appendChild(clonedCard);
+
+            // Show modal
+            modal.classList.add('active');
+
+            // Attach events to cloned card
+            setTimeout(() => {
+                attachCardEvents(clonedCard);
+            }, 100);
+
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCardModal() {
+            const modal = document.getElementById('cardModal');
+            modal.classList.remove('active');
+
+            // Re-enable body scroll
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on button click
+        document.getElementById('closeCardModal').addEventListener('click', closeCardModal);
+
+        // Close modal on background click
+        document.getElementById('cardModal').addEventListener('click', (e) => {
+            if (e.target.id === 'cardModal') {
+                closeCardModal();
+            }
+        });
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeCardModal();
+            }
+        });
+
+        // Initialiser les cartes holographiques quand le site est affiché
+        const siteContentHolo = document.getElementById('site-content');
+        if (siteContentHolo) {
+            const observerHolo = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'style') {
+                        if (siteContentHolo.style.display !== 'none') {
+                            setTimeout(() => {
+                                initHoloCards();
+                            }, 500);
+                        }
+                    }
+                });
+            });
+
+            observerHolo.observe(siteContentHolo, {
+                attributes: true,
+                attributeFilter: ['style']
+            });
+
+            // Si déjà visible au chargement
+            if (siteContentHolo.style.display !== 'none') {
+                setTimeout(() => {
+                    initHoloCards();
+                }, 500);
+            }
         }
 
         // ===== BAG/INVENTORY SYSTEM =====
