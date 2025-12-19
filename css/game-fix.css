@@ -1,0 +1,43 @@
+/* =============================================
+   FIX ISOLATION - Séparer le jeu et le site
+   ============================================= */
+
+/* 1. ANNULER les styles globaux de lastversion.css */
+body {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: unset !important;
+    justify-content: unset !important;
+}
+
+/* 2. S'assurer que #site-content NE BLOQUE PAS le jeu quand caché */
+#site-content {
+    pointer-events: none;
+}
+
+#site-content[style*="display: block"],
+#site-content[style*="display:block"] {
+    pointer-events: auto;
+}
+
+/* 3. S'assurer que les boutons flottants du jeu sont cliquables */
+body > .floating-code-btn,
+body > .floating-bag-btn,
+body > .floating-mute-btn {
+    z-index: 10000 !important;
+    pointer-events: auto !important;
+}
+
+/* 4. Forcer la visibilité du background du jeu */
+body > .background-container {
+    display: block !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+}
+
+/* 5. Forcer la visibilité du game-container */
+body > .game-container {
+    display: block !important;
+    pointer-events: auto !important;
+}

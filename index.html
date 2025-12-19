@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/lastversion.css?v=10">
     <link rel="stylesheet" href="css/game.css?v=10">
-    <link rel="stylesheet" href="css/site.css?v=1">
+    <link rel="stylesheet" href="css/site.css?v=7">
     <link rel="stylesheet" href="css/cards.css?v=1">
 
     <!-- Unown Font -->
@@ -1012,9 +1012,18 @@
     <script src="data/index.js?v=10"></script>
 
     <script>
+        // === DIAGNOSTIC: Vérifier si les éléments existent ===
+        console.log('=== DIAGNOSTIC GAME ===');
+        console.log('background-container existe?', document.querySelector('.background-container'));
+        console.log('game-container existe?', document.querySelector('.game-container'));
+        console.log('openCodeModalBtn existe?', document.getElementById('openCodeModalBtn'));
+        console.log('muteBtn existe?', document.getElementById('muteBtn'));
+        console.log('site-content existe?', document.getElementById('site-content'));
+
         // Remplir le background avec du texte animé
         function fillBackgroundWithText() {
             const container = document.querySelector('.background-container');
+            console.log('fillBackgroundWithText appelée, container:', container);
             if (!container) return;
 
             const text = 'A$$KEETCHUM ';
@@ -1472,6 +1481,27 @@
                 closeCardModal();
             }
         });
+
+        // ===== HIDE HEADER ON SCROLL DOWN / SHOW ON SCROLL UP =====
+        let lastScrollTop = 0;
+        const header = document.querySelector('.site-header');
+        const siteContentScroll = document.getElementById('site-content');
+
+        if (siteContentScroll && header) {
+            siteContentScroll.addEventListener('scroll', () => {
+                const scrollTop = siteContentScroll.scrollTop;
+
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    // Scrolling down & past 100px
+                    header.classList.add('hidden');
+                } else {
+                    // Scrolling up
+                    header.classList.remove('hidden');
+                }
+
+                lastScrollTop = scrollTop;
+            });
+        }
 
         // Initialiser les cartes holographiques quand le site est affiché
         const siteContentHolo = document.getElementById('site-content');

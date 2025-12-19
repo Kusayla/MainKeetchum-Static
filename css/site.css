@@ -2,15 +2,19 @@
    A$$ KEETCHUM - MHGA STYLE
    ====================================== */
 
-/* Reset & Base */
-* {
-    margin: 0;
-    padding: 0;
+/* IMPORTANT: Tous les styles sont scopés à #site-content pour ne PAS affecter le jeu */
+
+/* Reset & Base - Scoped to site-content only */
+#site-content * {
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+/* Reset seulement les éléments qui n'ont PAS besoin de margins pour le centrage */
+#site-content h1, #site-content h2, #site-content h3, #site-content h4, #site-content h5, #site-content h6,
+#site-content p, #site-content span, #site-content a, #site-content button,
+#site-content ul, #site-content li, #site-content img {
+    margin: 0;
+    padding: 0;
 }
 
 #site-content {
@@ -25,10 +29,25 @@ html {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99999;
     padding-bottom: 2rem;
     scroll-behavior: smooth;
 }
+
+/* Quand #site-content est display:none, il ne doit rien bloquer */
+#site-content:not([style*="display: block"]):not([style*="display:block"]) {
+    z-index: -9999;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* Quand #site-content est visible (display: block), il prend le dessus */
+#site-content[style*="display: block"],
+#site-content[style*="display:block"] {
+    z-index: 99999;
+    pointer-events: auto;
+    visibility: visible;
+}
+
 
 /* Header */
 .site-header {
@@ -46,6 +65,13 @@ html {
     flex-wrap: wrap;
     gap: 1rem;
     border-bottom: 4px solid #000;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.site-header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .site-logo {
