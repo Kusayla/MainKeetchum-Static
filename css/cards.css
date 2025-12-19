@@ -120,13 +120,16 @@
     border-radius: var(--radius);
 }
 
-/* Holographic Shine Effect */
+/* Holographic Shine Effect - Base */
 .card__shine {
     --space: 5%;
     --angle: 133deg;
-    --imgsize: 500px;
 
+    display: grid;
+    overflow: hidden;
+    z-index: 2;
     opacity: 0.8;
+
     background-image:
         repeating-linear-gradient(
             0deg,
@@ -165,7 +168,6 @@
             contrast(2)
             saturate(1.2);
     mix-blend-mode: color-dodge;
-    z-index: 2;
 }
 
 /* Glare Effect */
@@ -181,35 +183,111 @@
     z-index: 3;
 }
 
-/* Gold Secret Effect */
-.card[data-rarity="rare secret"] .card__shine {
-    --space: 5%;
-    --angle: 110deg;
-
+/* ====================================
+   EFFET 1 - GOLD GALAXY (Trumpy Card)
+   Utilise: galaxy.jpg avec effet doré
+   ==================================== */
+.card[data-rarity="gold secret"] .card__shine {
     background-image:
+        url('../img/effet/galaxy.jpg'),
         repeating-linear-gradient(
-            var(--angle),
-            rgba(89, 46, 80, 0.5) 0%,
-            hsl(39, 37%, 60%) 2.5%,
-            rgb(216, 183, 92) 5%,
-            hsl(39, 37%, 60%) 7.5%,
-            rgba(14, 21, 46, 0.5) 10%,
-            rgba(14, 21, 46, 0.5) 15%
+            110deg,
+            rgba(255, 215, 0, 0.8) calc(5% * 1),
+            rgba(251, 191, 36, 0.8) calc(5% * 2),
+            rgba(255, 235, 59, 0.8) calc(5% * 3),
+            rgba(255, 193, 7, 0.8) calc(5% * 4),
+            rgba(255, 215, 0, 0.8) calc(5% * 5)
         ),
         radial-gradient(
-            farthest-corner circle at var(--background-x) var(--background-y),
-            rgba(251, 191, 36, 0.8) 10%,
-            rgba(251, 191, 36, 0.4) 30%,
-            rgba(0, 0, 0, 0.5) 90%
+            farthest-corner circle at var(--pointer-x) var(--pointer-y),
+            rgba(255, 255, 255, 0.5) 10%,
+            rgba(255, 215, 0, 0.3) 30%,
+            rgba(0, 0, 0, 0.3) 100%
         );
 
-    background-size: 600% 600%, 200%;
-    background-position: var(--background-x) var(--background-y);
-    background-blend-mode: color-burn, normal;
+    background-size: cover, 300% 400%, 200%;
+    background-position:
+        center center,
+        calc(10% + var(--pointer-from-left) * 80%) calc(10% + var(--pointer-from-top) * 80%),
+        center center;
+    background-blend-mode: color-burn, multiply;
 
-    filter: brightness(calc(var(--pointer-from-center) * 0.4 + 0.7))
-            contrast(3)
-            saturate(0.66);
+    filter: brightness(1.2) contrast(1.4) saturate(1.3);
+    mix-blend-mode: color-dodge;
+    opacity: calc(var(--card-opacity) * 1.2);
+}
+
+/* ====================================
+   EFFET 2 - RAINBOW HOLO (ICE Card)
+   Utilise: rainbow.jpg - glitter sparkles subtil
+   ==================================== */
+.card[data-rarity="rainbow holo"] .card__shine {
+    background-image:
+        url('../img/effet/rainbow.jpg'),
+        repeating-linear-gradient(
+            110deg,
+            rgba(248, 14, 53, 0.3) calc(5% * 1),
+            rgba(238, 223, 16, 0.3) calc(5% * 2),
+            rgba(33, 233, 133, 0.3) calc(5% * 3),
+            rgba(13, 189, 233, 0.3) calc(5% * 4),
+            rgba(201, 41, 241, 0.3) calc(5% * 5),
+            rgba(248, 14, 53, 0.3) calc(5% * 6)
+        ),
+        radial-gradient(
+            farthest-corner circle at var(--pointer-x) var(--pointer-y),
+            rgba(255, 255, 255, 0.3) 10%,
+            rgba(255, 255, 255, 0.15) 30%,
+            transparent 70%
+        );
+
+    background-size: 20%, 350% 600%, 180%;
+    background-position:
+        center center,
+        calc(10% + var(--pointer-from-left) * 80%) calc(10% + var(--pointer-from-top) * 80%),
+        center center;
+    background-blend-mode: screen, soft-light;
+
+    filter: brightness(calc(var(--pointer-from-center) * 0.2 + 0.75))
+            contrast(1.1)
+            saturate(1.2);
+    mix-blend-mode: overlay;
+    opacity: calc(var(--card-opacity) * 0.6);
+}
+
+/* ====================================
+   EFFET 3 - COSMOS HOLO (KK Card)
+   Utilise: cosmos.png avec teinte violette
+   ==================================== */
+.card[data-rarity="cosmos holo"] .card__shine {
+    background-image:
+        url('../img/effet/cosmos.png'),
+        repeating-linear-gradient(
+            82deg,
+            rgba(147, 51, 234, 0.6) calc(4% * 1),
+            rgba(138, 43, 226, 0.6) calc(4% * 2),
+            rgba(186, 104, 200, 0.6) calc(4% * 3),
+            rgba(123, 31, 162, 0.6) calc(4% * 4),
+            rgba(142, 36, 170, 0.6) calc(4% * 5),
+            rgba(171, 71, 188, 0.6) calc(4% * 6),
+            rgba(147, 51, 234, 0.6) calc(4% * 7)
+        ),
+        radial-gradient(
+            farthest-corner circle at var(--pointer-x) var(--pointer-y),
+            rgba(180, 100, 230, 0.5) 5%,
+            rgba(138, 43, 226, 0.3) 40%,
+            rgba(0, 0, 0, 0.5) 130%
+        );
+
+    background-size: cover, 400% 900%, cover;
+    background-position:
+        center center,
+        calc(10% + var(--pointer-from-left) * 80%) calc(10% + var(--pointer-from-top) * 80%),
+        center center;
+    background-blend-mode: color-burn, multiply;
+
+    filter: brightness(1) contrast(1.3) saturate(1.2);
+    mix-blend-mode: color-dodge;
+    opacity: calc(var(--card-opacity) * 1.1);
 }
 
 /* Card Modal/Zoom */
