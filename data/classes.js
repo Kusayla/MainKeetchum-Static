@@ -630,7 +630,22 @@ class Monster extends Sprite {
               opacity: 0,
               repeat: 5,
               yoyo: true,
-              duration: 0.08
+              duration: 0.08,
+              onComplete: () => {
+                // TRANSFORMATION: Si c'est Dragkatchu, changer son sprite en mexicanDracatchu
+                if (recipient.name === 'Dragkatchu' || recipient.originalName === 'Dragkatchu') {
+                  const mexicanImg = new Image()
+                  mexicanImg.src = './img/mexicanDracatchu.png'
+                  mexicanImg.onload = () => {
+                    recipient.image = mexicanImg
+                    recipient.name = 'Mexican Dragkatchu'
+                    // Mettre à jour l'affichage du nom
+                    const enemyNameEl = document.querySelector('#enemyName')
+                    if (enemyNameEl) enemyNameEl.textContent = 'Mexican Dragkatchu'
+                    console.log('🌮 Dragkatchu transformed into Mexican Dragkatchu! 🌮')
+                  }
+                }
+              }
             })
             renderedSprites.splice(1, 1)
           }
